@@ -1,4 +1,4 @@
-/* Ivy Clinics admin. One palette and two faces: Cormorant Garamond for display, Jost for everything else.
+/* Pure Clinics admin. One palette and two faces: Cormorant Garamond for display, Jost for everything else.
    Arabic letters fall back to Amiri and IBM Plex Sans Arabic, which sit next to them in the same stacks. */
 
 * {
@@ -53,8 +53,11 @@ li {
   --line: #e2d8cc;
   --line-strong: #d8ccbe;
   --soft: #efe7dc;
-  --accent: #2f4a3c;
+  /* Black for actions, warm taupe for the brand, green only for what is happening right now. */
+  --accent: #1e1e1c;
   --accent-ink: #ffffff;
+  --brand: #7a6a55;
+  --now: #2f4a3c;
   --sage: #e1e9e3;
   --blush: #f1e6df;
   --sand-soft: #ece4d6;
@@ -100,6 +103,18 @@ li {
   display: flex;
   align-items: center;
   padding: 0 8px;
+}
+
+/* The Pure Clinics wordmark in type: PURE a little heavier than CLINICS, both widely spaced. */
+.wordmark {
+  font: 300 15px/1 var(--body);
+  letter-spacing: 0.36em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.wordmark b {
+  font-weight: 500;
 }
 
 .nav {
@@ -357,9 +372,9 @@ li {
   gap: 8px;
   padding: 0 13px;
   border-radius: var(--radius-control);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  background: var(--sage);
-  color: var(--accent);
+  border: 1px solid var(--line-strong);
+  background: var(--soft);
+  color: var(--ink);
   font-size: 13.5px;
   font-weight: 500;
   white-space: nowrap;
@@ -368,7 +383,7 @@ li {
 
 .tour-button:hover {
   transform: translateY(-1px);
-  background: #d6e2d9;
+  background: var(--sand-soft);
 }
 
 .avatar {
@@ -528,12 +543,12 @@ li {
 }
 
 .spark-area {
-  fill: color-mix(in srgb, var(--accent) 22%, transparent);
+  fill: color-mix(in srgb, var(--brand) 22%, transparent);
   animation: fade-in 0.6s 0.7s backwards;
 }
 
 .spark-dot {
-  fill: var(--accent);
+  fill: var(--brand);
   stroke: var(--ink);
   stroke-width: 1.2;
 }
@@ -581,10 +596,6 @@ li {
   flex-direction: column;
 }
 
-.studio-card {
-  grid-column: span 7;
-}
-
 .head-actions {
   display: flex;
   align-items: center;
@@ -593,8 +604,7 @@ li {
   justify-content: flex-end;
 }
 
-.phase,
-.follow {
+.phase {
   height: 32px;
   display: inline-flex;
   align-items: center;
@@ -611,17 +621,6 @@ li {
 .phase--live {
   background: var(--good-bg);
   color: var(--good);
-}
-
-.follow {
-  border: 1px solid var(--line-strong);
-  background: var(--surface);
-}
-
-.follow.on {
-  border: 0;
-  background: transparent;
-  color: var(--muted);
 }
 
 .scene-host {
@@ -653,7 +652,6 @@ li {
   pointer-events: none;
 }
 
-.scene-overlay,
 .scene-legend,
 .scene-hint {
   position: absolute;
@@ -661,15 +659,6 @@ li {
   pointer-events: none;
 }
 
-.scene-overlay {
-  top: 14px;
-  inset-inline-start: 14px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.scene-overlay span,
 .scene-legend {
   background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(8px);
@@ -678,12 +667,6 @@ li {
   padding: 6px 9px;
   font-size: 12px;
   color: var(--muted);
-}
-
-.scene-overlay b {
-  color: var(--ink);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
 }
 
 .scene-legend {
@@ -716,49 +699,6 @@ li {
   font-size: 11.5px;
   color: var(--muted);
   opacity: 0.8;
-}
-
-.scene-tag {
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--line-strong);
-  box-shadow: 0 3px 10px rgba(30, 30, 28, 0.08);
-  font: 500 11px/1 var(--body);
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.scene-tag:empty {
-  display: none;
-}
-
-.scene-tag--in {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #ffffff;
-}
-
-.scene-tag--noshow {
-  background: #efeae2;
-  color: var(--muted);
-}
-
-.scene-tag--instructor {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  font-size: 12px;
-}
-
-.scene-tag--instructor span {
-  color: var(--muted);
-  font-weight: 400;
-}
-
-.scene-floor-number {
-  font: 500 10px/1 var(--body);
-  color: var(--muted);
 }
 
 .scene-tip {
@@ -809,8 +749,8 @@ li {
 }
 
 .scene-room--busy {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--now);
+  border-color: var(--now);
   color: rgba(255, 255, 255, 0.82);
 }
 
@@ -840,97 +780,11 @@ li {
   color: var(--muted);
 }
 
-/* Pilates: today's classes under the studio. */
-.class-strip {
-  margin-top: 14px;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(102px, 1fr);
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-
-.class-chip {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  padding: 11px;
-  text-align: start;
-  border-radius: var(--radius-control);
-  border: 1px solid var(--line);
-  background: var(--surface);
-  transition: transform 0.2s, border-color 0.2s, background 0.25s, color 0.25s;
-}
-
-.class-chip:hover {
-  transform: translateY(-2px);
-  border-color: var(--line-strong);
-}
-
-.class-chip.done {
-  color: var(--muted);
-}
-
-.class-chip[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #ffffff;
-}
-
-.class-chip[aria-pressed='true'] .squares i {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.class-chip[aria-pressed='true'] .squares i.on {
-  background: #9db5a2;
-}
-
-.class-chip[aria-pressed='true'] .cs-status {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.cs-time {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: 19px;
-  line-height: 1;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-
-.cs-name {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.cs-kind {
-  margin-top: -4px;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.class-chip[aria-pressed='true'] .cs-kind {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.cs-status {
-  font-size: 11.5px;
-  color: var(--muted);
-}
-
-.class-chip.live .cs-status {
-  color: var(--good);
-  font-weight: 500;
-}
-
 /* Clinics: one card per clinic under the models. */
 .clinic-row {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -961,7 +815,7 @@ li {
 }
 
 .clinic-card .clinic-busy {
-  color: var(--accent);
+  color: var(--now);
   font-weight: 500;
 }
 
@@ -977,6 +831,118 @@ li {
 }
 
 /* ---------- Webshop ---------- */
+
+/* ---------- Treatment series ---------- */
+
+.courses-card {
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
+}
+
+.courses {
+  display: grid;
+}
+
+/* Name, progress, status and the reminder button on one line; the status column takes what is left. */
+.course {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 150px minmax(0, 1fr) 92px;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  padding-block: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.course:first-child {
+  border-top: 0;
+}
+
+.course-who {
+  display: grid;
+  min-width: 0;
+}
+
+.course-who strong {
+  font-weight: 500;
+}
+
+.course-who span,
+.course-state {
+  overflow: hidden;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.course-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.course-steps {
+  display: flex;
+  gap: 3px;
+}
+
+.course-steps i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.course-steps i.on {
+  background: var(--brand);
+}
+
+.course-progress small {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.course--due .course-state {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.course--late .course-state {
+  color: var(--bad);
+  font-weight: 500;
+}
+
+.course--planned .course-state {
+  color: var(--good);
+}
+
+.course-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.course-sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--good);
+}
+
+.courses-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+  color: var(--muted);
+}
 
 .shop-card {
   grid-column: span 5;
@@ -1033,7 +999,7 @@ li {
   display: block;
   height: 100%;
   border-radius: 3px;
-  background: var(--accent);
+  background: var(--brand);
   transform-origin: left;
   animation: grow-x 0.9s 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1100,11 +1066,11 @@ li {
   margin-top: auto;
   padding: 12px 14px;
   border-radius: var(--radius-control);
-  background: var(--sage);
+  background: var(--soft);
 }
 
 .shop-note b {
-  color: var(--accent);
+  color: var(--brand);
   font-weight: 500;
 }
 
@@ -1329,12 +1295,12 @@ li {
 }
 
 .feed-icon.clinic {
-  background: var(--sage);
-  color: var(--accent);
+  background: var(--soft);
+  color: var(--brand);
 }
 
-.feed-icon.pilates {
-  background: var(--sand-soft);
+.feed-icon.blanche {
+  background: var(--blush);
 }
 
 .feed-icon.webshop {
@@ -1522,7 +1488,19 @@ li {
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  background: #263d31;
+  background: #3a3833;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+.btn-small {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
 }
 
 .btn-ghost:hover {
@@ -1728,10 +1706,6 @@ li {
   transform-origin: right;
 }
 
-[dir='rtl'] .follow svg {
-  transform: scaleX(-1);
-}
-
 /* The 3D labels are placed from the left edge of the scene, so their layer stays left to right;
    the text inside each label keeps the Arabic direction. */
 [dir='rtl'] .scene-labels {
@@ -1773,7 +1747,7 @@ li {
 
 @media (max-width: 1360px) {
   .scene-card,
-  .studio-card,
+  .courses-card,
   .shop-card,
   .feed-card,
   .week-card,
@@ -1854,6 +1828,17 @@ li {
 
   .clinic-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* "Both clinics" takes the full width; Nijmegen and Uden sit side by side under it. */
+  .clinic-row .clinic-card:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Two lines per client on a phone: name and progress, then status and the button. */
+  .course {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
   }
 
   .shop-top li {

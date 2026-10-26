@@ -35,6 +35,8 @@ export function useI18n() {
       weekday: (date: Date) => weekdayShort(date, locale),
       time: formatTime,
       euro: (amount: number) => formatEuro(amount, locale),
+      /** A whole number with the language's grouping, in Western digits (also in Arabic, like the rest of the app). */
+      num: (value: number) => new Intl.NumberFormat(locale === 'ar' ? 'ar-u-nu-latn' : locale).format(value),
       text: (value: L10n) => pick(value, locale),
       /** "Vandaag", "Morgen" or "do 29 okt". */
       relativeDay: (date: Date) => {

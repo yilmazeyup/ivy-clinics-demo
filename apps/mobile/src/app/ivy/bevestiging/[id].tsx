@@ -1,4 +1,4 @@
-import { IVY_COLORS, IVY_MEMBER } from '@pure-ivy/shared';
+import { CLINIC_COLORS, IVY_MEMBER } from '@pure-ivy/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
@@ -32,7 +32,9 @@ export default function IvyConfirmation() {
     ? t('ivy.confirm.moved')
     : treatment.deposit
       ? t('ivy.confirm.paid', { amount: euro(treatment.deposit) })
-      : t('ivy.confirm.free');
+      : treatment.priceFrom
+        ? t('ivy.confirm.booked')
+        : t('ivy.confirm.free');
 
   return (
     <Screen gap={24}>
@@ -44,7 +46,7 @@ export default function IvyConfirmation() {
         <Txt variant="hero">{t('ivy.confirm.title', { name: IVY_MEMBER.firstName })}</Txt>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Icon name="check" size={18} color={theme.c.primary} strokeWidth={2} />
-          <Txt variant="body" color={IVY_COLORS.body} style={{ flex: 1 }}>
+          <Txt variant="body" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
             {status}
           </Txt>
         </View>
@@ -55,7 +57,8 @@ export default function IvyConfirmation() {
         <View style={{ padding: 18, gap: 14 }}>
           <Txt variant="title">{text(treatment.name)}</Txt>
           <Row icon="calendar" value={dayLong(appointment.start)} />
-          <Row icon="clock" value={`${time(appointment.start)}–${time(end)}`} />
+          {/* The left-to-right mark keeps "10:30–11:15" in order inside Arabic text. */}
+          <Row icon="clock" value={`\u200E${time(appointment.start)}–${time(end)}`} />
           <Row icon="user" value={`${specialist.name} · ${t(roleKey(specialist.role))}`} />
           <Row icon="pin" value={`${cityName(location)} · ${location.address}`} />
         </View>
@@ -84,7 +87,7 @@ export default function IvyConfirmation() {
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Txt variant="bodyStrong">{t('ivy.confirm.intake')}</Txt>
-          <Txt variant="small" color={IVY_COLORS.body}>
+          <Txt variant="small" color={CLINIC_COLORS.body}>
             {t('ivy.confirm.intakeBody', { name: specialist.name })}
           </Txt>
         </View>

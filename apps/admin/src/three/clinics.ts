@@ -1,10 +1,9 @@
-import { IVY_COLORS } from '@pure-ivy/shared';
+import { CLINIC_COLORS } from '@pure-ivy/shared';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-import { damp, el, type Stage } from './stage';
-import type { Tip } from './studio';
+import { damp, el, type Stage, type Tip } from './stage';
 
 export type RoomState = 'busy' | 'free' | 'done' | 'off';
 
@@ -14,10 +13,12 @@ export type RoomView = { state: RoomState; status: string };
 
 const W = 7.2;
 const D = 4.6;
-const GAP = 2.1;
+
+/** Where the camera looks from when it shows both clinics. */
+export const OVERVIEW = { camera: [2.4, 17.5, 17.2] as [number, number, number], target: [0, 0, 1.2] as [number, number, number] };
 
 const CHAIR: Record<RoomState, string> = {
-  busy: IVY_COLORS.ivy,
+  busy: CLINIC_COLORS.now,
   free: '#FFFFFF',
   done: '#F1ECE5',
   off: '#D9D2C8',
@@ -46,8 +47,8 @@ type Room = {
 };
 
 /**
- * The four clinics as small architectural models, seen from above. Every treatment room has a chair
- * that turns ivy green while a treatment is going on, so "what is happening now" reads at a glance.
+ * The clinics as small architectural models on a diagonal, seen from above. Every treatment room has a chair
+ * that turns green while a treatment is going on, so "what is happening now" reads at a glance.
  */
 export class ClinicsScene {
   private readonly root = new THREE.Group();
@@ -57,6 +58,7 @@ export class ClinicsScene {
   private readonly tipEl = el('scene-tip');
   private readonly unsubscribe: () => void;
   private focused: number | null = null;
+  private readonly count: number;
 
   constructor(
     private readonly stage: Stage,
@@ -64,13 +66,14 @@ export class ClinicsScene {
     private readonly describe: (clinic: number, room: number) => Tip | null,
   ) {
     stage.scene.add(this.root);
+    this.count = clinics.length;
 
     const white = new THREE.MeshStandardMaterial({ color: '#FFFFFF', roughness: 0.9 });
     const wall = new THREE.MeshStandardMaterial({ color: '#F4F1EB', roughness: 0.95 });
     const oak = new THREE.MeshStandardMaterial({ color: '#D7BF9B', roughness: 0.72 });
     const taupe = new THREE.MeshStandardMaterial({ color: '#BFB3A5', roughness: 0.5, metalness: 0.2 });
     const cart = new THREE.MeshStandardMaterial({ color: '#E7E0D6', roughness: 0.6 });
-    const sand = new THREE.MeshStandardMaterial({ color: IVY_COLORS.sand, roughness: 0.9 });
+    const sand = new THREE.MeshStandardMaterial({ color: CLINIC_COLORS.sand, roughness: 0.9 });
 
     const geo = {
       pedestal: new RoundedBoxGeometry(0.42, 0.36, 0.42, 2, 0.05),
@@ -134,7 +137,7 @@ export class ClinicsScene {
         shape.holes.push(hole);
         const frame = new THREE.Mesh(
           new THREE.ShapeGeometry(shape),
-          new THREE.MeshBasicMaterial({ color: IVY_COLORS.ivy, transparent: true, opacity: 0, depthWrite: false }),
+          new THREE.MeshBasicMaterial({ color: CLINIC_COLORS.now, transparent: true, opacity: 0, depthWrite: false }),
         );
         frame.rotation.x = -Math.PI / 2;
         frame.position.set(x, 0.016, roomZ);
@@ -222,7 +225,7 @@ export class ClinicsScene {
     key.shadow.bias = -0.0004;
     key.shadow.normalBias = 0.02;
     key.shadow.radius = 4;
-    const fill = new THREE.HemisphereLight('#FFFFFF', IVY_COLORS.sand, 0.45);
+    const fill = new THREE.HemisphereLight('#FFFFFF', CLINIC_COLORS.sand, 0.45);
     stage.scene.add(key, fill);
 
     this.unsubscribe = stage.onFrame((time, delta) => this.frame(time, delta));
@@ -248,11 +251,11 @@ export class ClinicsScene {
     );
   }
 
-  /** Zooms in on one clinic; null shows all four again. */
+  /** Zooms in on one clinic; null shows them all again. */
   focus(clinic: number | null) {
     this.focused = clinic;
     if (clinic === null) {
-      this.stage.flyTo([2, 19, 12.8], [0, 0, 1.1]);
+      this.stage.flyTo(OVERVIEW.camera, OVERVIEW.target);
     } else {
       const c = this.tileCenter(clinic);
       this.stage.flyTo([c.x + 1.2, 8.6, c.z + 6.2], [c.x, 0.2, c.z + 0.3]);
@@ -264,10 +267,10 @@ export class ClinicsScene {
     this.stage.scene.remove(this.root);
   }
 
+  /** The clinics stand on a diagonal, the first at the back on the left, so two of them fill a landscape view. */
   private tileCenter(clinic: number) {
-    const col = clinic % 2;
-    const row = Math.floor(clinic / 2);
-    return new THREE.Vector3((col - 0.5) * (W + GAP), 0, (row - 0.5) * (D + GAP));
+    const step = clinic - (this.count - 1) / 2;
+    return new THREE.Vector3(step * (W + 0.6), 0, step * (D + 0.8));
   }
 
   private frame(time: number, delta: number) {
@@ -285,7 +288,7 @@ export class ClinicsScene {
       room.upholstery.color.lerp(dim ? room.chairTarget.clone().lerp(new THREE.Color('#E9E3DA'), 0.7) : room.chairTarget, k);
       room.floor.color.lerp(room.floorTarget, k);
       const busy = room.state === 'busy';
-      room.upholstery.emissive.set(busy ? IVY_COLORS.ivy : '#000000');
+      room.upholstery.emissive.set(busy ? CLINIC_COLORS.now : '#000000');
       room.upholstery.emissiveIntensity = busy ? 0.25 + Math.sin(time * 2.6 + room.index) * 0.15 : 0;
       const frame = room.frame.material as THREE.MeshBasicMaterial;
       frame.opacity = damp(frame.opacity, busy && !dim ? 0.45 + Math.sin(time * 2.6 + room.index) * 0.25 : 0, 6, delta);

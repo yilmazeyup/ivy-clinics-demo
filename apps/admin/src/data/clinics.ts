@@ -37,19 +37,18 @@ export const ROOMS = Object.fromEntries(LOCATIONS.map((l) => [l.id, SPECIALISTS.
   Specialist[]
 >;
 
-/** How often each treatment is booked relative to the others. */
-const WEIGHT: Partial<Record<TreatmentId, number>> = { botox: 4, hydrafacial: 3, consult: 2, sparkpro: 2 };
+/** How often each treatment is booked relative to the others: laser hair removal is most of the diary. */
+const WEIGHT: Partial<Record<TreatmentId, number>> = { laser: 6, consult: 3, acne: 2, epilation: 2, pigment: 2, couperose: 2, brows: 3, nails: 3 };
 
 const menu = (s: Specialist): TreatmentId[] =>
   TREATMENTS.filter((t) => s.categories.includes(t.category)).flatMap((t) => Array<TreatmentId>(WEIGHT[t.id] ?? 1).fill(t.id));
 
 /** How full each clinic's diary tends to be. */
-const BUSY: Record<LocationId, number> = { amsterdam: 0.9, amstelveen: 0.84, denbosch: 0.78, westervoort: 0.66 };
+const BUSY: Record<LocationId, number> = { nijmegen: 0.88, uden: 0.76 };
 
-/** Starting prices from ivyclinics.nl; Botox and laser go up with the number of zones. */
+/** Prices from pureclinics.nl; laser goes by zone, from the upper lip to full legs or a combination deal. */
 function priceFor(treatment: Treatment, r: Rng): number {
-  if (treatment.id === 'botox') return pick(r, [85, 139, 175, 225]);
-  if (treatment.id === 'sparkpro') return pick(r, [35, 70, 105]);
+  if (treatment.id === 'laser') return pick(r, [55, 65, 75, 120, 140, 195, 225, 350]);
   return treatment.priceFrom;
 }
 
@@ -70,13 +69,13 @@ function makeAppt(clinic: LocationId, room: number, treatment: Treatment, start:
 
 export const works = (s: Specialist, day: Date) => s.days.includes(day.getDay());
 
-/** A full day for all four clinics, the same on every load. Specialists only work on their own days. */
+/** A full day for both clinics, the same on every load. Each clinic keeps its own hours; specialists work on their own days. */
 export function clinicDay(day: Date): Appt[] {
-  const hours = openingHours(day);
-  if (!hours) return [];
   const base = startOfDay(day).getTime();
   const out: Appt[] = [];
   for (const location of LOCATIONS) {
+    const hours = openingHours(day, location.id);
+    if (!hours) continue;
     ROOMS[location.id].forEach((specialist, room) => {
       if (!works(specialist, day)) return;
       const r = rng(`${dateKey(day)}-${specialist.id}`);
@@ -107,12 +106,12 @@ export function phaseOf(a: Appt, now: Date): ApptPhase {
   return 'later';
 }
 
-/** Finds room for a new booking later today, for the live feed. A free consultation goes to someone who gives them. */
+/** Finds room for a new booking later today, for the live feed. A free intake goes to someone who gives them. */
 export function bookInGap(appts: Appt[], now: Date, seed: string, consult = false): Appt | null {
-  const hours = openingHours(now);
-  if (!hours) return null;
   const r = rng(seed);
   const location = pick(r, LOCATIONS);
+  const hours = openingHours(now, location.id);
+  if (!hours) return null;
   const rooms = ROOMS[location.id]
     .map((specialist, room) => ({ specialist, room }))
     .filter(({ specialist }) => works(specialist, now) && (!consult || specialist.categories.includes('consult')));
@@ -136,14 +135,18 @@ export const revenueOf = (appts: Appt[]) => appts.reduce((sum, a) => sum + a.pri
 
 export const clinicRevenue = (day: Date) => revenueOf(clinicDay(day));
 
-/** Booked minutes against the open time of the rooms that are staffed that day. */
+/** Booked minutes against the open minutes of every staffed room, each clinic with its own hours. */
 export function occupancy(appts: Appt[], day: Date): number {
-  const hours = openingHours(day);
-  if (!hours) return 0;
-  const staffed = LOCATIONS.reduce((n, l) => n + ROOMS[l.id].filter((s) => works(s, day)).length, 0);
+  const open = LOCATIONS.reduce((sum, l) => {
+    const hours = openingHours(day, l.id);
+    return hours ? sum + (hours.close - hours.open) * 60 * ROOMS[l.id].filter((s) => works(s, day)).length : sum;
+  }, 0);
   const minutes = appts.reduce((sum, a) => sum + a.treatment.minutes, 0);
-  return minutes / ((hours.close - hours.open) * 60 * Math.max(1, staffed));
+  return open ? minutes / open : 0;
 }
 
-/** The day the clinics view shows: today, or Monday when the clinics are closed on Sunday. */
+/** Whether a clinic has its doors open today; Uden, for one, is closed on Mondays and Thursdays. */
+export const isOpen = (location: LocationId, day: Date) => openingHours(day, location) !== null;
+
+/** The day the clinics view shows: today, or Monday when both clinics are closed on Sunday. */
 export const clinicViewDay = (now: Date) => (openingHours(now) ? now : addDays(now, 1));

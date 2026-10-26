@@ -30,9 +30,10 @@ export function between(r: Rng, min: number, max: number): number {
   return min + Math.floor(r() * (max - min + 1));
 }
 
+// No staff names here, so a client is never mistaken for one of the therapists.
 const FIRST = [
-  'Emma', 'Anouk', 'Sanne', 'Lisa', 'Fatima', 'Zeynep', 'Yara', 'Lina', 'Amira', 'Meryem',
-  'Charlotte', 'Floor', 'Maud', 'Isa', 'Romy', 'Esmée', 'Nina', 'Hanna', 'Ilse', 'Merel',
+  'Emma', 'Anouk', 'Noor', 'Lisa', 'Fatima', 'Zeynep', 'Fleur', 'Lina', 'Amira', 'Meryem',
+  'Charlotte', 'Floor', 'Maud', 'Isa', 'Romy', 'Esmée', 'Julia', 'Hanna', 'Ilse', 'Merel',
   'Joyce', 'Priya', 'Mei', 'Rania', 'Nadia', 'Kim', 'Marloes', 'Tessa', 'Babette', 'Dewi',
   'Sevda', 'Hira', 'Laura', 'Jasmijn', 'Vera', 'Eline', 'Naomi', 'Aylin', 'Ines', 'Saar',
 ];

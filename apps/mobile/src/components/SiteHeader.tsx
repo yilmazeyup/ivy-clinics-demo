@@ -8,15 +8,14 @@ import { useDemo } from '@/state/demo';
 import { useTheme } from '@/theme';
 
 import { Icon } from './Icon';
-import { IvyLogo } from './IvyLogo';
+import { PureLogo } from './PureLogo';
 import { Txt } from './Txt';
 
-type Section = 'home' | 'book' | 'pilates' | 'shop' | 'mine';
+type Section = 'home' | 'book' | 'shop' | 'mine';
 
 /** Which menu item a page belongs to, so the menu still shows where you are on a detail page. */
 function sectionOf(path: string): Section | null {
-  if (/^\/ivy\/(boeken|afspraak|bevestiging)/.test(path)) return 'book';
-  if (/^\/ivy\/(pilates|les|ticket)/.test(path)) return 'pilates';
+  if (/^\/ivy\/(boeken|behandeling|afspraak|bevestiging)/.test(path)) return 'book';
   if (/^\/ivy\/(shop|product|winkelmand|afrekenen|bestelling)/.test(path)) return 'shop';
   if (/^\/ivy\/(mijn|journaal)/.test(path)) return 'mine';
   if (/^\/ivy\/?$/.test(path) || /^\/ivy\/(advies|assistent)/.test(path)) return 'home';
@@ -34,7 +33,6 @@ export function SiteHeader() {
   const items = [
     { key: 'home', href: '/ivy', label: t('ivy.tab.home') },
     { key: 'book', href: '/ivy/boeken', label: t('ivy.tab.book') },
-    { key: 'pilates', href: '/ivy/pilates', label: t('ivy.tab.pilates') },
     { key: 'shop', href: '/ivy/shop', label: t('ivy.tab.shop'), badge: inCart },
     { key: 'mine', href: '/ivy/mijn', label: t('ivy.tab.mine') },
   ] as const;
@@ -53,8 +51,8 @@ export function SiteHeader() {
           gap: 40,
         }}
       >
-        <Pressable accessibilityRole="link" accessibilityLabel="Ivy Clinics" onPress={() => router.navigate('/ivy')}>
-          <IvyLogo width={124} />
+        <Pressable accessibilityRole="link" accessibilityLabel="Pure Clinics" onPress={() => router.navigate('/ivy')}>
+          <PureLogo width={150} />
         </Pressable>
         <View accessibilityRole="menubar" style={{ flex: 1, flexDirection: 'row', alignItems: 'stretch', gap: 30, height: '100%' }}>
           {items.map((item) => {

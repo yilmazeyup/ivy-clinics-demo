@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- A demo with fictional data: keep it out of search results. -->
     <meta name="robots" content="noindex, nofollow" />
-    <title>Ivy Clinics · hulp</title>
+    <title>Pure Clinics · hulp</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,8 +19,9 @@
         --ink: #1e1e1c;
         --muted: #6e6259;
         --line: #e2d8cc;
-        --ivy: #2f4a3c;
-        --sage: #e1e9e3;
+        --accent: #1e1e1c;
+        --brand: #7a6a55;
+        --soft: #efe7dc;
         --display: 'Cormorant Garamond', 'Amiri', Georgia, serif;
         --body: 'Jost', 'IBM Plex Sans Arabic', system-ui, sans-serif;
       }
@@ -52,9 +53,18 @@
         gap: 16px;
         flex-wrap: wrap;
       }
+      /* The Pure Clinics wordmark in type: PURE a little heavier than CLINICS, both widely spaced. */
       .logo {
-        height: 26px;
         display: block;
+        font: 300 17px/1 var(--body);
+        letter-spacing: 0.36em;
+        white-space: nowrap;
+      }
+      .logo b {
+        font-weight: 500;
+      }
+      #home {
+        text-decoration: none;
       }
       .head-actions {
         display: flex;
@@ -158,14 +168,14 @@
         font-variant-numeric: tabular-nums;
       }
       .chapters button[aria-current='true'] {
-        color: var(--ivy);
+        color: var(--brand);
         font-weight: 500;
       }
       .note {
         margin: 14px 0 0;
         padding: 12px 14px;
         border-radius: 10px;
-        background: var(--sage);
+        background: var(--soft);
         font-size: 14.5px;
       }
       .faq {
@@ -214,7 +224,7 @@
         height: 50px;
         padding: 0 20px;
         border-radius: 10px;
-        background: var(--ivy);
+        background: var(--accent);
         color: #fff;
         text-decoration: none;
         font-weight: 500;
@@ -223,7 +233,7 @@
       select:focus-visible,
       button:focus-visible,
       summary:focus-visible {
-        outline: 2px solid var(--ivy);
+        outline: 2px solid var(--accent);
         outline-offset: 2px;
       }
       footer {
@@ -249,7 +259,7 @@
   <body>
     <div class="wrap">
       <header>
-        <a href="../" id="home"><img class="logo" src="../ivy-logo.svg" alt="Ivy Clinics" /></a>
+        <a href="../" id="home" aria-label="Pure Clinics"><span class="logo" aria-hidden="true"><b>PURE</b>CLINICS</span></a>
         <div class="head-actions">
           <a class="back" id="back" href="../" data-t="back"></a>
           <label class="lang">
@@ -273,9 +283,9 @@
         <div class="video">
           <!-- The video is spoken in Dutch; subtitles follow the page language (Dutch, else English). -->
           <video id="video" controls preload="metadata" playsinline poster="poster.jpg">
-            <source src="ivy-uitleg.mp4" type="video/mp4" />
-            <track kind="subtitles" srclang="nl" label="Nederlands" src="ivy-uitleg.nl.vtt" />
-            <track kind="subtitles" srclang="en" label="English" src="ivy-uitleg.en.vtt" />
+            <source src="pure-uitleg.mp4" type="video/mp4" />
+            <track kind="subtitles" srclang="nl" label="Nederlands" src="pure-uitleg.nl.vtt" />
+            <track kind="subtitles" srclang="en" label="English" src="pure-uitleg.en.vtt" />
           </video>
         </div>
         <aside class="chapters">
@@ -305,25 +315,27 @@
           chaptersTitle: 'Hoofdstukken',
           chapters: {
             welcome: 'Welkom',
-            app: 'De app',
-            book: 'Een behandeling boeken',
-            classes: 'Lessen in de studio',
-            shop: 'Shop en Mijn Ivy',
-            web: 'Op de computer',
+            intake: 'Gratis intake',
+            treatment: 'Een behandeling kiezen',
+            laser: 'Laser ontharen',
+            mine: 'Je traject en Mijn Pure',
+            shop: 'Nazorg en webshop',
             admin: 'Het beheer',
-            studio: 'Lessen, webshop en de week',
+            courses: 'Trajecten en webshop',
             end: 'Speel de dag af',
           },
           faqTitle: 'Veelgestelde vragen',
           faq: [
-            ['Hoe boek ik een behandeling?', 'Open Boeken, kies een behandeling en de kliniek bij jou in de buurt. Daarna kies je de specialist, een dag en een tijd. Twijfel je? Begin met een gratis adviesgesprek.'],
-            ['Kan ik mijn afspraak verzetten of annuleren?', 'Ja. Onder Mijn Ivy staan al je afspraken. Verzetten of annuleren is gratis tot 24 uur van tevoren.'],
-            ['Welke lessen zijn er?', 'Reformer pilates in studio 1, en mat pilates, yoga, barre en stretch in studio 2. Bij een reformerles kies je zelf je toestel; bij een matles krijg je een vaste plek.'],
-            ['Wat zijn credits?', 'Een les kost één credit. Je koopt credits als pakket in de shop, of je neemt een abonnement met onbeperkt lessen. Annuleer je op tijd, dan krijg je je credit terug.'],
-            ['Hoe check ik in bij een les?', 'Je les staat in je wallet. Scan de code bij de deur en je bent ingecheckt.'],
-            ['Wat kan de Ivy-assistent?', 'Je typt of zegt wat je wilt, bijvoorbeeld een rustige les op donderdag. De assistent zoekt het op en boekt het voor je. In de demo werken een paar voorbeeldvragen.'],
-            ['Wat ziet het team in het beheer?', 'De cijfers van vandaag, de vier klinieken met wie er nu in behandeling is, de agenda per kamer, de lessen in de studio, de webshop en wat er net gebeurde. Met de knop Uitleg loop je er stap voor stap doorheen.'],
-            ['Is dit echt?', 'Nee, dit is een demo met fictieve klanten en testbetalingen. Er wordt niets echt geboekt, betaald of verstuurd.'],
+            ['Hoe plan ik een gratis intake?', 'Tik op Plan gratis intake, of kies Intake onder Boeken. Een huidtherapeut bekijkt je huid en vertelt eerlijk wat bij je past. De intake is gratis en vrijblijvend, in Nijmegen of Uden.'],
+            ['Wat kost laser ontharen?', 'Je betaalt per zone, per behandeling. Vink in de app je zones aan en je ziet meteen de prijs. Met het pakket 5+1 is de zesde behandeling gratis, en op Home staan de deals voor vrouwen, mannen en studenten.'],
+            ['Hoe weet ik wanneer mijn volgende behandeling is?', 'Laser en de meeste huidbehandelingen gaan in een reeks. Op Home zie je hoe ver je bent en wanneer de volgende behandeling past. Met één tik plan je hem in, bij dezelfde huidtherapeut.'],
+            ['Wordt mijn behandeling vergoed?', 'Sommige behandelingen door een huidtherapeut, bijvoorbeeld bij acne, couperose of camouflage, worden soms vergoed vanuit je aanvullende verzekering. Dat verschilt per polis. In de app staat bij de behandeling of vergoeding mogelijk is.'],
+            ['Kan ik mijn afspraak verzetten of annuleren?', 'Ja, onder Mijn Pure. Verzetten of annuleren is gratis tot 48 uur van tevoren.'],
+            ['Wat is het membership?', 'Members krijgen exclusieve aanbiedingen en evenementen, een persoonlijke jaarplanning voor hun huid, gratis bezorging vanaf € 40 en een cadeau op hun verjaardag. Je wordt member onder Mijn Pure.'],
+            ['Wat is Blanche Beauty Studio?', 'De beautystudio van Pure Clinics in Nijmegen, voor wenkbrauwen, wimpers en nagels. Je boekt het in dezelfde app, onder Beauty studio.'],
+            ['Wat doen het huidadvies en de assistent?', 'Het huidadvies stelt vier korte vragen en raadt behandelingen aan; het is geen medische diagnose. De assistent plant en verzet afspraken voor je, bijvoorbeeld een gratis intake op woensdagavond.'],
+            ['Wat ziet het team in het beheer?', 'De cijfers van vandaag, beide klinieken met wie er nu in behandeling is, de agenda per kamer, de trajecten met wie toe is aan een vervolgafspraak, de webshop en wat er net gebeurde.'],
+            ['Is dit echt?', 'Nee, dit is een demo met fictieve cliënten en testbetalingen. De behandelingen, prijzen, foto’s en adressen komen wel van pureclinics.nl.'],
           ],
           open: 'Open de demo',
           footer: 'Demo · niet voor echte boekingen',
@@ -337,25 +349,27 @@
           chaptersTitle: 'Chapters',
           chapters: {
             welcome: 'Welcome',
-            app: 'The app',
-            book: 'Booking a treatment',
-            classes: 'Classes in the studio',
-            shop: 'Shop and My Ivy',
-            web: 'On a computer',
+            intake: 'Free intake',
+            treatment: 'Choosing a treatment',
+            laser: 'Laser hair removal',
+            mine: 'Your treatment plan and My Pure',
+            shop: 'Aftercare and webshop',
             admin: 'The admin panel',
-            studio: 'Classes, webshop and the week',
+            courses: 'Treatment plans and webshop',
             end: 'Play the day',
           },
           faqTitle: 'Frequently asked questions',
           faq: [
-            ['How do I book a treatment?', 'Open Book, choose a treatment and the clinic near you. Then pick the specialist, a day and a time. Not sure yet? Start with a free consultation.'],
-            ['Can I move or cancel my appointment?', 'Yes. My Ivy lists all your appointments. Moving or cancelling is free up to 24 hours ahead.'],
-            ['Which classes are there?', 'Reformer pilates in studio 1, and mat pilates, yoga, barre and stretch in studio 2. In a reformer class you choose your own reformer; in a mat class you get a fixed spot.'],
-            ['What are credits?', 'A class costs one credit. You buy credits as a pack in the shop, or take a subscription with unlimited classes. Cancel in time and you get your credit back.'],
-            ['How do I check in for a class?', 'Your class is in your wallet. Scan the code at the door and you are checked in.'],
-            ['What can the Ivy assistant do?', 'Type or say what you want, for example a calm class on Thursday. The assistant looks it up and books it for you. In the demo a few example questions work.'],
-            ['What does the team see in the admin panel?', "Today's numbers, the four clinics with who is being treated right now, the diary per room, the classes in the studio, the webshop and what just happened. The Guide button walks you through it step by step."],
-            ['Is this real?', 'No, this is a demo with fictional clients and test payments. Nothing is really booked, paid or sent.'],
+            ['How do I book a free intake?', 'Tap Book a free intake, or choose Intake under Book. A skin therapist looks at your skin and tells you honestly what suits you. The intake is free and without obligation, in Nijmegen or Uden.'],
+            ['What does laser hair removal cost?', 'You pay per zone, per treatment. Tick your zones in the app and you see the price straight away. With the 5+1 package the sixth treatment is free, and Home shows the deals for women, men and students.'],
+            ['How do I know when my next treatment is due?', 'Laser and most skin treatments come in a series. Home shows how far along you are and when the next treatment fits. One tap books it, with the same skin therapist.'],
+            ['Is my treatment reimbursed?', 'Some treatments by a skin therapist, for acne, couperose or camouflage for example, are sometimes covered by supplementary health insurance. It differs per policy. The app shows at the treatment whether reimbursement is possible.'],
+            ['Can I move or cancel my appointment?', 'Yes, under My Pure. Moving or cancelling is free up to 48 hours ahead.'],
+            ['What is the membership?', 'Members get exclusive offers and events, a personal yearly plan for their skin, free delivery from € 40 and a birthday gift. You become a member under My Pure.'],
+            ['What is Blanche Beauty Studio?', 'The beauty studio of Pure Clinics in Nijmegen, for brows, lashes and nails. You book it in the same app, under Beauty studio.'],
+            ['What do the skin advice and the assistant do?', 'The skin advice asks four short questions and suggests treatments; it is not a medical diagnosis. The assistant books and moves appointments for you, a free intake on Wednesday evening for example.'],
+            ['What does the team see in the admin panel?', "Today's numbers, both clinics with who is being treated right now, the diary per room, the treatment plans with who is due for a follow-up, the webshop and what just happened."],
+            ['Is this real?', 'No, this is a demo with fictional clients and test payments. The treatments, prices, photos and addresses do come from pureclinics.nl.'],
           ],
           open: 'Open the demo',
           footer: 'Demo · not for real bookings',
@@ -369,25 +383,27 @@
           chaptersTitle: 'الفصول',
           chapters: {
             welcome: 'مرحبًا',
-            app: 'التطبيق',
-            book: 'حجز علاج',
-            classes: 'الحصص في الاستوديو',
-            shop: 'المتجر وحسابي',
-            web: 'على الكمبيوتر',
+            intake: 'جلسة تعارف مجانية',
+            treatment: 'اختيار علاج',
+            laser: 'إزالة الشعر بالليزر',
+            mine: 'خطتك العلاجية وحسابي',
+            shop: 'العناية اللاحقة والمتجر',
             admin: 'لوحة الإدارة',
-            studio: 'الحصص والمتجر والأسبوع',
+            courses: 'الخطط العلاجية والمتجر',
             end: 'شغّل اليوم',
           },
           faqTitle: 'أسئلة شائعة',
           faq: [
-            ['كيف أحجز علاجًا؟', 'افتح «الحجز»، واختر العلاج والعيادة القريبة منك، ثم اختر الأخصائي واليوم والوقت. لست متأكدًا بعد؟ ابدأ باستشارة مجانية.'],
-            ['هل يمكنني تغيير موعدي أو إلغاؤه؟', 'نعم. تجد كل مواعيدك في «حسابي». التغيير أو الإلغاء مجاني حتى 24 ساعة قبل الموعد.'],
-            ['ما الحصص المتاحة؟', 'بيلاتس الريفورمر في الاستوديو 1، وبيلاتس البساط واليوغا والبار والتمدد في الاستوديو 2. في حصة الريفورمر تختار جهازك بنفسك، وفي حصة البساط تحصل على مكان ثابت.'],
-            ['ما هي الأرصدة؟', 'الحصة الواحدة تكلّف رصيدًا واحدًا. تشتري الأرصدة كباقة من المتجر، أو تشترك في باقة غير محدودة. إذا ألغيت في الوقت المناسب يعود إليك رصيدك.'],
-            ['كيف أسجّل حضوري في الحصة؟', 'حصتك موجودة في محفظتك. امسح الرمز عند الباب فيُسجَّل حضورك.'],
-            ['ماذا تستطيع مساعدة Ivy أن تفعل؟', 'اكتب أو قل ما تريد، مثل حصة هادئة يوم الخميس. تبحث المساعدة عنها وتحجزها لك. في العرض التجريبي تعمل بعض الأسئلة النموذجية.'],
-            ['ماذا يرى الفريق في لوحة الإدارة؟', 'أرقام اليوم، والعيادات الأربع ومن يتلقى العلاج الآن، وجدول المواعيد لكل غرفة، والحصص في الاستوديو، والمتجر، وما حدث للتو. يأخذك زر «شرح» عبرها خطوة بخطوة.'],
-            ['هل هذا حقيقي؟', 'لا، هذا عرض تجريبي بعملاء خياليين ومدفوعات تجريبية. لا يُحجز أو يُدفع أو يُرسل أي شيء فعليًا.'],
+            ['كيف أحجز جلسة تعارف مجانية؟', 'اضغط على «احجز جلسة تعارف مجانية»، أو اختر «جلسة تعارف» في «الحجز». تفحص أخصائية البشرة بشرتك وتخبرك بصدق بما يناسبك. الجلسة مجانية ودون التزام، في Nijmegen أو Uden.'],
+            ['كم تكلفة إزالة الشعر بالليزر؟', 'تدفع حسب المنطقة لكل جلسة. حدّد المناطق في التطبيق فترى السعر فورًا. مع باقة 5+1 تكون الجلسة السادسة مجانية، وفي الصفحة الرئيسية عروض للنساء والرجال والطلاب.'],
+            ['كيف أعرف موعد جلستي التالية؟', 'الليزر ومعظم علاجات البشرة تكون على شكل سلسلة. في الصفحة الرئيسية ترى أين وصلت ومتى تناسبك الجلسة التالية. وبضغطة واحدة تحجزها مع أخصائية البشرة نفسها.'],
+            ['هل يغطي التأمين علاجي؟', 'بعض العلاجات لدى أخصائية البشرة، مثل علاج حب الشباب أو الكوبروز أو التمويه، يغطيها التأمين التكميلي أحيانًا. يختلف ذلك حسب البوليصة. يوضح التطبيق عند كل علاج إن كانت التغطية ممكنة.'],
+            ['هل يمكنني تغيير موعدي أو إلغاؤه؟', 'نعم، من «حسابي». التغيير أو الإلغاء مجاني حتى 48 ساعة قبل الموعد.'],
+            ['ما هي العضوية؟', 'يحصل الأعضاء على عروض وفعاليات حصرية، وخطة سنوية شخصية لبشرتهم، وتوصيل مجاني من 40 €، وهدية في عيد ميلادهم. تصبح عضوًا من «حسابي».'],
+            ['ما هو Blanche Beauty Studio؟', 'استوديو التجميل التابع لـ Pure Clinics في Nijmegen، للحواجب والرموش والأظافر. تحجزه في التطبيق نفسه، ضمن «استوديو التجميل».'],
+            ['ماذا تفعل استشارة البشرة والمساعد؟', 'تطرح استشارة البشرة أربعة أسئلة قصيرة وتقترح علاجات، وهي ليست تشخيصًا طبيًا. والمساعد يحجز المواعيد ويغيّرها لك، مثل جلسة تعارف مجانية مساء الأربعاء.'],
+            ['ماذا يرى الفريق في لوحة الإدارة؟', 'أرقام اليوم، والعيادتين ومن يتلقى العلاج الآن، وجدول المواعيد لكل غرفة، والخطط العلاجية ومن حان موعد متابعته، والمتجر، وما حدث للتو.'],
+            ['هل هذا حقيقي؟', 'لا، هذا عرض تجريبي بعملاء خياليين ومدفوعات تجريبية. أما العلاجات والأسعار والصور والعناوين فمأخوذة من pureclinics.nl.'],
           ],
           open: 'افتح العرض التجريبي',
           footer: 'عرض تجريبي · ليس للحجوزات الحقيقية',
@@ -401,25 +417,27 @@
           chaptersTitle: 'Chapitres',
           chapters: {
             welcome: 'Bienvenue',
-            app: 'L’app',
-            book: 'Réserver un soin',
-            classes: 'Les cours au studio',
-            shop: 'La boutique et Mon Ivy',
-            web: 'Sur ordinateur',
+            intake: 'Consultation gratuite',
+            treatment: 'Choisir un soin',
+            laser: 'Épilation laser',
+            mine: 'Ton parcours et Mon Pure',
+            shop: 'Soins après traitement et boutique',
             admin: 'L’espace de gestion',
-            studio: 'Cours, boutique et semaine',
+            courses: 'Parcours et boutique',
             end: 'Jouer la journée',
           },
           faqTitle: 'Questions fréquentes',
           faq: [
-            ['Comment réserver un soin ?', 'Ouvre Réserver, choisis un soin et la clinique près de chez toi. Choisis ensuite le spécialiste, un jour et une heure. Tu hésites ? Commence par une consultation gratuite.'],
-            ['Puis-je déplacer ou annuler mon rendez-vous ?', 'Oui. Tous tes rendez-vous sont dans Mon Ivy. Déplacer ou annuler est gratuit jusqu’à 24 heures avant.'],
-            ['Quels cours y a-t-il ?', 'Du Pilates reformer au studio 1, et du Pilates au tapis, du yoga, de la barre et du stretching au studio 2. Sur reformer, tu choisis ta machine ; au tapis, tu as une place attitrée.'],
-            ['Que sont les crédits ?', 'Un cours coûte un crédit. Tu achètes des crédits en pack dans la boutique, ou tu prends un abonnement illimité. Si tu annules à temps, ton crédit t’est rendu.'],
-            ['Comment m’enregistrer à un cours ?', 'Ton cours est dans ton wallet. Scanne le code à l’entrée, et c’est fait.'],
-            ['Que peut faire l’assistant Ivy ?', 'Écris ou dis ce que tu veux, par exemple un cours calme le jeudi. L’assistant le trouve et le réserve pour toi. Dans la démo, quelques questions d’exemple fonctionnent.'],
-            ['Que voit l’équipe dans l’espace de gestion ?', 'Les chiffres du jour, les quatre cliniques avec les soins en cours, l’agenda par salle, les cours au studio, la boutique et ce qui vient de se passer. Le bouton Guide t’accompagne pas à pas.'],
-            ['Est-ce réel ?', 'Non, c’est une démo avec des clients fictifs et des paiements de test. Rien n’est vraiment réservé, payé ou envoyé.'],
+            ['Comment réserver une consultation gratuite ?', 'Touche Réserver la consultation, ou choisis Consultation dans Réserver. Une thérapeute de la peau examine ta peau et te dit honnêtement ce qui te convient. C’est gratuit et sans engagement, à Nijmegen ou à Uden.'],
+            ['Combien coûte l’épilation laser ?', 'Tu paies par zone et par séance. Coche tes zones dans l’app et tu vois tout de suite le prix. Avec le forfait 5+1, la sixième séance est offerte, et l’accueil affiche les offres pour femmes, hommes et étudiants.'],
+            ['Comment savoir quand faire ma prochaine séance ?', 'Le laser et la plupart des soins de la peau se font en plusieurs séances. L’accueil montre où tu en es et quand la prochaine séance convient. Un geste suffit pour la réserver, avec la même thérapeute.'],
+            ['Mon soin est-il remboursé ?', 'Certains soins d’une thérapeute de la peau, par exemple pour l’acné, la couperose ou le camouflage, sont parfois remboursés par une assurance complémentaire. Cela dépend du contrat. L’app indique pour chaque soin si un remboursement est possible.'],
+            ['Puis-je déplacer ou annuler mon rendez-vous ?', 'Oui, dans Mon Pure. C’est gratuit jusqu’à 48 heures avant.'],
+            ['Qu’est-ce que la membership ?', 'Les membres ont des offres et des événements exclusifs, un plan annuel personnel pour leur peau, la livraison gratuite dès 40 € et un cadeau d’anniversaire. Tu deviens membre dans Mon Pure.'],
+            ['Qu’est-ce que Blanche Beauty Studio ?', 'L’institut beauté de Pure Clinics à Nijmegen, pour les sourcils, les cils et les ongles. Tu le réserves dans la même app, sous Institut beauté.'],
+            ['Que font le conseil peau et l’assistant ?', 'Le conseil peau pose quatre questions courtes et propose des soins ; ce n’est pas un diagnostic médical. L’assistant réserve et déplace tes rendez-vous, par exemple une consultation gratuite le mercredi soir.'],
+            ['Que voit l’équipe dans l’espace de gestion ?', 'Les chiffres du jour, les deux cliniques avec les soins en cours, l’agenda par salle, les parcours de soins avec qui doit revenir, la boutique et ce qui vient de se passer.'],
+            ['Est-ce réel ?', 'Non, c’est une démo avec des clients fictifs et des paiements de test. Les soins, les prix, les photos et les adresses viennent bien de pureclinics.nl.'],
           ],
           open: 'Ouvrir la démo',
           footer: 'Démo · pas pour de vraies réservations',
@@ -433,25 +451,27 @@
           chaptersTitle: 'Kapitel',
           chapters: {
             welcome: 'Willkommen',
-            app: 'Die App',
-            book: 'Eine Behandlung buchen',
-            classes: 'Kurse im Studio',
-            shop: 'Shop und Mein Ivy',
-            web: 'Am Computer',
+            intake: 'Kostenloses Erstgespräch',
+            treatment: 'Eine Behandlung wählen',
+            laser: 'Laser-Haarentfernung',
+            mine: 'Deine Reihe und Mein Pure',
+            shop: 'Nachpflege und Webshop',
             admin: 'Die Verwaltung',
-            studio: 'Kurse, Webshop und die Woche',
+            courses: 'Behandlungsreihen und Webshop',
             end: 'Tag abspielen',
           },
           faqTitle: 'Häufige Fragen',
           faq: [
-            ['Wie buche ich eine Behandlung?', 'Öffne Buchen, wähle eine Behandlung und die Klinik in deiner Nähe. Dann wählst du die Fachkraft, einen Tag und eine Uhrzeit. Noch unsicher? Starte mit einer kostenlosen Beratung.'],
-            ['Kann ich meinen Termin verschieben oder absagen?', 'Ja. Unter Mein Ivy stehen alle deine Termine. Verschieben oder absagen ist bis 24 Stunden vorher kostenlos.'],
-            ['Welche Kurse gibt es?', 'Reformer-Pilates in Studio 1, dazu Matten-Pilates, Yoga, Barre und Stretching in Studio 2. Beim Reformer-Kurs wählst du dein Gerät selbst, beim Mattenkurs bekommst du einen festen Platz.'],
-            ['Was sind Credits?', 'Ein Kurs kostet einen Credit. Credits kaufst du als Paket im Shop, oder du nimmst ein Abo mit unbegrenzten Kursen. Sagst du rechtzeitig ab, bekommst du den Credit zurück.'],
-            ['Wie checke ich bei einem Kurs ein?', 'Dein Kurs liegt in deiner Wallet. Scanne den Code an der Tür, und du bist eingecheckt.'],
-            ['Was kann der Ivy-Assistent?', 'Schreib oder sag, was du möchtest, zum Beispiel einen ruhigen Kurs am Donnerstag. Der Assistent sucht ihn heraus und bucht ihn für dich. In der Demo funktionieren einige Beispielfragen.'],
-            ['Was sieht das Team in der Verwaltung?', 'Die Zahlen von heute, die vier Kliniken mit den laufenden Behandlungen, den Kalender pro Raum, die Kurse im Studio, den Webshop und was gerade passiert ist. Der Button Erklärung führt Schritt für Schritt hindurch.'],
-            ['Ist das echt?', 'Nein, das ist eine Demo mit erfundenen Kundinnen und Kunden und Testzahlungen. Nichts wird wirklich gebucht, bezahlt oder verschickt.'],
+            ['Wie buche ich ein kostenloses Erstgespräch?', 'Tippe auf Erstgespräch buchen oder wähle Erstgespräch unter Buchen. Eine Hauttherapeutin schaut sich deine Haut an und sagt dir ehrlich, was zu dir passt. Kostenlos und unverbindlich, in Nijmegen oder Uden.'],
+            ['Was kostet Laser-Haarentfernung?', 'Du zahlst pro Zone und Behandlung. Hak in der App deine Zonen an, und du siehst sofort den Preis. Mit dem Paket 5+1 ist die sechste Behandlung gratis, und auf der Startseite stehen die Deals für Frauen, Männer und Studierende.'],
+            ['Woher weiß ich, wann meine nächste Behandlung fällig ist?', 'Laser und die meisten Hautbehandlungen laufen in Reihen. Auf der Startseite siehst du, wie weit du bist und wann die nächste Behandlung passt. Mit einem Tippen buchst du sie, bei derselben Hauttherapeutin.'],
+            ['Wird meine Behandlung erstattet?', 'Manche Behandlungen bei einer Hauttherapeutin, etwa bei Akne, Couperose oder Camouflage, übernimmt manchmal die Zusatzversicherung. Das hängt vom Tarif ab. Die App zeigt bei jeder Behandlung, ob eine Erstattung möglich ist.'],
+            ['Kann ich meinen Termin verschieben oder absagen?', 'Ja, unter Mein Pure. Bis 48 Stunden vorher ist das kostenlos.'],
+            ['Was ist die Membership?', 'Mitglieder bekommen exklusive Angebote und Events, einen persönlichen Jahresplan für ihre Haut, kostenlose Lieferung ab 40 € und ein Geburtstagsgeschenk. Mitglied wirst du unter Mein Pure.'],
+            ['Was ist Blanche Beauty Studio?', 'Das Beauty-Studio von Pure Clinics in Nijmegen, für Brauen, Wimpern und Nägel. Du buchst es in derselben App, unter Beauty-Studio.'],
+            ['Was machen die Hautberatung und der Assistent?', 'Die Hautberatung stellt vier kurze Fragen und schlägt Behandlungen vor; sie ist keine medizinische Diagnose. Der Assistent bucht und verschiebt Termine für dich, zum Beispiel ein kostenloses Erstgespräch am Mittwochabend.'],
+            ['Was sieht das Team in der Verwaltung?', 'Die Zahlen von heute, beide Kliniken mit den laufenden Behandlungen, den Kalender pro Raum, die Behandlungsreihen mit allen, die einen Folgetermin brauchen, den Webshop und was gerade passiert ist.'],
+            ['Ist das echt?', 'Nein, das ist eine Demo mit erfundenen Kund:innen und Testzahlungen. Die Behandlungen, Preise, Fotos und Adressen stammen aber von pureclinics.nl.'],
           ],
           open: 'Demo öffnen',
           footer: 'Demo · nicht für echte Buchungen',
@@ -465,25 +485,27 @@
           chaptersTitle: 'Capitoli',
           chapters: {
             welcome: 'Benvenuto',
-            app: 'L’app',
-            book: 'Prenotare un trattamento',
-            classes: 'Le lezioni in studio',
-            shop: 'Lo shop e Il mio Ivy',
-            web: 'Sul computer',
+            intake: 'Consulenza gratuita',
+            treatment: 'Scegliere un trattamento',
+            laser: 'Epilazione laser',
+            mine: 'Il tuo percorso e Il mio Pure',
+            shop: 'Cura post-trattamento e shop',
             admin: 'La gestione',
-            studio: 'Lezioni, shop e la settimana',
+            courses: 'Percorsi e shop',
             end: 'Riproduci la giornata',
           },
           faqTitle: 'Domande frequenti',
           faq: [
-            ['Come prenoto un trattamento?', 'Apri Prenota, scegli un trattamento e la clinica vicino a te. Poi scegli lo specialista, un giorno e un orario. Hai dubbi? Inizia con una consulenza gratuita.'],
-            ['Posso spostare o annullare l’appuntamento?', 'Sì. In Il mio Ivy trovi tutti i tuoi appuntamenti. Spostare o annullare è gratis fino a 24 ore prima.'],
-            ['Quali lezioni ci sono?', 'Pilates reformer nello studio 1, e pilates a corpo libero, yoga, barre e stretching nello studio 2. Al reformer scegli tu la macchina; sul tappetino hai un posto fisso.'],
-            ['Cosa sono i crediti?', 'Una lezione costa un credito. Compri i crediti a pacchetti nello shop, oppure scegli un abbonamento illimitato. Se annulli in tempo, il credito ti viene restituito.'],
-            ['Come faccio il check-in a una lezione?', 'La lezione è nel tuo wallet. Scansiona il codice all’ingresso e il check-in è fatto.'],
-            ['Cosa sa fare l’assistente Ivy?', 'Scrivi o di’ cosa vuoi, per esempio una lezione tranquilla di giovedì. L’assistente la cerca e la prenota per te. Nella demo funzionano alcune domande di esempio.'],
-            ['Cosa vede il team nella gestione?', 'I numeri di oggi, le quattro cliniche con i trattamenti in corso, l’agenda per sala, le lezioni in studio, lo shop e cosa è appena successo. Il pulsante Guida ti accompagna passo dopo passo.'],
-            ['È reale?', 'No, è una demo con clienti inventati e pagamenti di prova. Niente viene davvero prenotato, pagato o inviato.'],
+            ['Come prenoto una consulenza gratuita?', 'Tocca Prenota la consulenza, oppure scegli Consulenza in Prenota. Una terapista della pelle esamina la tua pelle e ti dice onestamente cosa fa per te. È gratuita e senza impegno, a Nijmegen o a Uden.'],
+            ['Quanto costa l’epilazione laser?', 'Paghi per zona e per seduta. Seleziona le zone nell’app e vedi subito il prezzo. Con il pacchetto 5+1 la sesta seduta è gratis, e nella home trovi le offerte per donne, uomini e studenti.'],
+            ['Come so quando fare la prossima seduta?', 'Il laser e quasi tutti i trattamenti della pelle si fanno in più sedute. Nella home vedi a che punto sei e quando conviene la prossima. Con un tocco la prenoti, con la stessa terapista.'],
+            ['Il mio trattamento è rimborsato?', 'Alcuni trattamenti di una terapista della pelle, per esempio per acne, couperose o camouflage, a volte sono rimborsati dall’assicurazione integrativa. Dipende dalla polizza. L’app indica per ogni trattamento se il rimborso è possibile.'],
+            ['Posso spostare o annullare l’appuntamento?', 'Sì, in Il mio Pure. È gratis fino a 48 ore prima.'],
+            ['Cos’è la membership?', 'I membri hanno offerte ed eventi esclusivi, un piano annuale personale per la pelle, la consegna gratuita da 40 € e un regalo di compleanno. Diventi membro in Il mio Pure.'],
+            ['Cos’è Blanche Beauty Studio?', 'Il beauty studio di Pure Clinics a Nijmegen, per sopracciglia, ciglia e unghie. Lo prenoti nella stessa app, alla voce Beauty studio.'],
+            ['Cosa fanno la consulenza pelle e l’assistente?', 'La consulenza pelle fa quattro brevi domande e suggerisce dei trattamenti; non è una diagnosi medica. L’assistente prenota e sposta gli appuntamenti per te, per esempio una consulenza gratuita mercoledì sera.'],
+            ['Cosa vede il team nella gestione?', 'I numeri di oggi, le due cliniche con i trattamenti in corso, l’agenda per sala, i percorsi con chi deve tornare, lo shop e cosa è appena successo.'],
+            ['È reale?', 'No, è una demo con clienti inventati e pagamenti di prova. I trattamenti, i prezzi, le foto e gli indirizzi vengono però da pureclinics.nl.'],
           ],
           open: 'Apri la demo',
           footer: 'Demo · non per prenotazioni reali',

@@ -23,11 +23,11 @@ export type Arg =
   | { treatment: TreatmentId }
   | { msg: MessageKey }
   | { product: ProductId; extra?: number }
-  /** A place in class: "reformer 3", or "plek 3" on a mat in studio 2. */
-  | { spot: number; mat: boolean };
+  /** A day without the time, e.g. "di 3 nov". */
+  | { date: Date };
 export type Line = { key: MessageKey; args?: Record<string, Arg> };
 
-type PluralBase = 'phase.free' | 'shop.title' | 'shop.note' | 'ev.checkin.title';
+type PluralBase = 'shop.title' | 'shop.note' | 'courses.title' | 'clinics.busy';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -39,13 +39,15 @@ function makeI18n(locale: Locale) {
   const longDay = new Intl.DateTimeFormat(intl, { weekday: 'long', day: 'numeric', month: 'long' });
   const shortDay = new Intl.DateTimeFormat(intl, { weekday: 'short' });
   const weekday = new Intl.DateTimeFormat(intl, { weekday: 'long' });
+  const shortDate = new Intl.DateTimeFormat(intl, { weekday: 'short', day: 'numeric', month: 'short' });
+  const dateShort = (date: Date) => shortDate.format(date).replace(/\./g, '');
   const clock = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 
   const resolve = (arg: Arg): string => {
     if (arg instanceof Date) return clock(arg);
     if (typeof arg === 'object' && 'treatment' in arg) return treatmentById(arg.treatment).name[locale];
     if (typeof arg === 'object' && 'msg' in arg) return MESSAGES[locale][arg.msg];
-    if (typeof arg === 'object' && 'spot' in arg) return MESSAGES[locale][arg.mat ? 'spot.mat' : 'spot.reformer'].replace('{n}', String(arg.spot));
+    if (typeof arg === 'object' && 'date' in arg) return dateShort(arg.date);
     if (typeof arg === 'object' && 'product' in arg) {
       const product = productById(arg.product);
       const name = product ? (product.brand ? `${product.brand} ${product.name[locale]}` : product.name[locale]) : '';
@@ -69,6 +71,7 @@ function makeI18n(locale: Locale) {
     num: (value: number) => integer.format(Math.round(value)),
     pct: (value: number) => percent.format(value),
     dayLong: (date: Date) => longDay.format(date),
+    dateShort,
     weekdayShort: (date: Date) => shortDay.format(date).replace('.', ''),
     /** "maandag", "Monday", "الاثنين": the sentences that use it are written to fit every weekday. */
     weekdayLong: (date: Date) => weekday.format(date),

@@ -19,21 +19,7 @@ export type Variant =
 
 type Spec = { font: keyof Fonts; size: number; line: number; tracking?: number; upper?: boolean };
 
-const PURE: Record<Variant, Spec> = {
-  hero: { font: 'display', size: 30, line: 33, tracking: -1 },
-  display: { font: 'display', size: 26, line: 30, tracking: -0.8 },
-  title: { font: 'title', size: 22, line: 26, tracking: -0.4 },
-  heading: { font: 'title', size: 18, line: 22, tracking: -0.2 },
-  body: { font: 'body', size: 15, line: 21 },
-  bodyStrong: { font: 'strong', size: 15, line: 21 },
-  small: { font: 'body', size: 13, line: 18 },
-  smallStrong: { font: 'strong', size: 13, line: 18 },
-  caption: { font: 'medium', size: 11, line: 14 },
-  eyebrow: { font: 'strong', size: 12, line: 16, tracking: 1.4, upper: true },
-  button: { font: 'strong', size: 16, line: 20 },
-};
-
-const IVY: Record<Variant, Spec> = {
+const SPECS: Record<Variant, Spec> = {
   hero: { font: 'display', size: 40, line: 43 },
   display: { font: 'title', size: 33, line: 36 },
   title: { font: 'title', size: 26, line: 30 },
@@ -51,18 +37,18 @@ type Props = Omit<TextProps, 'children'> & {
   variant?: Variant;
   color?: string;
   align?: 'auto' | 'center' | 'left' | 'right';
-  /** Colour for *accented* words; defaults to the brand's own accent treatment. */
+  /** Colour for *accented* words; by default they keep the text colour (Arabic uses the primary colour). */
   accentColor?: string;
   children?: ReactNode;
 };
 
 /**
- * Brand-aware text. Strings may mark accents with *asterisks*: Ivy renders them in italic serif
+ * Text in the clinic's type. Strings may mark accents with *asterisks*, set in italic serif
  * (Amiri bold in Arabic). Arabic never gets letter-spacing or upper-casing, which would break joining.
  */
 export function Txt({ variant = 'body', color, align, accentColor, style, children, ...rest }: Props) {
   const theme = useTheme();
-  const spec = (theme.brand === 'pure' ? PURE : IVY)[variant];
+  const spec = SPECS[variant];
   const base: TextStyle = {
     fontFamily: theme.f[spec.font],
     fontSize: spec.size,
@@ -80,7 +66,7 @@ export function Txt({ variant = 'body', color, align, accentColor, style, childr
   if (typeof children === 'string' && children.includes('*')) {
     const accent: TextStyle = {
       fontFamily: theme.f.accent,
-      color: accentColor ?? (theme.arabic && theme.brand === 'ivy' ? theme.c.primary : undefined),
+      color: accentColor ?? (theme.arabic ? theme.c.primary : undefined),
     };
     return (
       <Text style={[base, style, arabicLine]} {...rest}>

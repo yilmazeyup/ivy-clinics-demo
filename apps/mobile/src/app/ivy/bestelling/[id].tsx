@@ -1,4 +1,4 @@
-import { DELIVERY_DAYS, IVY_COLORS, IVY_MEMBER, locationById } from '@pure-ivy/shared';
+import { DELIVERY_DAYS, CLINIC_COLORS, IVY_MEMBER, locationById } from '@pure-ivy/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
@@ -27,13 +27,11 @@ export default function OrderConfirmation() {
   const order = orders.find((o) => o.id === id);
   if (!order) return <Redirect href="/ivy/shop" />;
 
-  const physical = order.lines.some((l) => shopItem(l.id)?.kind === 'product');
-  const credits = order.lines.some((l) => shopItem(l.id)?.kind === 'package');
+  const physical = order.lines.some((l) => shopItem(l.id));
   const location = locationById(order.locationId);
   const notes = [
     physical && order.delivery === 'ship' ? t('shop.orderShip', { days: DELIVERY_DAYS }) : null,
     physical && order.delivery === 'pickup' ? t('shop.orderPickup', { city: cityName(location), address: location.address }) : null,
-    credits ? t('shop.orderCredits') : null,
   ].filter((n): n is string => Boolean(n));
 
   return (
@@ -46,7 +44,7 @@ export default function OrderConfirmation() {
         <Txt variant="hero">{t('shop.orderTitle', { name: IVY_MEMBER.firstName })}</Txt>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Icon name="check" size={18} color={theme.c.primary} strokeWidth={2} />
-          <Txt variant="body" color={IVY_COLORS.body} style={{ flex: 1 }}>
+          <Txt variant="body" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
             {t('shop.orderPaid', { amount: euro(order.total) })}
           </Txt>
         </View>

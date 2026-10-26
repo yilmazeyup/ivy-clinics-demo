@@ -67,7 +67,7 @@ export function DayStrip({ days, selected, onSelect, isDisabled, isMarked }: Pro
                 width: 12,
                 height: 2,
                 borderRadius: 1,
-                backgroundColor: marked ? (active ? (theme.brand === 'pure' ? theme.c.accent : theme.c.onPrimary) : theme.c.primary) : 'transparent',
+                backgroundColor: marked ? (active ? theme.c.onPrimary : theme.c.primary) : 'transparent',
               }}
             />
           </Pressable>

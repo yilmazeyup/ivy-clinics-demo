@@ -147,7 +147,7 @@ export function CardHead({ eyebrow, title, children }: { eyebrow: string; title:
 export type FeedItem = {
   id: string;
   at: Date;
-  source: 'clinic' | 'pilates' | 'webshop';
+  source: 'clinic' | 'blanche' | 'webshop';
   icon: IconName;
   title: Line;
   detail: Line;

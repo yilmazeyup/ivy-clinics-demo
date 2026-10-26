@@ -1,6 +1,21 @@
-import { CLASS_TYPES, IVY_MEMBER, onReformer, sameDay, WINDOW_REFORMERS } from '@pure-ivy/shared';
+import {
+  addDays,
+  DEALS,
+  freeSlots,
+  inSentence,
+  IVY_MEMBER,
+  LASER_ZONES,
+  locationById,
+  packagePrice,
+  specialistById,
+  startOfDay,
+  treatmentById,
+  type FreeSlot,
+  type LocationId,
+  type TreatmentId,
+} from '@pure-ivy/shared';
 import * as Haptics from 'expo-haptics';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,39 +26,51 @@ import { Photo } from '@/components/Photo';
 import { Rail, useModalTop } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { usePilates, type SessionView } from '@/pilates';
+import { cityName, useIvy } from '@/ivy';
 import { useTheme } from '@/theme';
 
+/** Free times the assistant offers: for a new intake, or to move an existing appointment (`replace`). */
+type SlotChoice = { treatmentId: TreatmentId; locationId: LocationId; slots: FreeSlot[]; replace?: string };
 type NewMessage =
   | { kind: 'text'; from: 'user' | 'bot'; text: string }
-  | { kind: 'options'; sessionIds: string[] }
-  | { kind: 'booked'; sessionId: string; reformer: number; creditsLeft: number };
+  | ({ kind: 'options' } & SlotChoice)
+  | { kind: 'link'; label: string; href: Href }
+  | { kind: 'booked'; appointmentId: string };
 type Message = NewMessage & { id: number };
 
-type Prompt = 'q1' | 'q2' | 'reschedule' | 'pause' | 'invite';
+type Prompt = 'q1' | 'q2' | 'reschedule' | 'price' | 'insurance';
 
-/** A scripted demo of the assistant: it answers the example questions and really books the class. */
+/** Laser zones in the price question, and the deal that covers them. */
+const PRICE_ZONES = ['armpits', 'bikini'];
+const PRICE_DEAL = 'w1';
+
+/** A scripted demo of the assistant: it answers the example questions and really books the free intake. */
 export default function PureAssistant() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { t } = useI18n();
-  const pilates = usePilates();
+  const { t, text, euro, locale } = useI18n();
+  const ivy = useIvy();
   const scroll = useRef<ScrollViewInstance>(null);
   const nextId = useRef(1);
   const [messages, setMessages] = useState<Message[]>(() => [
-    { id: 0, kind: 'text', from: 'bot', text: t('pilates.ai.intro', { name: IVY_MEMBER.firstName }) },
+    { id: 0, kind: 'text', from: 'bot', text: t('ivy.assistant.intro', { name: IVY_MEMBER.firstName }) },
   ]);
   const [typing, setTyping] = useState(false);
   const [used, setUsed] = useState<Prompt[]>([]);
   const [draft, setDraft] = useState('');
   const top = useModalTop();
 
-  // The first Thursday ahead with calm evening classes, e.g. 19:15 Stretch & Release and 20:30 Slow Flow.
-  const calmThursday = pilates.upcoming.filter(
-    (s) => s.start.getDay() === 4 && s.start.getHours() >= 18 && CLASS_TYPES[s.typeId].level === 'calm' && onReformer(s.typeId),
-  );
-  const thursday = calmThursday.filter((s) => sameDay(s.start, calmThursday[0]?.start ?? new Date(0)));
-  const target = thursday.find((s) => s.start.getHours() === 19) ?? thursday[0];
+  // Free intakes on the first Wednesday evening ahead in Nijmegen, which is open until nine that day.
+  const consult = treatmentById('consult');
+  const evening = (() => {
+    for (let i = 0; i < 21; i++) {
+      const day = addDays(startOfDay(ivy.now), i);
+      if (day.getDay() !== 3) continue;
+      const slots = freeSlots(consult, 'any', day, ivy.now, 'nijmegen', ivy.appointments).filter((s) => s.start.getHours() >= 18);
+      if (slots.length > 0) return slots.slice(0, 3);
+    }
+    return [];
+  })();
 
   const push = (...items: NewMessage[]) => setMessages((list) => [...list, ...items.map((m) => ({ ...m, id: nextId.current++ }))]);
 
@@ -55,60 +82,97 @@ export default function PureAssistant() {
     }, 900);
   };
 
-  const bookTarget = (): NewMessage[] => {
-    if (!target) return [{ kind: 'text', from: 'bot', text: t('pilates.ai.fallback') }];
-    if (target.booking) {
-      return [{ kind: 'booked', sessionId: target.id, reformer: target.booking.spot, creditsLeft: pilates.credits }];
-    }
-    const reformer = WINDOW_REFORMERS.find((n) => !target.taken.includes(n)) ?? [1, 2, 3, 4, 5, 6, 7, 8].find((n) => !target.taken.includes(n));
-    if (!reformer || !pilates.bookClass(target.id, reformer)) {
-      return [{ kind: 'text', from: 'bot', text: t('pilates.class.noCredits') }];
-    }
+  const bookFirst = (): NewMessage[] => {
+    const slot = evening[0];
+    if (!slot) return [{ kind: 'text', from: 'bot', text: t('ivy.assistant.fallback') }];
+    const appointmentId = ivy.bookAppointment({ treatmentId: 'consult', specialistId: slot.specialistId, locationId: 'nijmegen', start: slot.start });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    return [{ kind: 'booked', sessionId: target.id, reformer, creditsLeft: pilates.unlimited ? pilates.credits : pilates.credits - 1 }];
+    return [{ kind: 'booked', appointmentId }];
+  };
+
+  // The next appointment with its first free times on later days, with the same specialist.
+  const reschedule = (): NewMessage[] => {
+    const next = ivy.next;
+    if (!next) return [{ kind: 'text', from: 'bot', text: t('ivy.assistant.reply.none') }];
+    const others = ivy.appointments.filter((a) => a.id !== next.id);
+    const slots: FreeSlot[] = [];
+    for (let i = 1; i <= 14 && slots.length < 3; i++) {
+      const day = addDays(startOfDay(next.start), i);
+      slots.push(...freeSlots(next.treatment, next.specialistId, day, ivy.now, next.locationId, others).slice(0, 3 - slots.length));
+    }
+    return [
+      {
+        kind: 'text',
+        from: 'bot',
+        text: t('ivy.assistant.reply.reschedule', { treatment: inSentence(text(next.treatment.name), locale), name: next.specialist.name }),
+      },
+      { kind: 'options', treatmentId: next.treatmentId, locationId: next.locationId, slots, replace: next.id },
+    ];
+  };
+
+  const price = (): NewMessage[] => {
+    const total = LASER_ZONES.filter((z) => PRICE_ZONES.includes(z.id)).reduce((sum, z) => sum + z.price, 0);
+    const deal = DEALS.find((d) => d.id === PRICE_DEAL);
+    return [
+      { kind: 'text', from: 'bot', text: t('ivy.assistant.reply.price', { total: euro(total), package: euro(packagePrice(total)), deal: euro(deal?.price ?? total) }) },
+      { kind: 'link', label: t('ivy.assistant.link.deal'), href: { pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: PRICE_DEAL } } },
+    ];
   };
 
   const ask = (prompt: Prompt) => {
     if (typing) return;
     setUsed((list) => [...list, prompt]);
     if (prompt === 'q1') {
-      push({ kind: 'text', from: 'user', text: t('pilates.ai.q1') });
+      push({ kind: 'text', from: 'user', text: t('ivy.assistant.q1') });
       reply([
-        { kind: 'text', from: 'bot', text: t('pilates.ai.a1') },
-        { kind: 'options', sessionIds: thursday.map((s) => s.id) },
+        { kind: 'text', from: 'bot', text: t('ivy.assistant.a1') },
+        { kind: 'options', treatmentId: 'consult', locationId: 'nijmegen', slots: evening },
       ]);
     } else if (prompt === 'q2') {
-      push({ kind: 'text', from: 'user', text: t('pilates.ai.q2') });
-      reply(bookTarget());
+      push({ kind: 'text', from: 'user', text: t('ivy.assistant.q2') });
+      reply(bookFirst());
     } else {
-      push({ kind: 'text', from: 'user', text: t(`pilates.ai.chip.${prompt}`) });
-      reply([{ kind: 'text', from: 'bot', text: t(`pilates.ai.reply.${prompt}`) }]);
+      push({ kind: 'text', from: 'user', text: t(`ivy.assistant.chip.${prompt}`) });
+      if (prompt === 'reschedule') reply(reschedule());
+      else if (prompt === 'price') reply(price());
+      else reply([{ kind: 'text', from: 'bot', text: t('ivy.assistant.reply.insurance') }]);
     }
   };
 
   const send = () => {
-    const text = draft.trim();
-    if (!text || typing) return;
+    const typed = draft.trim();
+    if (!typed || typing) return;
     setDraft('');
-    push({ kind: 'text', from: 'user', text });
-    reply([{ kind: 'text', from: 'bot', text: t('pilates.ai.fallback') }]);
+    push({ kind: 'text', from: 'user', text: typed });
+    reply([{ kind: 'text', from: 'bot', text: t('ivy.assistant.fallback') }]);
   };
 
-  // Tapping a suggested class: the 19:15 one books like the follow-up question, others open the class.
+  // The first suggested intake books like the follow-up question; any other time opens the booking screen on it.
   // Screens opened from here replace the sheet, so they show full-screen rather than inside it.
-  const pick = (sessionId: string) => {
-    if (pilates.byId(sessionId)?.booking) router.replace(`/ivy/ticket/${sessionId}`);
-    else if (sessionId === target?.id) ask('q2');
-    else router.replace(`/ivy/les/${sessionId}`);
+  const pick = (choice: SlotChoice, slot: FreeSlot) => {
+    if (!choice.replace && slot === evening[0] && !used.includes('q2')) {
+      ask('q2');
+      return;
+    }
+    router.replace({
+      pathname: '/ivy/afspraak/[treatmentId]',
+      params: {
+        treatmentId: choice.treatmentId,
+        location: choice.locationId,
+        specialist: slot.specialistId,
+        slot: String(slot.start.getTime()),
+        ...(choice.replace ? { replace: choice.replace } : {}),
+      },
+    });
   };
 
   const booked = messages.some((m) => m.kind === 'booked');
   const suggestions: Prompt[] = [
     ...(used.includes('q1') ? [] : (['q1'] as Prompt[])),
     ...(used.includes('q1') && !booked ? (['q2'] as Prompt[]) : []),
-    ...(['reschedule', 'pause', 'invite'] as Prompt[]).filter((p) => !used.includes(p)),
+    ...(['reschedule', 'price', 'insurance'] as Prompt[]).filter((p) => !used.includes(p)),
   ];
-  const label = (p: Prompt) => (p === 'q1' || p === 'q2' ? t(`pilates.ai.${p}`) : t(`pilates.ai.chip.${p}`));
+  const label = (p: Prompt) => (p === 'q1' || p === 'q2' ? t(`ivy.assistant.${p}`) : t(`ivy.assistant.chip.${p}`));
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -128,9 +192,9 @@ export default function PureAssistant() {
           <Icon name="sparkle" size={20} color={theme.c.sand} />
         </View>
         <View style={{ flex: 1 }}>
-          <Txt variant="heading">{t('pilates.ai.title')}</Txt>
+          <Txt variant="heading">{t('ivy.assistant.title')}</Txt>
           <Txt variant="small" color={theme.c.muted}>
-            {t('pilates.ai.subtitle')}
+            {t('ivy.assistant.subtitle')}
           </Txt>
         </View>
         <IconButton icon="close" label={t('common.close')} tone="surface" onPress={() => router.back()} />
@@ -187,7 +251,7 @@ export default function PureAssistant() {
             value={draft}
             onChangeText={setDraft}
             onSubmitEditing={send}
-            placeholder={t('pilates.ai.placeholder')}
+            placeholder={t('ivy.assistant.placeholder')}
             placeholderTextColor={theme.c.muted}
             returnKeyType="send"
             style={{
@@ -207,7 +271,7 @@ export default function PureAssistant() {
           ) : (
             <IconButton
               icon="mic"
-              label={t('pilates.ai.mic')}
+              label={t('ivy.assistant.mic')}
               tone="ink"
               onPress={() => push({ kind: 'text', from: 'bot', text: t('common.demoNote') })}
               size={46}
@@ -219,7 +283,7 @@ export default function PureAssistant() {
   );
 }
 
-function MessageView({ message, onPick }: { message: Message; onPick: (sessionId: string) => void }) {
+function MessageView({ message, onPick }: { message: Message; onPick: (choice: SlotChoice, slot: FreeSlot) => void }) {
   const theme = useTheme();
   if (message.kind === 'text') {
     const mine = message.from === 'user';
@@ -242,22 +306,41 @@ function MessageView({ message, onPick }: { message: Message; onPick: (sessionId
       </View>
     );
   }
-  if (message.kind === 'options') return <Options sessionIds={message.sessionIds} onPick={onPick} />;
-  return <Booked message={message} />;
+  if (message.kind === 'options') return <Options choice={message} onPick={onPick} />;
+  if (message.kind === 'link') {
+    return (
+      <Button
+        kind="secondary"
+        size="sm"
+        label={message.label}
+        iconAfter="arrow"
+        onPress={() => router.replace(message.href)}
+        style={{ alignSelf: 'flex-start' }}
+      />
+    );
+  }
+  return <Booked appointmentId={message.appointmentId} />;
 }
 
-function Options({ sessionIds, onPick }: { sessionIds: string[]; onPick: (sessionId: string) => void }) {
+function Options({ choice, onPick }: { choice: SlotChoice; onPick: (choice: SlotChoice, slot: FreeSlot) => void }) {
   const theme = useTheme();
-  const { t, tp, time, relativeDay } = useI18n();
-  const pilates = usePilates();
-  const sessions = sessionIds.map((id) => pilates.byId(id)).filter((s): s is SessionView => Boolean(s));
+  const { t, text, time, relativeDay } = useI18n();
+  const treatment = treatmentById(choice.treatmentId);
+  const location = locationById(choice.locationId);
+  if (choice.slots.length === 0) {
+    return (
+      <Txt variant="small" color={theme.c.muted}>
+        {t('ivy.book.noTimes')}
+      </Txt>
+    );
+  }
   return (
     <View style={{ gap: 8, alignSelf: 'stretch' }}>
-      {sessions.map((s) => (
+      {choice.slots.map((s) => (
         <Pressable
-          key={s.id}
+          key={s.start.getTime()}
           accessibilityRole="button"
-          onPress={() => onPick(s.id)}
+          onPress={() => onPick(choice, s)}
           style={({ pressed }) => ({
             flexDirection: 'row',
             alignItems: 'center',
@@ -270,12 +353,12 @@ function Options({ sessionIds, onPick }: { sessionIds: string[]; onPick: (sessio
             opacity: pressed ? 0.85 : 1,
           })}
         >
-          <Photo photo={CLASS_TYPES[s.typeId].photo} style={{ width: 52, height: 60, borderRadius: 10 }} />
+          <Photo photo={treatment.photo} style={{ width: 52, height: 60, borderRadius: 10 }} />
           <View style={{ flex: 1, gap: 2 }}>
             <Txt variant="smallStrong" color={theme.c.muted}>{`${relativeDay(s.start)} · ${time(s.start)}`}</Txt>
-            <Txt variant="bodyStrong">{s.name}</Txt>
+            <Txt variant="bodyStrong">{text(treatment.name)}</Txt>
             <Txt variant="small" color={theme.c.muted}>
-              {`${s.instructor} · ${s.booking ? t('pilates.booked') : s.full ? t('pilates.full') : tp('pilates.spots', s.spotsLeft)}`}
+              {`${specialistById(s.specialistId).name} · ${cityName(location)}`}
             </Txt>
           </View>
           <Icon name="chevron" size={18} color={theme.c.muted} />
@@ -285,13 +368,12 @@ function Options({ sessionIds, onPick }: { sessionIds: string[]; onPick: (sessio
   );
 }
 
-function Booked({ message }: { message: Extract<Message, { kind: 'booked' }> }) {
+function Booked({ appointmentId }: { appointmentId: string }) {
   const theme = useTheme();
   const { t, dayShort, time } = useI18n();
-  const pilates = usePilates();
-  const session = pilates.byId(message.sessionId);
-  if (!session) return null;
-  const byWindow = WINDOW_REFORMERS.includes(message.reformer);
+  const ivy = useIvy();
+  const appointment = ivy.byId(appointmentId);
+  if (!appointment) return null;
   return (
     <View style={{ alignSelf: 'stretch', borderRadius: theme.r.card, backgroundColor: theme.c.ink, padding: 16, gap: 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -299,17 +381,24 @@ function Booked({ message }: { message: Extract<Message, { kind: 'booked' }> }) 
           <Icon name="check" size={17} strokeWidth={2.4} />
         </View>
         <Txt variant="bodyStrong" color="#FFFFFF" style={{ flex: 1 }}>
-          {byWindow ? t('pilates.ai.bookedTitle', { n: message.reformer }) : t('pilates.class.reformer', { n: message.reformer })}
+          {t('ivy.assistant.bookedTitle')}
         </Txt>
       </View>
       <Txt variant="small" color={theme.c.onPhotoMuted}>
-        {t('pilates.ai.bookedBody', {
-          class: session.name,
-          when: `${dayShort(session.start)} ${time(session.start)}`,
-          n: message.creditsLeft,
+        {t('ivy.assistant.bookedBody', {
+          when: `${dayShort(appointment.start)} ${time(appointment.start)}`,
+          name: appointment.specialist.name,
+          city: cityName(appointment.location),
         })}
       </Txt>
-      <Button kind="light" size="sm" label={t('common.view')} iconAfter="arrow" onPress={() => router.replace(`/ivy/ticket/${session.id}`)} style={{ alignSelf: 'flex-start' }} />
+      <Button
+        kind="light"
+        size="sm"
+        label={t('common.view')}
+        iconAfter="arrow"
+        onPress={() => router.replace({ pathname: '/ivy/bevestiging/[id]', params: { id: appointment.id } })}
+        style={{ alignSelf: 'flex-start' }}
+      />
     </View>
   );
 }

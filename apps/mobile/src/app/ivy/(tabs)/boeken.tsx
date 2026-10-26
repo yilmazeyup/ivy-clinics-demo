@@ -1,6 +1,7 @@
 import {
   CONCERNS,
-  IVY_COLORS,
+  concernInfo,
+  CLINIC_COLORS,
   IVY_MEMBER,
   LOCATIONS,
   TREATMENTS,
@@ -26,7 +27,7 @@ import { useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
 type Category = 'all' | TreatmentCategory;
-const CATEGORIES: Category[] = ['all', 'consult', 'injectables', 'skin', 'laser', 'facials'];
+const CATEGORIES: Category[] = ['all', 'consult', 'removal', 'conditions', 'skin', 'hair', 'beauty'];
 
 export default function IvyBook() {
   const theme = useTheme();
@@ -51,8 +52,8 @@ export default function IvyBook() {
     (tr) => tr.id !== 'consult' && (category === 'all' || tr.category === category) && (!forConcern || forConcern.includes(tr.id)),
   );
   const showConsult = !concern && (category === 'all' || category === 'consult');
-  const open = (treatment: Treatment) =>
-    router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: treatment.id, location } });
+  // A treatment opens on its own page first: what it is, how it goes and what it costs.
+  const open = (treatment: Treatment) => router.push({ pathname: '/ivy/behandeling/[id]', params: { id: treatment.id, location } });
 
   return (
     <Screen gap={22} width="page">
@@ -62,6 +63,8 @@ export default function IvyBook() {
           {t('ivy.book.intro')}
         </Txt>
       </View>
+
+      <Steps />
 
       <View style={{ gap: 10 }}>
         <Txt variant="eyebrow" color={theme.c.muted}>
@@ -91,6 +94,8 @@ export default function IvyBook() {
         ))}
       </Rail>
 
+      {concern ? <ConcernNote concern={concern} /> : null}
+
       {showConsult ? <ConsultCard onPress={() => open(treatmentById('consult'))} /> : null}
 
       {/* Two columns of treatments on a computer screen. */}
@@ -105,6 +110,39 @@ export default function IvyBook() {
   );
 }
 
+/** How a treatment at Pure goes, from the free intake to the aftercare. */
+function Steps() {
+  const theme = useTheme();
+  const { t } = useI18n();
+  const steps = [t('ivy.steps.1'), t('ivy.steps.2'), t('ivy.steps.3'), t('ivy.steps.4')];
+  return (
+    <View accessibilityRole="list" accessibilityLabel={t('ivy.steps.title')} style={{ flexDirection: 'row', gap: 6 }}>
+      {steps.map((step, index) => (
+        <View key={step} style={{ flex: 1, gap: 6, paddingTop: 10, borderTopWidth: 2, borderTopColor: index === 0 ? theme.c.ink : theme.c.line }}>
+          <Txt variant="caption" color={theme.c.muted}>
+            {`0${index + 1}`}
+          </Txt>
+          <Txt variant="smallStrong">{step}</Txt>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** What the chosen concern is, in two sentences from the condition pages on pureclinics.nl. */
+function ConcernNote({ concern }: { concern: ConcernId }) {
+  const theme = useTheme();
+  const { t, text } = useI18n();
+  return (
+    <View style={{ padding: 16, gap: 6, borderRadius: theme.r.card, backgroundColor: theme.c.surface, borderWidth: 1, borderColor: theme.c.line }}>
+      <Txt variant="eyebrow" color={theme.c.muted}>
+        {t('ivy.concern.about', { concern: t(`ivy.concern.${concern}`) })}
+      </Txt>
+      <Txt variant="body">{text(concernInfo(concern))}</Txt>
+    </View>
+  );
+}
+
 function ConsultCard({ onPress }: { onPress: () => void }) {
   const theme = useTheme();
   const { t, text } = useI18n();
@@ -115,7 +153,7 @@ function ConsultCard({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       style={({ pressed }) => ({
         flexDirection: 'row',
-        backgroundColor: IVY_COLORS.sand,
+        backgroundColor: CLINIC_COLORS.sand,
         borderRadius: theme.r.card,
         overflow: 'hidden',
         opacity: pressed ? 0.9 : 1,
@@ -125,7 +163,7 @@ function ConsultCard({ onPress }: { onPress: () => void }) {
       <View style={{ flex: 1, padding: 16, gap: 6 }}>
         <Badge label={t('ivy.book.startHere')} tone="ink" />
         <Txt variant="heading">{text(consult.name)}</Txt>
-        <Txt variant="small" color={IVY_COLORS.body}>
+        <Txt variant="small" color={CLINIC_COLORS.body}>
           {text(consult.description)}
         </Txt>
         <Txt variant="smallStrong">{`${t('common.minutes', { n: consult.minutes })} · ${t('ivy.price.free')}`}</Txt>
@@ -153,9 +191,12 @@ function TreatmentRow({ treatment, first, onPress }: { treatment: Treatment; fir
     >
       <Photo photo={treatment.photo} style={{ width: 80, height: 96, borderRadius: theme.r.small }} />
       <View style={{ flex: 1, gap: 3 }}>
-        <Txt variant="caption" color={theme.c.muted}>
-          {t(`ivy.cat.${treatment.category}`)}
-        </Txt>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Txt variant="caption" color={theme.c.muted}>
+            {t(`ivy.cat.${treatment.category}`)}
+          </Txt>
+          {treatment.insurable ? <Badge label={t('ivy.book.insurable')} tone="outline" /> : null}
+        </View>
         <Txt variant="heading">{text(treatment.name)}</Txt>
         <Txt variant="small" color={theme.c.muted} numberOfLines={2}>
           {text(treatment.description)}

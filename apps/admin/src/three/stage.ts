@@ -5,6 +5,9 @@ import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer
 
 type Vec = [number, number, number];
 
+/** What a hover tooltip in a scene shows: a bold first line and a detail line that may contain <br>. */
+export type Tip = { title: string; detail: string };
+
 export type StageOptions = {
   camera: Vec;
   target: Vec;
@@ -274,34 +277,4 @@ export function el(className: string, html = ''): HTMLDivElement {
   div.className = className;
   div.innerHTML = html;
   return div;
-}
-
-/** A canvas texture of faint floor planks, so the studio floor reads as wood. */
-export function plankTexture(base: string, line: string): THREE.CanvasTexture {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
-  const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = base;
-  ctx.fillRect(0, 0, 512, 512);
-  ctx.strokeStyle = line;
-  ctx.lineWidth = 1;
-  for (let y = 0; y <= 512; y += 32) {
-    ctx.beginPath();
-    ctx.moveTo(0, y + 0.5);
-    ctx.lineTo(512, y + 0.5);
-    ctx.stroke();
-    // Staggered butt joints.
-    const offset = ((y / 32) % 4) * 128 + 40;
-    ctx.beginPath();
-    ctx.moveTo(offset + 0.5, y);
-    ctx.lineTo(offset + 0.5, y + 32);
-    ctx.stroke();
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.anisotropy = 4;
-  return texture;
 }

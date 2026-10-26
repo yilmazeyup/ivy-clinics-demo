@@ -26,7 +26,7 @@ const importMap = { imports: { three: `${THREE}/build/three.module.js`, 'three/a
 const fonts =
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap';
 
-const page = `<title>Ivy Clinics Beheer</title>
+const page = `<title>Pure Clinics Beheer</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

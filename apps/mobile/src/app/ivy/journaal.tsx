@@ -1,4 +1,4 @@
-import { IVY_COLORS } from '@pure-ivy/shared';
+import { CLINIC_COLORS } from '@pure-ivy/shared';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 
@@ -60,7 +60,7 @@ function Entry({ appointment, upcoming }: { appointment: AppointmentView; upcomi
             borderRadius: theme.r.card,
             borderWidth: 1.5,
             borderStyle: 'dashed',
-            borderColor: IVY_COLORS.dashed,
+            borderColor: CLINIC_COLORS.dashed,
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,

@@ -1,16 +1,16 @@
 import { LOCATIONS, openingHours, sameDay, type TreatmentCategory } from '@pure-ivy/shared';
 import type { CSSProperties } from 'react';
 
-import { phaseOf, ROOMS, works, type Appt } from '../data/clinics';
+import { isOpen, phaseOf, ROOMS, works, type Appt } from '../data/clinics';
 import { hourOf } from '../data/format';
 import { useI18n } from '../i18n';
 import { appointmentTip, CATEGORY_COLOR } from './ClinicsView';
 import { CardHead } from './ui';
 
 /** Blocks on these colours need white text. */
-const DARK: TreatmentCategory[] = ['injectables', 'skin'];
+const DARK: TreatmentCategory[] = ['conditions', 'hair'];
 
-/** The day as a plain diary: a row per treatment room, an appointment per block, a line for now. */
+/** The day as a plain diary: a row per treatment room, an appointment per block, a line for now. Each clinic keeps its own hours. */
 export function AgendaView({ appts, day, now }: { appts: Appt[]; day: Date; now: Date }) {
   const i18n = useI18n();
   const { t, text, clock } = i18n;
@@ -52,7 +52,8 @@ export function AgendaView({ appts, day, now }: { appts: Appt[]; day: Date; now:
             <div key={location.id} className="agenda-clinic">
               <div className="agenda-clinic-name">{location.city}</div>
               {ROOMS[location.id].map((specialist, room) => {
-                const off = !works(specialist, day);
+                const closed = !isOpen(location.id, day);
+                const off = closed || !works(specialist, day);
                 return (
                   <div key={specialist.id} className="agenda-row">
                     <span className="agenda-label">
@@ -62,7 +63,7 @@ export function AgendaView({ appts, day, now }: { appts: Appt[]; day: Date; now:
                       {ticks.map((hour) => (
                         <i key={hour} className="agenda-grid" style={{ insetInlineStart: at(hour) }} />
                       ))}
-                      {off ? <span className="agenda-off">{t('room.off')}</span> : null}
+                      {off ? <span className="agenda-off">{closed ? t('room.closed') : t('room.off')}</span> : null}
                       {appts
                         .filter((a) => a.clinic === location.id && a.room === room)
                         .map((a) => {

@@ -1,6 +1,5 @@
 import { LOCALE_NAMES, LOCALES, type Locale } from '@pure-ivy/shared';
 
-import ivyLogo from '../assets/ivy-logo.svg';
 import { Accent, useI18n, useSetLocale, type MessageKey } from '../i18n';
 import { Icon, type IconName } from './Icon';
 import { useToast } from './ui';
@@ -8,11 +7,11 @@ import { useToast } from './ui';
 /** The help page with the explainer video and common questions, on the demo site. */
 const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
 
-/** Agenda, Lessen and Webshop jump to their part of the overview; Hulp opens the help page; the rest follow later. */
+/** Agenda, Trajecten and Webshop jump to their part of the overview; Hulp opens the help page; the rest follow later. */
 const NAV: { icon: IconName; label: MessageKey; section?: string; help?: boolean }[] = [
   { icon: 'grid', label: 'nav.overview' },
   { icon: 'calendar', label: 'nav.agenda', section: 'agenda' },
-  { icon: 'list', label: 'nav.pilates', section: 'pilates' },
+  { icon: 'repeat', label: 'nav.courses', section: 'trajecten' },
   { icon: 'bag', label: 'nav.webshop', section: 'webshop' },
   { icon: 'users', label: 'nav.clients' },
   { icon: 'mail', label: 'nav.campaigns' },
@@ -32,8 +31,10 @@ export function Sidebar() {
   };
   return (
     <aside className="sidebar">
-      <div className="logo">
-        <img src={ivyLogo} alt="Ivy Clinics" height={22} />
+      <div className="logo" role="img" aria-label="Pure Clinics">
+        <span className="wordmark" aria-hidden="true">
+          <b>PURE</b>CLINICS
+        </span>
       </div>
 
       <nav className="nav" aria-label={t('nav.label')}>
@@ -120,7 +121,7 @@ export function Topbar({ now, playing, progress, onPlay, onStop, onTour }: Topba
           <Icon name="bell" />
         </button>
         <span className="avatar" aria-label={t('top.admin')}>
-          IC
+          PC
         </span>
       </div>
     </header>

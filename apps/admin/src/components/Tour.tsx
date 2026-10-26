@@ -5,13 +5,13 @@ import { Icon } from './Icon';
 
 type Step = { target: string; title: MessageKey; body: MessageKey };
 
-/** The walk-through, in reading order: numbers, clinics, diary, feed, studio, shop, then the play button. */
+/** The walk-through, in reading order: numbers, clinics, diary, feed, treatment series, shop, then the play button. */
 const STEPS: Step[] = [
   { target: '.kpi', title: 'tour.kpis.title', body: 'tour.kpis.body' },
   { target: '#klinieken', title: 'tour.clinics.title', body: 'tour.clinics.body' },
   { target: '#agenda', title: 'tour.agenda.title', body: 'tour.agenda.body' },
   { target: '#live', title: 'tour.feed.title', body: 'tour.feed.body' },
-  { target: '#pilates', title: 'tour.pilates.title', body: 'tour.pilates.body' },
+  { target: '#trajecten', title: 'tour.courses.title', body: 'tour.courses.body' },
   { target: '#webshop', title: 'tour.webshop.title', body: 'tour.webshop.body' },
   { target: '.play', title: 'tour.play.title', body: 'tour.play.body' },
 ];

@@ -6,7 +6,7 @@ import { CardHead, useToast, type FeedItem } from './ui';
 
 const SOURCE_KEY: Record<FeedItem['source'], MessageKey> = {
   clinic: 'source.clinic',
-  pilates: 'source.pilates',
+  blanche: 'source.blanche',
   webshop: 'source.webshop',
 };
 
@@ -87,7 +87,8 @@ export function WeekChart({ days, series, today }: { days: WeekDay[]; series: Se
   );
 }
 
-export type Insight = { id: string; icon: IconName; title: string; body: string; action: string };
+/** `run` does the action for real in the demo, where it can; otherwise the button only confirms. */
+export type Insight = { id: string; icon: IconName; title: string; body: string; action: string; run?: () => void };
 
 /** Suggestions an AI assistant would make from the bookings; in the demo they are written from the test data. */
 export function Insights({ items }: { items: Insight[] }) {
@@ -115,7 +116,8 @@ export function Insights({ items }: { items: Insight[] }) {
                 onClick={() => {
                   if (isDone) return;
                   setDone((d) => [...d, item.id]);
-                  toast(t('tips.toast'));
+                  if (item.run) item.run();
+                  else toast(t('tips.toast'));
                 }}
               >
                 {isDone ? <Icon name="check" size={16} /> : null}

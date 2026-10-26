@@ -48,7 +48,7 @@ export function Button({ label, onPress, kind = 'primary', size = 'md', icon, ic
           paddingHorizontal: size === 'md' ? 22 : 14,
           borderRadius: size === 'md' ? theme.r.control : theme.r.chip,
           backgroundColor: bg,
-          borderWidth: border ? (theme.brand === 'pure' ? 1.5 : 1) : 0,
+          borderWidth: border ? 1 : 0,
           borderColor: border,
           opacity: disabled ? 0.45 : pressed ? 0.82 : 1,
           flexDirection: 'row',
@@ -90,7 +90,7 @@ export function IconButton({ icon, label, onPress, tone = 'plain', size = 44 }: 
       style={({ pressed }) => ({
         width: size,
         height: size,
-        borderRadius: theme.brand === 'pure' ? 12 : 8,
+        borderRadius: 8,
         backgroundColor: bg,
         alignItems: 'center',
         justifyContent: 'center',

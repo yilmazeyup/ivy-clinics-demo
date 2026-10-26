@@ -1,4 +1,4 @@
-import { CLASS_TYPES } from '@pure-ivy/shared';
+import { LOCATIONS, PURE_CLINICS, openingHours } from '@pure-ivy/shared';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
@@ -6,7 +6,6 @@ import { Pressable, View } from 'react-native';
 
 import { Badge } from '@/components/Badge';
 import { Button, IconButton } from '@/components/Button';
-import { CreditsBar } from '@/components/CreditsBar';
 import { Icon, type IconName } from '@/components/Icon';
 import { Photo } from '@/components/Photo';
 import { Screen } from '@/components/Screen';
@@ -14,26 +13,19 @@ import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, roleKey, useIvy, type AppointmentView } from '@/ivy';
-import { spotLines, useCancelNote, usePilates, type SessionView } from '@/pilates';
 import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
 /** The help page with the explainer video and common questions, on the demo site. */
 const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
 
-type Upcoming = { kind: 'appointment'; start: Date; appointment: AppointmentView } | { kind: 'class'; start: Date; session: SessionView };
-
-/** Everything the member has planned or bought: treatments, classes, waitlist spots and orders. */
+/** Everything the member has planned or bought, the membership, and how to reach both clinics. */
 export default function MyIvy() {
   const theme = useTheme();
   const { t, locale } = useI18n();
   const ivy = useIvy();
-  const pilates = usePilates();
   const { orders } = useDemo();
-  const upcoming: Upcoming[] = [
-    ...ivy.upcoming.map((appointment) => ({ kind: 'appointment' as const, start: appointment.start, appointment })),
-    ...pilates.myClasses.map((session) => ({ kind: 'class' as const, start: session.start, session })),
-  ].sort((a, b) => a.start.getTime() - b.start.getTime());
+  const upcoming = ivy.upcoming;
 
   return (
     <Screen gap={26}>
@@ -41,8 +33,6 @@ export default function MyIvy() {
         <Txt variant="display">{t('ivy.mine.title')}</Txt>
         <IconButton icon="globe" label={t('common.settings')} tone="surface" onPress={() => router.push('/settings')} />
       </View>
-
-      <CreditsBar />
 
       <Section title={t('ivy.appts.upcoming')}>
         {upcoming.length === 0 ? (
@@ -53,23 +43,11 @@ export default function MyIvy() {
             <Button size="sm" label={t('ivy.home.consultCta')} onPress={() => router.push('/ivy/afspraak/consult')} style={{ alignSelf: 'flex-start' }} />
           </View>
         ) : (
-          upcoming.map((item) =>
-            item.kind === 'appointment' ? (
-              <AppointmentCard key={item.appointment.id} appointment={item.appointment} />
-            ) : (
-              <ClassCard key={item.session.id} session={item.session} />
-            ),
-          )
+          upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} />)
         )}
       </Section>
 
-      {pilates.waitlisted.length > 0 ? (
-        <Section title={t('pilates.my.waitlist')}>
-          {pilates.waitlisted.map((s) => (
-            <WaitlistRow key={s.id} session={s} />
-          ))}
-        </Section>
-      ) : null}
+      <Membership />
 
       {orders.length > 0 ? (
         <Section title={t('ivy.mine.orders')}>
@@ -90,6 +68,8 @@ export default function MyIvy() {
           </List>
         </Section>
       ) : null}
+
+      <Contact />
 
       <Section title={t('ivy.mine.more')}>
         <List>
@@ -168,73 +148,112 @@ function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
   );
 }
 
-function ClassCard({ session }: { session: SessionView }) {
+/** The Pure Clinics membership (pureclinics.nl/membership): its perks, and joining in one tap. */
+function Membership() {
   const theme = useTheme();
-  const { t, relativeDay, time } = useI18n();
-  const pilates = usePilates();
+  const { t } = useI18n();
+  const { member, joinMembership } = useDemo();
   const toast = useToast();
-  const spot = session.booking?.spot ?? 0;
-  const lines = spotLines(session, spot);
-  const cancelNote = useCancelNote();
-
+  const perks = [t('ivy.member.perk1'), t('ivy.member.perk2'), t('ivy.member.perk3'), t('ivy.member.perk4')];
   return (
-    <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 12, gap: 12 }}>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push(`/ivy/les/${session.id}`)}
-        style={({ pressed }) => ({ flexDirection: 'row', gap: 14, opacity: pressed ? 0.85 : 1 })}
-      >
-        <Photo photo={CLASS_TYPES[session.typeId].photo} style={{ width: 78, height: 94, borderRadius: theme.r.photo }} />
-        <View style={{ flex: 1, justifyContent: 'center', gap: 3 }}>
-          <Txt variant="smallStrong" color={theme.c.muted}>{`${relativeDay(session.start)} · ${time(session.start)}`}</Txt>
-          <Txt variant="heading">{session.name}</Txt>
-          <Txt variant="small" color={theme.c.muted}>{`${t(lines.label, { n: spot })} · ${t(lines.note)}`}</Txt>
-        </View>
-      </Pressable>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <Button size="sm" icon="wallet" label={t('pilates.home.wallet')} onPress={() => router.push(`/ivy/ticket/${session.id}`)} style={{ flex: 1 }} />
+    <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, padding: 18, gap: 12 }}>
+      <Txt variant="eyebrow" color={theme.c.muted}>
+        {t('ivy.member.eyebrow')}
+      </Txt>
+      <Txt variant="title">{member ? t('ivy.member.joined') : t('ivy.member.title')}</Txt>
+      {member ? null : (
+        <Txt variant="body" color={theme.c.muted}>
+          {t('ivy.member.body')}
+        </Txt>
+      )}
+      <View style={{ gap: 8 }}>
+        {perks.map((perk) => (
+          <View key={perk} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Icon name="check" size={16} strokeWidth={2.2} />
+            <Txt variant="body" style={{ flex: 1 }}>
+              {perk}
+            </Txt>
+          </View>
+        ))}
+      </View>
+      {member ? null : (
         <Button
           size="sm"
-          kind="secondary"
-          label={t('common.cancel')}
+          label={t('ivy.member.join')}
+          style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() => {
-            pilates.cancelClass(session.id);
-            toast(t('pilates.my.cancelled'));
+            joinMembership();
+            toast(t('ivy.member.joined'));
           }}
-          style={{ flex: 1 }}
         />
-      </View>
-      <Txt variant="caption" color={theme.c.muted} style={{ paddingHorizontal: 2 }}>
-        {cancelNote(session)}
-      </Txt>
+      )}
     </View>
   );
 }
 
-function WaitlistRow({ session }: { session: SessionView }) {
+/** Both clinics with today's opening hours; a tap calls the clinic. */
+function Contact() {
   const theme = useTheme();
-  const { t, relativeDay, time } = useI18n();
+  const { t } = useI18n();
+  const { now } = useDemo();
+  // The left-to-right mark keeps "09:00–17:00" in order inside Arabic text.
+  const hours = (h: { open: number; close: number }) => `\u200E${String(h.open).padStart(2, '0')}:00–${String(h.close).padStart(2, '0')}:00`;
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={() => router.push(`/ivy/les/${session.id}`)}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-        padding: 12,
-        borderRadius: theme.r.card,
-        backgroundColor: theme.c.surface,
-        opacity: pressed ? 0.85 : 1,
-      })}
-    >
-      <Photo photo={CLASS_TYPES[session.typeId].photo} style={{ width: 56, height: 64, borderRadius: theme.r.small }} />
-      <View style={{ flex: 1, gap: 2 }}>
-        <Txt variant="bodyStrong">{session.name}</Txt>
-        <Txt variant="small" color={theme.c.muted}>{`${relativeDay(session.start)} · ${time(session.start)}`}</Txt>
-      </View>
-      <Badge label={t('pilates.chance', { pct: session.chance })} tone="highlight" />
-    </Pressable>
+    <Section title={t('ivy.contact.title')}>
+      <List>
+        {LOCATIONS.map((location, index) => {
+          const today = openingHours(now, location.id);
+          return (
+            <Pressable
+              key={location.id}
+              accessibilityRole="link"
+              onPress={() => Linking.openURL(`tel:${location.phone.replace(/\s/g, '')}`)}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 14,
+                paddingVertical: 14,
+                borderTopWidth: index === 0 ? 0 : 1,
+                borderTopColor: theme.c.line,
+                opacity: pressed ? 0.8 : 1,
+              })}
+            >
+              <Icon name="pin" size={20} color={theme.c.muted} />
+              <View style={{ flex: 1, gap: 2 }}>
+                <Txt variant="bodyStrong">{cityName(location)}</Txt>
+                <Txt variant="small" color={theme.c.muted}>
+                  {location.address}
+                </Txt>
+                <Txt variant="small" color={theme.c.muted}>
+                  {today ? t('ivy.contact.today', { hours: hours(today) }) : t('ivy.contact.closed')}
+                </Txt>
+              </View>
+              <Txt variant="smallStrong" color={theme.c.primary}>
+                {t('ivy.contact.call', { phone: location.phone })}
+              </Txt>
+            </Pressable>
+          );
+        })}
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => Linking.openURL(`mailto:${PURE_CLINICS.email}`)}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 14,
+            minHeight: 52,
+            borderTopWidth: 1,
+            borderTopColor: theme.c.line,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Icon name="mail" size={20} color={theme.c.muted} />
+          <Txt variant="body" style={{ flex: 1 }}>
+            {PURE_CLINICS.email}
+          </Txt>
+        </Pressable>
+      </List>
+    </Section>
   );
 }
 

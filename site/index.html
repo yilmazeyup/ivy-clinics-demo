@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- A demo with fictional data: keep it out of search results. -->
     <meta name="robots" content="noindex, nofollow" />
-    <title>Ivy Clinics · demo</title>
+    <title>Pure Clinics · demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,8 +19,8 @@
         --ink: #1e1e1c;
         --muted: #6e6259;
         --line: #e2d8cc;
-        --ivy: #2f4a3c;
-        --sage: #e1e9e3;
+        --accent: #1e1e1c;
+        --soft: #efe7dc;
         --display: 'Cormorant Garamond', Georgia, serif;
         --body: 'Jost', system-ui, sans-serif;
       }
@@ -51,8 +51,15 @@
         justify-content: space-between;
         gap: 16px;
       }
+      /* The Pure Clinics wordmark in type: PURE a little heavier than CLINICS, both widely spaced. */
       .logo {
-        height: 26px;
+        font: 300 17px/1 var(--body);
+        letter-spacing: 0.36em;
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .logo b {
+        font-weight: 500;
       }
       .lang {
         display: flex;
@@ -102,7 +109,7 @@
         width: 44px;
         height: 44px;
         border-radius: 10px;
-        background: var(--ivy);
+        background: var(--accent);
         display: grid;
         place-items: center;
       }
@@ -144,7 +151,7 @@
         width: 34px;
         height: 34px;
         border-radius: 8px;
-        background: var(--ivy);
+        background: var(--accent);
         color: #fff;
         display: grid;
         place-items: center;
@@ -161,7 +168,7 @@
       .try {
         padding: 12px 14px;
         border-radius: 10px;
-        background: var(--sage);
+        background: var(--soft);
         color: var(--ink) !important;
         font-size: 15.5px;
       }
@@ -173,14 +180,14 @@
         height: 50px;
         padding: 0 20px;
         border-radius: 10px;
-        background: var(--ivy);
+        background: var(--accent);
         color: #fff;
         text-decoration: none;
         font-weight: 500;
       }
       .button:focus-visible,
       select:focus-visible {
-        outline: 2px solid var(--ivy);
+        outline: 2px solid var(--accent);
         outline-offset: 2px;
       }
       .preview {
@@ -306,7 +313,7 @@
   <body>
     <div class="wrap">
       <header>
-        <img class="logo" src="ivy-logo.svg" alt="Ivy Clinics" />
+        <span class="logo" role="img" aria-label="Pure Clinics"><b>PURE</b>CLINICS</span>
         <label class="lang">
           <span data-t="lang">Taal</span>
           <select id="lang" aria-label="Taal">
@@ -320,7 +327,7 @@
         </label>
       </header>
 
-      <h1 data-t="title">Ivy Clinics · <em>demo</em></h1>
+      <h1 data-t="title">Pure Clinics · <em>demo</em></h1>
       <p class="lead" data-t="lead"></p>
       <a class="help-link" id="open-help" href="hulp/">
         <span class="play" aria-hidden="true"></span>
@@ -337,7 +344,7 @@
           <div class="preview app-preview">
             <div class="phone">
               <div class="screen">
-                <iframe id="app-frame" title="Ivy Clinics app" src="app/?lang=nl"></iframe>
+                <iframe id="app-frame" title="Pure Clinics app" src="app/?lang=nl"></iframe>
               </div>
             </div>
           </div>
@@ -376,120 +383,120 @@
       const TEXT = {
         nl: {
           lang: 'Taal',
-          title: 'Ivy Clinics · <em>demo</em>',
-          lead: 'Dit is een voorbeeld van de nieuwe Ivy Clinics-app en het beheerscherm. Alles is nep: namen, afspraken en betalingen. Klik gerust rond, je kunt niets kapotmaken.',
+          title: 'Pure Clinics · <em>demo</em>',
+          lead: 'Dit is een voorbeeld van de nieuwe Pure Clinics-app en het beheerscherm. Alles is nep: namen, afspraken en betalingen. Klik gerust rond, je kunt niets kapotmaken.',
           helpTitle: 'Bekijk de uitlegvideo',
-          helpBody: '2,5 minuten · alles over de app en het beheer',
+          helpBody: 'Ongeveer 3 minuten · alles over de app en het beheer',
           appTitle: 'De app voor cliënten',
-          appBody: 'Zo ziet de app eruit op een telefoon. Cliënten boeken hier een behandeling, een les (pilates, yoga, barre of stretch) of iets uit de webshop.',
-          appTry: 'Probeer dit: tik op Boeken, kies HydraFacial en kies een tijd.',
+          appBody: 'Zo ziet de app eruit op een telefoon. Cliënten plannen hier een gratis intake of een behandeling, volgen hun lasertraject en bestellen hun nazorg.',
+          appTry: 'Probeer dit: tik op Boeken, kies Laser ontharen, vink je zones aan en kies een tijd.',
           appOpen: 'Open de app',
           adminTitle: 'Het beheerscherm voor het team',
-          adminBody: 'Hier ziet het team wat er vandaag gebeurt: in de vier klinieken, in de studio en in de webshop.',
+          adminBody: 'Hier ziet het team wat er vandaag gebeurt: in Nijmegen, in Uden, bij Blanche Beauty Studio en in de webshop.',
           adminTry: 'Probeer dit: druk op Speel de dag af. Dan zie je een hele dag in 45 seconden.',
           adminOpen: 'Open het beheerscherm',
           realTitle: 'Wat is echt?',
-          real: 'De behandelingen, vanaf-prijzen, adressen, openingstijden en webshopproducten komen van ivyclinics.nl.',
+          real: 'De behandelingen en hun uitleg, de prijzen, deals, foto’s, adressen en openingstijden komen van pureclinics.nl.',
           fakeTitle: 'Wat is nep?',
           fake: 'Alle namen van cliënten en medewerkers, de afspraken, de omzet en de betalingen. Er wordt niets echt geboekt of betaald.',
           footer: 'Demo · niet bedoeld voor echte boekingen',
         },
         en: {
           lang: 'Language',
-          title: 'Ivy Clinics · <em>demo</em>',
-          lead: "This is a preview of the new Ivy Clinics app and admin screen. Everything is fake: names, appointments and payments. Click around freely, you can't break anything.",
+          title: 'Pure Clinics · <em>demo</em>',
+          lead: "This is a preview of the new Pure Clinics app and admin screen. Everything is fake: names, appointments and payments. Click around freely, you can't break anything.",
           helpTitle: 'Watch the explainer video',
-          helpBody: '2.5 minutes · all about the app and the admin panel',
+          helpBody: 'About 3 minutes · all about the app and the admin panel',
           appTitle: 'The app for clients',
-          appBody: 'This is how the app looks on a phone. Clients book a treatment, a class (pilates, yoga, barre or stretch) or something from the webshop here.',
-          appTry: 'Try this: tap Book, choose HydraFacial and pick a time.',
+          appBody: 'This is how the app looks on a phone. Clients book a free intake or a treatment here, follow their laser treatment plan and order their aftercare.',
+          appTry: 'Try this: tap Book, choose Laser hair removal, tick your zones and pick a time.',
           appOpen: 'Open the app',
           adminTitle: 'The admin screen for the team',
-          adminBody: 'Here the team sees what is happening today: in the four clinics, in the studio and in the webshop.',
+          adminBody: 'Here the team sees what is happening today: in Nijmegen, in Uden, at Blanche Beauty Studio and in the webshop.',
           adminTry: "Try this: press Play the day. You'll see a whole day in 45 seconds.",
           adminOpen: 'Open the admin screen',
           realTitle: 'What is real?',
-          real: 'The treatments, starting prices, addresses, opening hours and webshop products come from ivyclinics.nl.',
+          real: 'The treatments and their explanations, prices, deals, photos, addresses and opening hours come from pureclinics.nl.',
           fakeTitle: 'What is fake?',
           fake: 'All names of clients and staff, the appointments, the revenue and the payments. Nothing is really booked or paid.',
           footer: 'Demo · not for real bookings',
         },
         ar: {
           lang: 'اللغة',
-          title: 'Ivy Clinics · <em>نسخة تجريبية</em>',
-          lead: 'هذه معاينة لتطبيق Ivy Clinics الجديد ولوحة الإدارة. كل البيانات وهمية: الأسماء والمواعيد والمدفوعات. تجوّل بحرية، فلن تُفسد شيئًا.',
+          title: 'Pure Clinics · <em>نسخة تجريبية</em>',
+          lead: 'هذه معاينة لتطبيق Pure Clinics الجديد ولوحة الإدارة. كل البيانات وهمية: الأسماء والمواعيد والمدفوعات. تجوّل بحرية، فلن تُفسد شيئًا.',
           helpTitle: 'شاهد فيديو الشرح',
-          helpBody: 'دقيقتان ونصف · كل شيء عن التطبيق ولوحة الإدارة',
+          helpBody: 'نحو 3 دقائق · كل شيء عن التطبيق ولوحة الإدارة',
           appTitle: 'التطبيق للعملاء',
-          appBody: 'هكذا يبدو التطبيق على الهاتف. يحجز فيه العملاء علاجًا أو حصة (بيلاتس أو يوغا أو بار أو تمدد) أو منتجًا من المتجر الإلكتروني.',
-          appTry: 'جرّب: اضغط على «الحجز»، واختر هايدرافيشل، ثم اختر وقتًا.',
+          appBody: 'هكذا يبدو التطبيق على الهاتف. يحجز فيه العملاء استشارة مجانية أو علاجًا، ويتابعون خطة الليزر، ويطلبون منتجات العناية اللاحقة.',
+          appTry: 'جرّب: اضغط على «الحجز»، واختر إزالة الشعر بالليزر، وحدّد المناطق، ثم اختر وقتًا.',
           appOpen: 'افتح التطبيق',
           adminTitle: 'لوحة الإدارة للفريق',
-          adminBody: 'هنا يرى الفريق ما يحدث اليوم: في العيادات الأربع وفي الاستوديو وفي المتجر الإلكتروني.',
+          adminBody: 'هنا يرى الفريق ما يحدث اليوم: في Nijmegen وUden وBlanche Beauty Studio والمتجر الإلكتروني.',
           adminTry: 'جرّب: اضغط على «شغّل اليوم» لترى يومًا كاملًا في 45 ثانية.',
           adminOpen: 'افتح لوحة الإدارة',
           realTitle: 'ما الحقيقي؟',
-          real: 'العلاجات وأسعارها الابتدائية والعناوين وساعات العمل ومنتجات المتجر مأخوذة من موقع ivyclinics.nl.',
+          real: 'العلاجات وشرحها والأسعار والعروض والصور والعناوين وساعات العمل مأخوذة من موقع pureclinics.nl.',
           fakeTitle: 'ما الوهمي؟',
           fake: 'كل أسماء العملاء والموظفين، والمواعيد، والإيرادات، والمدفوعات. لا يُحجز أو يُدفع أي شيء فعليًا.',
           footer: 'نسخة تجريبية · ليست للحجوزات الحقيقية',
         },
         fr: {
           lang: 'Langue',
-          title: 'Ivy Clinics · <em>démo</em>',
-          lead: 'Voici un aperçu de la nouvelle app Ivy Clinics et de l’écran de gestion. Tout est fictif : noms, rendez-vous et paiements. Explore librement, tu ne peux rien casser.',
+          title: 'Pure Clinics · <em>démo</em>',
+          lead: 'Voici un aperçu de la nouvelle app Pure Clinics et de l’écran de gestion. Tout est fictif : noms, rendez-vous et paiements. Explore librement, tu ne peux rien casser.',
           helpTitle: 'Regarder la vidéo explicative',
-          helpBody: '2 min 30 · tout sur l’app et l’espace de gestion',
+          helpBody: 'Environ 3 minutes · tout sur l’app et l’espace de gestion',
           appTitle: 'L’app pour les clients',
-          appBody: 'Voici l’app sur un téléphone. Les clients y réservent un soin, un cours (pilates, yoga, barre ou stretching) ou un produit de la boutique.',
-          appTry: 'Essaie : touche Réserver, choisis HydraFacial puis un horaire.',
+          appBody: 'Voici l’app sur un téléphone. Les clients y réservent une consultation gratuite ou un soin, suivent leur parcours laser et commandent leurs soins après traitement.',
+          appTry: 'Essaie : touche Réserver, choisis l’épilation laser, coche tes zones puis un horaire.',
           appOpen: 'Ouvrir l’app',
           adminTitle: 'L’écran de gestion pour l’équipe',
-          adminBody: 'Ici, l’équipe voit ce qui se passe aujourd’hui : dans les quatre cliniques, au studio et dans la boutique en ligne.',
+          adminBody: 'Ici, l’équipe voit ce qui se passe aujourd’hui : à Nijmegen, à Uden, chez Blanche Beauty Studio et dans la boutique en ligne.',
           adminTry: 'Essaie : appuie sur Jouer la journée. Tu verras une journée entière en 45 secondes.',
           adminOpen: 'Ouvrir l’écran de gestion',
           realTitle: 'Qu’est-ce qui est réel ?',
-          real: 'Les soins, les prix de départ, les adresses, les horaires et les produits de la boutique viennent d’ivyclinics.nl.',
+          real: 'Les soins et leurs explications, les prix, les offres, les photos, les adresses et les horaires viennent de pureclinics.nl.',
           fakeTitle: 'Qu’est-ce qui est fictif ?',
           fake: 'Tous les noms des clients et du personnel, les rendez-vous, le chiffre d’affaires et les paiements. Rien n’est vraiment réservé ni payé.',
           footer: 'Démo · pas pour de vraies réservations',
         },
         de: {
           lang: 'Sprache',
-          title: 'Ivy Clinics · <em>Demo</em>',
-          lead: 'Das ist eine Vorschau der neuen Ivy-Clinics-App und der Verwaltung. Alles ist erfunden: Namen, Termine und Zahlungen. Klick dich ruhig durch, du kannst nichts kaputt machen.',
+          title: 'Pure Clinics · <em>Demo</em>',
+          lead: 'Das ist eine Vorschau der neuen Pure-Clinics-App und der Verwaltung. Alles ist erfunden: Namen, Termine und Zahlungen. Klick dich ruhig durch, du kannst nichts kaputt machen.',
           helpTitle: 'Erklärvideo ansehen',
-          helpBody: '2,5 Minuten · alles über die App und die Verwaltung',
+          helpBody: 'Etwa 3 Minuten · alles über die App und die Verwaltung',
           appTitle: 'Die App für Kunden',
-          appBody: 'So sieht die App auf dem Handy aus. Hier buchen Kunden eine Behandlung, einen Kurs (Pilates, Yoga, Barre oder Stretching) oder etwas aus dem Shop.',
-          appTry: 'Probier es aus: Tippe auf Buchen, wähle HydraFacial und dann eine Uhrzeit.',
+          appBody: 'So sieht die App auf dem Handy aus. Hier buchen Kund:innen ein kostenloses Erstgespräch oder eine Behandlung, verfolgen ihre Laserreihe und bestellen ihre Nachpflege.',
+          appTry: 'Probier es aus: Tippe auf Buchen, wähle Laser-Haarentfernung, hak deine Zonen an und wähle eine Uhrzeit.',
           appOpen: 'App öffnen',
           adminTitle: 'Die Verwaltung für das Team',
-          adminBody: 'Hier sieht das Team, was heute passiert: in den vier Kliniken, im Studio und im Webshop.',
+          adminBody: 'Hier sieht das Team, was heute passiert: in Nijmegen, in Uden, bei Blanche Beauty Studio und im Webshop.',
           adminTry: 'Probier es aus: Drück auf Tag abspielen. Dann siehst du einen ganzen Tag in 45 Sekunden.',
           adminOpen: 'Verwaltung öffnen',
           realTitle: 'Was ist echt?',
-          real: 'Die Behandlungen, Ab-Preise, Adressen, Öffnungszeiten und Shop-Produkte stammen von ivyclinics.nl.',
+          real: 'Die Behandlungen mit ihren Erklärungen, Preise, Deals, Fotos, Adressen und Öffnungszeiten stammen von pureclinics.nl.',
           fakeTitle: 'Was ist erfunden?',
           fake: 'Alle Namen von Kunden und Mitarbeitenden, die Termine, der Umsatz und die Zahlungen. Nichts wird wirklich gebucht oder bezahlt.',
           footer: 'Demo · nicht für echte Buchungen',
         },
         it: {
           lang: 'Lingua',
-          title: 'Ivy Clinics · <em>demo</em>',
-          lead: 'Questa è un’anteprima della nuova app di Ivy Clinics e della schermata di gestione. È tutto finto: nomi, appuntamenti e pagamenti. Esplora pure, non puoi rompere nulla.',
+          title: 'Pure Clinics · <em>demo</em>',
+          lead: 'Questa è un’anteprima della nuova app di Pure Clinics e della schermata di gestione. È tutto finto: nomi, appuntamenti e pagamenti. Esplora pure, non puoi rompere nulla.',
           helpTitle: 'Guarda il video di presentazione',
-          helpBody: 'Due minuti e mezzo · tutto sull’app e sulla gestione',
+          helpBody: 'Circa 3 minuti · tutto sull’app e sulla gestione',
           appTitle: 'L’app per i clienti',
-          appBody: 'Ecco l’app su un telefono. Qui i clienti prenotano un trattamento, una lezione (pilates, yoga, barre o stretching) o un prodotto dello shop.',
-          appTry: 'Prova: tocca Prenota, scegli HydraFacial e poi un orario.',
+          appBody: 'Ecco l’app su un telefono. Qui i clienti prenotano una consulenza gratuita o un trattamento, seguono il loro percorso laser e ordinano i prodotti per dopo il trattamento.',
+          appTry: 'Prova: tocca Prenota, scegli Epilazione laser, seleziona le zone e poi un orario.',
           appOpen: 'Apri l’app',
           adminTitle: 'La schermata di gestione per il team',
-          adminBody: 'Qui il team vede cosa succede oggi: nelle quattro cliniche, nello studio e nello shop online.',
+          adminBody: 'Qui il team vede cosa succede oggi: a Nijmegen, a Uden, da Blanche Beauty Studio e nello shop online.',
           adminTry: 'Prova: premi Riproduci la giornata. Vedrai un’intera giornata in 45 secondi.',
           adminOpen: 'Apri la schermata di gestione',
           realTitle: 'Cosa è vero?',
-          real: 'I trattamenti, i prezzi di partenza, gli indirizzi, gli orari e i prodotti dello shop vengono da ivyclinics.nl.',
+          real: 'I trattamenti con le loro spiegazioni, i prezzi, le offerte, le foto, gli indirizzi e gli orari vengono da pureclinics.nl.',
           fakeTitle: 'Cosa è finto?',
           fake: 'Tutti i nomi di clienti e personale, gli appuntamenti, il fatturato e i pagamenti. Niente viene davvero prenotato o pagato.',
           footer: 'Demo · non per prenotazioni reali',

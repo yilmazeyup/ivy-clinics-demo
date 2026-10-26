@@ -1,5 +1,5 @@
 import {
-  checkupSuggestion,
+  followUpSuggestion,
   locationById,
   specialistById,
   treatmentById,
@@ -20,7 +20,7 @@ export type AppointmentView = IvyAppointment & {
   location: ClinicLocation;
 };
 
-/** Ivy data joined with the member's own appointments, ready for screens. */
+/** Clinic data joined with the member's own appointments, ready for screens. */
 export function useIvy() {
   const demo = useDemo();
   return useMemo(() => {
@@ -39,7 +39,7 @@ export function useIvy() {
       upcoming,
       past,
       next: upcoming[0],
-      checkup: checkupSuggestion(demo.now, demo.appointments),
+      followUp: followUpSuggestion(demo.now, demo.appointments),
       byId: (id: string) => all.find((a) => a.id === id),
       /** Who did this treatment last time, so the booking flow can suggest the same person. */
       lastSpecialistFor: (treatmentId: TreatmentId): SpecialistId | undefined => past.find((a) => a.treatmentId === treatmentId)?.specialistId,

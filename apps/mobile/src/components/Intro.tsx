@@ -3,7 +3,7 @@ import { AccessibilityInfo, Animated, Easing, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/theme';
 
-import { IvyLogo } from './IvyLogo';
+import { PureLogo } from './PureLogo';
 
 /**
  * The opening moment of the app: the wordmark rises in on sand, a fine line draws out beneath it,
@@ -49,7 +49,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
       style={[StyleSheet.absoluteFill, { zIndex: 100, backgroundColor: theme.c.bg, alignItems: 'center', justifyContent: 'center', opacity: cover }]}
     >
       <Animated.View style={{ opacity: logo, transform: [{ translateY: logo.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}>
-        <IvyLogo width={172} />
+        <PureLogo width={210} />
       </Animated.View>
       {/* The line grows out from the middle. */}
       <Animated.View style={{ marginTop: 20, width: 120, height: 1, backgroundColor: theme.c.ink, transform: [{ scaleX: line }] }} />

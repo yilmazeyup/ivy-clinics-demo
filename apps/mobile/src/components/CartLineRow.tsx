@@ -2,20 +2,20 @@ import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { useI18n } from '@/i18n';
-import { PACKAGE_PHOTOS, shopItem, type CartLine } from '@/shop';
+import { shopItem, type CartLine } from '@/shop';
 import { useTheme } from '@/theme';
 
-import { Photo, TexturePhoto } from './Photo';
+import { TexturePhoto } from './Photo';
 import { Txt } from './Txt';
 
 /** One line of a bag or an order: picture, name and price, with room for controls on the end side. */
 export function CartLineRow({ line, first, children }: { line: CartLine; first?: boolean; children?: ReactNode }) {
   const theme = useTheme();
-  const { t, text, euro } = useI18n();
+  const { text, euro } = useI18n();
   const item = shopItem(line.id);
   if (!item) return null;
-  const name = item.kind === 'product' ? text(item.product.name) : t(`pilates.pkg.${item.pkg.id}`);
-  const brand = item.kind === 'product' ? item.product.brand : t('ivy.tab.pilates');
+  const name = text(item.product.name);
+  const brand = item.product.brand;
   const style = { width: 56, height: 66, borderRadius: theme.r.small };
 
   return (
@@ -29,7 +29,7 @@ export function CartLineRow({ line, first, children }: { line: CartLine; first?:
         borderTopColor: theme.c.line,
       }}
     >
-      {item.kind === 'product' ? <TexturePhoto texture={item.product.texture} style={style} /> : <Photo photo={PACKAGE_PHOTOS[item.pkg.id]} style={style} />}
+      <TexturePhoto texture={item.product.texture} style={style} />
       <View style={{ flex: 1, gap: 2 }}>
         {brand ? (
           <Txt variant="caption" color={theme.c.muted}>

@@ -1,6 +1,6 @@
 import {
   CONCERNS,
-  IVY_COLORS,
+  CLINIC_COLORS,
   inSentence,
   treatmentById,
   type ConcernId,
@@ -24,10 +24,10 @@ import { useTheme } from '@/theme';
 type Skin = 'calm' | 'sensitive' | 'reactive';
 const SKINS: Skin[] = ['calm', 'sensitive', 'reactive'];
 const QUESTIONS = 4;
-// Treatments that can irritate skin that reddens easily; the doctor decides in person.
-const NOT_FOR_REACTIVE: TreatmentId[] = ['sparkpro', 'microneedling'];
+// Treatments that can irritate skin that reddens easily; the skin therapist decides at the intake.
+const NOT_FOR_REACTIVE: TreatmentId[] = ['tca', 'skinpen', 'tixel'];
 
-/** Four questions and an optional selfie, then a short list of treatments and the free consultation. */
+/** Four questions and an optional selfie, then a short list of treatments and the free intake. */
 export default function IvyAdvice() {
   const theme = useTheme();
   const { t } = useI18n();
@@ -217,7 +217,7 @@ function SelfieFrame() {
         width: 220,
         height: 280,
         borderRadius: theme.r.card,
-        backgroundColor: IVY_COLORS.blush,
+        backgroundColor: CLINIC_COLORS.blush,
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -263,7 +263,7 @@ function Advice({ concerns, skin, treatedBefore }: { concerns: ConcernId[]; skin
 
       <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, backgroundColor: theme.c.sand }}>
         <Icon name="leaf" size={18} color={theme.c.primary} />
-        <Txt variant="small" color={IVY_COLORS.body} style={{ flex: 1 }}>
+        <Txt variant="small" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
           {t('ivy.ai.disclaimer')}
         </Txt>
       </View>
@@ -277,7 +277,7 @@ function Recommendation({ treatment, note, badge }: { treatment: Treatment; note
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.replace({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: treatment.id } })}
+      onPress={() => router.replace({ pathname: '/ivy/behandeling/[id]', params: { id: treatment.id } })}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',

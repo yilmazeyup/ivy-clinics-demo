@@ -11,7 +11,6 @@ export default function IvyTabs() {
   const tabs: TabSpec[] = [
     { name: 'index', label: t('ivy.tab.home'), icon: 'home' },
     { name: 'boeken', label: t('ivy.tab.book'), icon: 'calendarPlus' },
-    { name: 'pilates', label: t('ivy.tab.pilates'), icon: 'activity' },
     { name: 'shop', label: t('ivy.tab.shop'), icon: 'bag', badge: inCart },
     { name: 'mijn', label: t('ivy.tab.mine'), icon: 'user' },
   ];
@@ -19,7 +18,6 @@ export default function IvyTabs() {
     <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} tabs={tabs} />}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="boeken" />
-      <Tabs.Screen name="pilates" />
       <Tabs.Screen name="shop" />
       <Tabs.Screen name="mijn" />
     </Tabs>

@@ -1,5 +1,4 @@
 import { Amiri_400Regular, Amiri_700Bold } from '@expo-google-fonts/amiri';
-import { Archivo_400Regular, Archivo_500Medium, Archivo_600SemiBold } from '@expo-google-fonts/archivo';
 import {
   CormorantGaramond_300Light,
   CormorantGaramond_400Regular,
@@ -22,17 +21,12 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { ToastProvider } from '@/components/Toast';
 import { useLayout } from '@/layout';
 import { DemoProvider, useDemo } from '@/state/demo';
-import { BrandContext, useTheme } from '@/theme';
+import { useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Archivo_400Regular,
-    Archivo_500Medium,
-    Archivo_600SemiBold,
-    'ArchivoRoman-ExpandedSemiBold': require('../../assets/fonts/ArchivoRoman-ExpandedSemiBold.ttf'),
-    'ArchivoRoman-SemiExpandedSemiBold': require('../../assets/fonts/ArchivoRoman-SemiExpandedSemiBold.ttf'),
     CormorantGaramond_300Light,
     CormorantGaramond_400Regular,
     CormorantGaramond_400Regular_Italic,
@@ -61,7 +55,7 @@ export default function RootLayout() {
   );
 }
 
-/** Applies the brand background and the reading direction (Arabic flips the whole layout). */
+/** Applies the clinic's background and the reading direction (Arabic flips the whole layout). */
 function Shell() {
   const theme = useTheme();
   const direction = theme.rtl ? 'rtl' : 'ltr';
@@ -81,22 +75,14 @@ function Shell() {
       <View style={{ flex: 1, direction, backgroundColor: theme.c.bg }}>
         <ToastProvider>
           <StatusBar style="dark" />
-          {wide ? (
-            <BrandContext.Provider value="ivy">
-              <SiteHeader />
-            </BrandContext.Provider>
-          ) : null}
+          {wide ? <SiteHeader /> : null}
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="ivy" />
             <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
           </Stack>
         </ToastProvider>
-        {intro ? (
-          <BrandContext.Provider value="ivy">
-            <Intro onDone={() => setIntro(false)} />
-          </BrandContext.Provider>
-        ) : null}
+        {intro ? <Intro onDone={() => setIntro(false)} /> : null}
       </View>
     </LocaleProvider>
   );

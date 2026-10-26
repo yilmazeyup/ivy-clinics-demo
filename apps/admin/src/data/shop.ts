@@ -16,15 +16,16 @@ export type Order = {
   afterTreatment: string | null;
 };
 
-const CITIES = ['Amsterdam', 'Amstelveen', "'s-Hertogenbosch", 'Westervoort', 'Utrecht', 'Haarlem', 'Arnhem', 'Nijmegen', 'Eindhoven', 'Rotterdam'];
+/** Most customers live around the two clinics. */
+const CITIES = ['Nijmegen', 'Nijmegen', 'Uden', 'Uden', 'Wijchen', 'Beuningen', 'Arnhem', 'Oss', 'Veghel', 'Cuijk', "'s-Hertogenbosch", 'Malden'];
 
-/** Aftercare and the cleanser sell most; the big set least. */
+/** Sun protection and the cleanser sell most; the camouflage set least. */
 const WEIGHT: Partial<Record<ProductId, number>> = {
-  alhydran: 4,
-  'pomegranate-cleanser': 3,
-  'eyelight-serum': 2,
-  'earth-cream': 2,
-  'ayz-drops': 2,
+  'zo-spf': 4,
+  'zo-cleanser': 3,
+  'laser-aftercare-set': 2,
+  'lycogel-camouflage': 2,
+  'xlhair-revitalix': 2,
 };
 const POOL = PRODUCTS.filter((p) => !p.soldOut).flatMap((p) => Array<Product>(WEIGHT[p.id] ?? 1).fill(p));
 
@@ -74,6 +75,6 @@ export const shopRevenue = (day: Date) => orderTotal(shopDay(day));
 /** Units on the shelf at the start of the day: demo stock, with the sold-out product at zero. */
 export function stockOf(product: Product, day: Date): number {
   if (product.soldOut) return 0;
-  if (product.id === 'best-seller-edit') return 4;
+  if (product.id === 'camouflage-set') return 4;
   return between(rng(`stock-${product.id}-${dateKey(day)}`), 7, 36);
 }

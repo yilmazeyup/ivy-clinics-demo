@@ -1,14 +1,18 @@
 import {
   addDays,
+  DEALS,
   freeSlots,
   IVY_MEMBER,
+  LASER_ZONES,
   LOCATIONS,
   openingHours,
+  packagePrice,
   sameDay,
   specialistById,
   specialistsFor,
   startOfDay,
   TREATMENTS,
+  type Deal,
   type FreeSlot,
   type LocationId,
   type SpecialistId,
@@ -31,7 +35,7 @@ import { cityName, roleKey, useIvy } from '@/ivy';
 import { DETAIL_WIDTH, useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
-type Params = { treatmentId: string; location?: string; specialist?: string; slot?: string; replace?: string };
+type Params = { treatmentId: string; location?: string; specialist?: string; slot?: string; replace?: string; deal?: string };
 
 export default function IvyBooking() {
   const params = useLocalSearchParams<Params>();
@@ -67,7 +71,15 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
   );
   const slots = slotsOn(day);
   const last = ivy.lastSpecialistFor(treatment.id);
-  const firstTime = treatment.category === 'injectables' && !ivy.past.some((a) => a.treatmentId === treatment.id);
+  const firstTime = treatment.id !== 'consult' && treatment.category !== 'beauty' && !ivy.past.some((a) => a.treatmentId === treatment.id);
+  // Laser is priced per zone. A deal from Home fixes the zones; someone who had laser before starts with last time's zones.
+  const laser = treatment.id === 'laser';
+  const [deal, setDeal] = useState<Deal | null>(() => DEALS.find((d) => d.id === params.deal) ?? null);
+  const [zones, setZones] = useState<string[]>(() => (ivy.past.some((a) => a.treatmentId === 'laser') ? ['armpits', 'bikini'] : []));
+  const [pack, setPack] = useState(false);
+  const zoneTotal = zones.reduce((sum, id) => sum + (LASER_ZONES.find((z) => z.id === id)?.price ?? 0), 0);
+  const perTime = deal ? deal.price : pack ? packagePrice(zoneTotal) : zoneTotal;
+  const needsZone = laser && !deal && zones.length === 0;
   // Three times per row on a phone, five on a computer screen.
   const columns = wide ? 5 : 3;
   const tile = (inner(DETAIL_WIDTH) - 8 * (columns - 1)) / columns;
@@ -105,11 +117,19 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
             {`${dayShort(slot.start)} · ${time(slot.start)} · ${specialistById(slot.specialistId).name}`}
           </Txt>
           <Txt variant="small" color={theme.c.muted}>
-            {deposit ? t('ivy.book.deposit', { amount: euro(deposit) }) : replacing ? '' : t('ivy.price.free')}
+            {replacing
+              ? ''
+              : deposit
+                ? t('ivy.book.deposit', { amount: euro(deposit) })
+                : laser
+                  ? euro(perTime)
+                  : treatment.priceFrom
+                    ? t('ivy.price.from', { price: euro(treatment.priceFrom) })
+                    : t('ivy.price.free')}
           </Txt>
         </View>
       ) : null}
-      <Button label={deposit ? t('ivy.book.continue') : t('ivy.book.confirmFree')} disabled={!slot} onPress={confirm} />
+      <Button label={deposit ? t('ivy.book.continue') : t('ivy.book.confirmFree')} disabled={!slot || needsZone} onPress={confirm} />
       <Txt variant="caption" color={theme.c.muted} align="center">
         {t('ivy.book.policy')}
       </Txt>
@@ -151,6 +171,78 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         </View>
       ) : null}
 
+      {treatment.insurable ? (
+        <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, backgroundColor: theme.c.sand }}>
+          <Icon name="wallet" size={18} color={theme.c.primary} />
+          <Txt variant="small" color={theme.c.ink} style={{ flex: 1 }}>
+            {t('ivy.book.insurance')}
+          </Txt>
+        </View>
+      ) : null}
+
+      {laser && deal ? <DealCard deal={deal} onChange={() => setDeal(null)} /> : null}
+      {laser && !deal ? (
+        <Group label={t('ivy.zones.title')}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {LASER_ZONES.map((z) => {
+              const on = zones.includes(z.id);
+              return (
+                <Chip
+                  key={z.id}
+                  label={`${text(z.name)} · ${euro(z.price)}`}
+                  icon={on ? 'check' : undefined}
+                  selected={on}
+                  onPress={() => setZones((list) => (on ? list.filter((x) => x !== z.id) : [...list, z.id]))}
+                />
+              );
+            })}
+          </View>
+          <Pressable
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: pack }}
+            onPress={() => {
+              Haptics.selectionAsync();
+              setPack((on) => !on);
+            }}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+              padding: 14,
+              borderRadius: theme.r.control,
+              backgroundColor: theme.c.surface,
+              borderWidth: pack ? 1.5 : 1,
+              borderColor: pack ? theme.c.ink : theme.c.line,
+              opacity: pressed ? 0.85 : 1,
+            })}
+          >
+            <View
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 5,
+                borderWidth: pack ? 0 : 1.5,
+                borderColor: theme.c.lineStrong,
+                backgroundColor: pack ? theme.c.ink : 'transparent',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {pack ? <Icon name="check" size={14} color={theme.c.onPrimary} strokeWidth={2.4} /> : null}
+            </View>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Txt variant="bodyStrong">{t('ivy.zones.package')}</Txt>
+              <Txt variant="small" color={theme.c.muted}>
+                {t('ivy.zones.hint')}
+              </Txt>
+            </View>
+          </Pressable>
+          <Txt variant="bodyStrong" color={zones.length ? theme.c.ink : theme.c.muted}>
+            {zones.length ? t('ivy.zones.total', { price: euro(perTime) }) : t('ivy.zones.none')}
+          </Txt>
+        </Group>
+      ) : null}
+
       <Group label={t('ivy.book.location')}>
         <Rail gap={8}>
           {LOCATIONS.map((l) => (
@@ -182,13 +274,13 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
             setDay(d);
             setSlot(null);
           }}
-          isDisabled={(d) => openingHours(d) === null}
+          isDisabled={(d) => openingHours(d, locationId) === null}
           isMarked={(d) => ivy.upcoming.some((a) => sameDay(a.start, d))}
         />
       </Group>
 
       <Group label={specialistId === 'any' ? t('ivy.book.timesAll') : t('ivy.book.timesWith', { name: specialistById(specialistId).name })}>
-        {openingHours(day) === null ? (
+        {openingHours(day, locationId) === null ? (
           <Txt variant="body" color={theme.c.muted}>
             {t('ivy.book.closed')}
           </Txt>
@@ -236,6 +328,35 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         )}
       </Group>
     </Screen>
+  );
+}
+
+/** A deal chosen on Home: its zones and price, with a way back to choosing zones yourself. */
+function DealCard({ deal, onChange }: { deal: Deal; onChange: () => void }) {
+  const theme = useTheme();
+  const { t, text, euro } = useI18n();
+  return (
+    <Group label={`${t('ivy.deals.eyebrow')} · ${t(`ivy.deals.${deal.group}`)}`}>
+      <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, padding: 16, gap: 6 }}>
+        <Txt variant="heading">{text(deal.zones)}</Txt>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
+          <Txt variant="title">{euro(deal.price)}</Txt>
+          {deal.was ? (
+            <Txt variant="small" color={theme.c.muted} style={{ textDecorationLine: 'line-through' }}>
+              {t('ivy.deals.was', { price: euro(deal.was) })}
+            </Txt>
+          ) : null}
+        </View>
+        <Txt variant="caption" color={theme.c.muted}>
+          {t('ivy.deals.note')}
+        </Txt>
+        <Pressable accessibilityRole="button" onPress={onChange} hitSlop={8} style={{ alignSelf: 'flex-start', marginTop: 4 }}>
+          <Txt variant="smallStrong" color={theme.c.primary}>
+            {t('ivy.zones.title')}
+          </Txt>
+        </Pressable>
+      </View>
+    </Group>
   );
 }
 

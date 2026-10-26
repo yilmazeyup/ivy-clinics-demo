@@ -8,18 +8,6 @@ export function hash(text: string): number {
   return h >>> 0;
 }
 
-/** Deterministic shuffle driven by `seed`. */
-export function shuffle<T>(items: T[], seed: number): T[] {
-  const out = items.slice();
-  let s = seed;
-  for (let i = out.length - 1; i > 0; i--) {
-    s = (Math.imul(s, 1103515245) + 12345) >>> 0;
-    const j = s % (i + 1);
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
 export function atTime(day: Date, time: string): Date {
   const [h, m] = time.split(':').map(Number);
   const out = new Date(day);

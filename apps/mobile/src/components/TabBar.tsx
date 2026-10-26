@@ -11,7 +11,7 @@ import { Txt } from './Txt';
 
 export type TabSpec = { name: string; label: string; icon: IconName; badge?: number };
 
-/** One tab bar for both brands: Pure marks the active tab in ink, Ivy adds a thin underline. */
+/** The tab bar on a phone: the active tab in ink, with a thin underline. */
 export function TabBar({ state, navigateToTab, tabs }: BottomTabBarProps & { tabs: TabSpec[] }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -73,9 +73,7 @@ export function TabBar({ state, navigateToTab, tabs }: BottomTabBarProps & { tab
             <Txt variant="caption" color={color} numberOfLines={1} style={{ fontFamily: active ? theme.f.strong : theme.f.medium }}>
               {tab.label}
             </Txt>
-            {theme.brand === 'ivy' ? (
-              <View style={{ width: 16, height: 2, backgroundColor: active ? theme.c.ink : 'transparent' }} />
-            ) : null}
+            <View style={{ width: 16, height: 2, backgroundColor: active ? theme.c.ink : 'transparent' }} />
           </Pressable>
         );
       })}

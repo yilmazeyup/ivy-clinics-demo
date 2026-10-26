@@ -37,7 +37,8 @@ export type IconName =
   | 'lock'
   | 'activity'
   | 'minus'
-  | 'truck';
+  | 'truck'
+  | 'mail';
 
 // Arrows and chevrons point the other way in right-to-left layouts.
 const DIRECTIONAL: IconName[] = ['back', 'arrow', 'chevron'];
@@ -188,6 +189,12 @@ const SHAPES: Record<IconName, ReactNode> = {
     <>
       <Rect x={5} y={10.5} width={14} height={10} rx={2} />
       <Path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" />
+    </>
+  ),
+  mail: (
+    <>
+      <Rect x={3.5} y={5.5} width={17} height={13} rx={2} />
+      <Path d="m4 7 8 6 8-6" />
     </>
   ),
 };

@@ -1,24 +1,22 @@
-import { CLASS_TYPES, CONCERNS, IVY_COLORS, IVY_MEMBER, locationById, specialistById, timeOfDay } from '@pure-ivy/shared';
+import { CONCERNS, DEALS, CLINIC_COLORS, IVY_MEMBER, LASER_SERIES, locationById, PURE_CLINICS, specialistById, timeOfDay, type Deal } from '@pure-ivy/shared';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
 import { Button, IconButton } from '@/components/Button';
 import { Icon } from '@/components/Icon';
-import { IvyLogo } from '@/components/IvyLogo';
 import { Photo } from '@/components/Photo';
+import { PureLogo } from '@/components/PureLogo';
 import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, useIvy, type AppointmentView } from '@/ivy';
 import { useLayout } from '@/layout';
-import { spotLines, usePilates, type SessionView } from '@/pilates';
 import { useTheme } from '@/theme';
 
 export default function IvyHome() {
   const theme = useTheme();
   const { t, relativeDayInline, time } = useI18n();
   const ivy = useIvy();
-  const pilates = usePilates();
   const { wide } = useLayout();
   const greetingKey = `ivy.greeting.${timeOfDay(ivy.now)}` as const;
 
@@ -50,14 +48,14 @@ export default function IvyHome() {
             </View>
           ) : null}
           <View style={{ flex: 2, gap: 24 }}>
-            {pilates.next ? <NextClass session={pilates.next} /> : null}
-            <Checkup />
+            <FollowUp />
+            <Consult compact />
           </View>
         </View>
         <Concerns />
         <View style={{ flexDirection: 'row', gap: 24 }}>
           <View style={{ flex: 1 }}>
-            <Consult fill />
+            <Deals />
           </View>
           <View style={{ flex: 1 }}>
             <SkinAdvice fill />
@@ -71,7 +69,7 @@ export default function IvyHome() {
   return (
     <Screen gap={28}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <IvyLogo width={112} />
+        <PureLogo width={138} />
         <View style={{ flexDirection: 'row', gap: 2 }}>
           <IconButton icon="bell" label={t('common.notifications')} />
           <IconButton icon="user" label={t('common.settings')} onPress={() => router.push('/settings')} />
@@ -82,8 +80,8 @@ export default function IvyHome() {
 
       <AskIvy />
       {ivy.next ? <NextAppointment appointment={ivy.next} /> : null}
-      {pilates.next ? <NextClass session={pilates.next} /> : null}
-      <Checkup />
+      <FollowUp />
+      <Deals />
       <Concerns />
       <Consult />
       <SkinAdvice />
@@ -115,7 +113,7 @@ function NextAppointment({ appointment, fill }: { appointment: AppointmentView; 
   );
 }
 
-/** The assistant books and moves treatments and classes; the demo answers a few example questions. */
+/** The assistant books and moves appointments; the demo answers a few example questions. */
 function AskIvy() {
   const theme = useTheme();
   const { t } = useI18n();
@@ -137,7 +135,7 @@ function AskIvy() {
     >
       <Icon name="sparkle" size={20} color={theme.c.sand} />
       <Txt variant="body" color={theme.c.onPhotoMuted} style={{ flex: 1 }} numberOfLines={2}>
-        {t('pilates.home.ask')}
+        {t('ivy.home.ask')}
       </Txt>
       <View style={{ width: 42, height: 42, borderRadius: theme.r.control, backgroundColor: '#3A3935', alignItems: 'center', justifyContent: 'center' }}>
         <Icon name="mic" size={19} color="#FFFFFF" />
@@ -146,83 +144,101 @@ function AskIvy() {
   );
 }
 
-function NextClass({ session }: { session: SessionView }) {
-  const theme = useTheme();
-  const { t, relativeDay, time } = useI18n();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={() => router.push(`/ivy/les/${session.id}`)}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-        padding: 10,
-        borderRadius: theme.r.card,
-        backgroundColor: theme.c.surface,
-        opacity: pressed ? 0.9 : 1,
-      })}
-    >
-      <Photo photo={CLASS_TYPES[session.typeId].photo} style={{ width: 64, height: 78, borderRadius: theme.r.photo }} />
-      <View style={{ flex: 1, gap: 2 }}>
-        <Txt variant="caption" color={theme.c.muted}>
-          {t('pilates.home.nextClass')}
-        </Txt>
-        <Txt variant="heading" numberOfLines={1}>
-          {session.name}
-        </Txt>
-        <Txt variant="small" color={theme.c.muted} numberOfLines={1}>
-          {`${relativeDay(session.start)} · ${time(session.start)}`}
-        </Txt>
-        <Txt variant="small" color={theme.c.muted} numberOfLines={1}>
-          {t(spotLines(session, session.booking?.spot ?? 0).withInstructor, { name: session.instructor, n: session.booking?.spot ?? '' })}
-        </Txt>
-      </View>
-      <Button kind="secondary" size="sm" icon="wallet" label={t('pilates.home.wallet')} onPress={() => router.push(`/ivy/ticket/${session.id}`)} />
-    </Pressable>
-  );
-}
-
-/** A few months after an injectable treatment: a free check-up with the same doctor. It names no product. */
-function Checkup() {
+/** Six weeks after a laser session: the next one in the series, with the same skin therapist (a vervolgafspraak). */
+function FollowUp() {
   const theme = useTheme();
   const { t, time, relativeDayInline } = useI18n();
-  const { checkup } = useIvy();
-  if (!checkup) return null;
-  const specialist = specialistById(checkup.slot.specialistId);
-  const location = locationById(checkup.locationId);
+  const { followUp } = useIvy();
+  if (!followUp) return null;
+  const specialist = specialistById(followUp.slot.specialistId);
+  const location = locationById(followUp.locationId);
   return (
     <View style={{ flexDirection: 'row', backgroundColor: theme.c.surface, borderRadius: theme.r.card, overflow: 'hidden' }}>
-      <Photo photo={checkup.treatment.photo} style={{ width: 116 }} position="top" />
+      <Photo photo={followUp.treatment.photo} style={{ width: 116 }} position="top" />
       <View style={{ flex: 1, padding: 16, gap: 8 }}>
         <Txt variant="small" color={theme.c.muted}>
-          {t('ivy.home.checkupEyebrow', { n: checkup.monthsAgo })}
+          {t('ivy.home.followUpEyebrow', { n: followUp.weeksAgo })}
         </Txt>
-        <Txt variant="heading">{t('ivy.home.checkupTitle')}</Txt>
-        <Txt variant="small" color={IVY_COLORS.body}>
-          {t('ivy.home.checkupBody', {
+        <Txt variant="heading">{t('ivy.home.followUpTitle')}</Txt>
+        <Txt variant="small" color={CLINIC_COLORS.body}>
+          {t('ivy.home.followUpBody', {
+            session: followUp.session,
+            total: LASER_SERIES,
             name: specialist.name,
-            when: `${relativeDayInline(checkup.slot.start)} ${time(checkup.slot.start)}`,
+            when: `${relativeDayInline(followUp.slot.start)} ${time(followUp.slot.start)}`,
             city: cityName(location),
           })}
         </Txt>
         <Button
           size="sm"
-          label={t('ivy.home.checkupCta')}
+          label={t('ivy.home.followUpCta')}
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() =>
             router.push({
               pathname: '/ivy/afspraak/[treatmentId]',
               params: {
-                treatmentId: checkup.treatment.id,
+                treatmentId: followUp.treatment.id,
                 specialist: specialist.id,
                 location: location.id,
-                slot: String(checkup.slot.start.getTime()),
+                slot: String(followUp.slot.start.getTime()),
               },
             })
           }
         />
       </View>
+    </View>
+  );
+}
+
+/** The laser deals from pureclinics.nl/deals: one for women, one for men and one for students. */
+function Deals() {
+  const theme = useTheme();
+  const { t, text, euro } = useI18n();
+  const shown = (['women', 'men', 'students'] as const).map((group) => DEALS.find((d) => d.group === group)).filter((d): d is Deal => Boolean(d));
+  return (
+    <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 18, gap: 12, flex: 1 }}>
+      <Txt variant="eyebrow" color={theme.c.muted}>
+        {t('ivy.deals.eyebrow')}
+      </Txt>
+      <Txt variant="title">{t('ivy.deals.title')}</Txt>
+      <View>
+        {shown.map((deal, index) => (
+          <Pressable
+            key={deal.id}
+            accessibilityRole="button"
+            onPress={() => router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: deal.id } })}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+              paddingVertical: 12,
+              borderTopWidth: index === 0 ? 0 : 1,
+              borderTopColor: theme.c.line,
+              opacity: pressed ? 0.8 : 1,
+            })}
+          >
+            <View style={{ flex: 1, gap: 2 }}>
+              <Txt variant="caption" color={theme.c.muted}>
+                {t(`ivy.deals.${deal.group}`)}
+              </Txt>
+              <Txt variant="bodyStrong">{text(deal.zones)}</Txt>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Txt variant="heading">{euro(deal.price)}</Txt>
+              {deal.was ? (
+                <Txt variant="caption" color={theme.c.muted} style={{ textDecorationLine: 'line-through' }}>
+                  {t('ivy.deals.was', { price: euro(deal.was) })}
+                </Txt>
+              ) : null}
+            </View>
+            <Icon name="chevron" size={16} color={theme.c.muted} />
+          </Pressable>
+        ))}
+      </View>
+      <Txt variant="caption" color={theme.c.muted}>
+        {t('ivy.deals.note')}
+      </Txt>
+      <Button size="sm" label={t('ivy.deals.cta')} onPress={() => router.push('/ivy/afspraak/laser')} style={{ alignSelf: 'flex-start', marginTop: 2 }} />
     </View>
   );
 }
@@ -236,9 +252,9 @@ function Concerns() {
       key={concern.id}
       accessibilityRole="button"
       onPress={() => router.navigate({ pathname: '/ivy/boeken', params: { concern: concern.id, at: String(Date.now()) } })}
-      style={({ pressed }) => ({ width: wide ? undefined : 136, flex: wide ? 1 : undefined, gap: wide ? 12 : 8, opacity: pressed ? 0.85 : 1 })}
+      style={({ pressed }) => ({ width: wide ? undefined : 136, flexBasis: wide ? '22%' : undefined, flexGrow: wide ? 1 : undefined, gap: wide ? 12 : 8, opacity: pressed ? 0.85 : 1 })}
     >
-      <Photo photo={concern.photo} style={{ height: wide ? 300 : 172, borderRadius: theme.r.photo }} />
+      <Photo photo={concern.photo} style={{ height: wide ? 230 : 172, borderRadius: theme.r.photo }} />
       <Txt variant="bodyStrong" numberOfLines={2}>
         {t(`ivy.concern.${concern.id}`)}
       </Txt>
@@ -247,24 +263,24 @@ function Concerns() {
   return (
     <View style={{ gap: wide ? 18 : 14 }}>
       <Txt variant="title">{t('ivy.home.concerns')}</Txt>
-      {/* Five photos in one row on a computer screen; a row to swipe through on a phone. */}
-      {wide ? <View style={{ flexDirection: 'row', gap: 18 }}>{cards}</View> : <Rail gap={12}>{cards}</Rail>}
+      {/* Two rows of four photos on a computer screen; a row to swipe through on a phone. */}
+      {wide ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 18, rowGap: 26 }}>{cards}</View> : <Rail gap={12}>{cards}</Rail>}
     </View>
   );
 }
 
-function Consult({ fill }: { fill?: boolean }) {
+function Consult({ compact }: { compact?: boolean }) {
   const theme = useTheme();
   const { t } = useI18n();
   return (
-    <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, overflow: 'hidden', flex: fill ? 1 : undefined }}>
-      <Photo photo="ivy-room" style={{ height: fill ? 240 : 156 }} />
+    <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, overflow: 'hidden', flex: compact ? 1 : undefined }}>
+      {compact ? null : <Photo photo="pc-room" style={{ height: 156 }} />}
       <View style={{ padding: 18, gap: 8 }}>
         <Txt variant="eyebrow" color={theme.c.muted}>
           {t('ivy.home.consultEyebrow')}
         </Txt>
         <Txt variant="title">{t('ivy.home.consultTitle')}</Txt>
-        <Txt variant="body" color={IVY_COLORS.body}>
+        <Txt variant="body" color={CLINIC_COLORS.body}>
           {t('ivy.home.consultBody')}
         </Txt>
         <Button label={t('ivy.home.consultCta')} onPress={() => router.push('/ivy/afspraak/consult')} style={{ marginTop: 8 }} />
@@ -278,7 +294,7 @@ function SkinAdvice({ fill }: { fill?: boolean }) {
   const { t } = useI18n();
   return (
     <Pressable accessibilityRole="button" onPress={() => router.push('/ivy/advies')} style={fill ? { flex: 1 } : undefined}>
-      <Photo photo="ivy-serum" scrim style={fill ? { flex: 1, minHeight: 212, borderRadius: theme.r.card } : { height: 212, borderRadius: theme.r.card }}>
+      <Photo photo="pc-prx" scrim position="top" style={fill ? { flex: 1, minHeight: 212, borderRadius: theme.r.card } : { height: 212, borderRadius: theme.r.card }}>
         <View
           style={{
             position: 'absolute',
@@ -313,14 +329,14 @@ function SkinAdvice({ fill }: { fill?: boolean }) {
   );
 }
 
-/** The clinic's own numbers from ivyclinics.nl, plus opening hours. */
+/** The clinic's own numbers from pureclinics.nl, plus opening hours. */
 function Facts() {
   const theme = useTheme();
-  const { t, locale } = useI18n();
+  const { t, num } = useI18n();
   const facts = [
-    { value: locale === 'en' || locale === 'ar' ? '9.4' : '9,4', label: t('ivy.home.rating') },
-    { value: '4', label: t('ivy.home.locations') },
-    { value: locale === 'fr' || locale === 'de' ? '100 %' : '100%', label: t('ivy.home.natural') },
+    { value: `${num(PURE_CLINICS.clients)}+`, label: t('ivy.home.clients') },
+    { value: String(PURE_CLINICS.years), label: t('ivy.home.years') },
+    { value: '2', label: t('ivy.home.locations') },
   ];
   return (
     <View style={{ gap: 14 }}>
