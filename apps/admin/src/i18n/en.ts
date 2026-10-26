@@ -11,6 +11,7 @@ export const en: Messages = {
   'nav.clients': 'Clients',
   'nav.campaigns': 'Campaigns',
   'nav.settings': 'Settings',
+  'nav.help': 'Help & video',
   'nav.soon': '{label} comes in the next step of the demo.',
   'test.title': 'Test environment',
   'test.body': 'All names, appointments, orders and payments are test data. Mollie is in test mode.',

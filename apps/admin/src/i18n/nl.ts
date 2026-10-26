@@ -11,6 +11,7 @@ export const nl = {
   'nav.clients': 'Cliënten',
   'nav.campaigns': 'Campagnes',
   'nav.settings': 'Instellingen',
+  'nav.help': 'Hulp & video',
   'nav.soon': '{label} volgt in de volgende stap van de demo.',
   'test.title': 'Testomgeving',
   'test.body': 'Alle namen, afspraken, bestellingen en betalingen zijn testgegevens. Mollie staat in testmodus.',

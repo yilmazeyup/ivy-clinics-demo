@@ -253,6 +253,7 @@ export const nl = {
   'ivy.mine.title': 'Mijn *Ivy*.',
   'ivy.mine.orders': 'Bestellingen',
   'ivy.mine.more': 'Meer',
+  'ivy.mine.help': 'Hulp & uitleg',
   'ivy.journal.title': 'Huidjournaal',
   'ivy.journal.body': 'Je voor- en nafoto’s, privé. Je specialist ziet ze alleen als jij dat wilt.',
   'ivy.journal.add': 'Foto toevoegen',

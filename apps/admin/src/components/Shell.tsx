@@ -5,8 +5,11 @@ import { Accent, useI18n, useSetLocale, type MessageKey } from '../i18n';
 import { Icon, type IconName } from './Icon';
 import { useToast } from './ui';
 
-/** Agenda, Pilates and Webshop jump to their part of the overview; the rest follow in a later step. */
-const NAV: { icon: IconName; label: MessageKey; section?: string }[] = [
+/** The help page with the explainer video and common questions, on the demo site. */
+const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
+
+/** Agenda, Lessen and Webshop jump to their part of the overview; Hulp opens the help page; the rest follow later. */
+const NAV: { icon: IconName; label: MessageKey; section?: string; help?: boolean }[] = [
   { icon: 'grid', label: 'nav.overview' },
   { icon: 'calendar', label: 'nav.agenda', section: 'agenda' },
   { icon: 'list', label: 'nav.pilates', section: 'pilates' },
@@ -14,14 +17,16 @@ const NAV: { icon: IconName; label: MessageKey; section?: string }[] = [
   { icon: 'users', label: 'nav.clients' },
   { icon: 'mail', label: 'nav.campaigns' },
   { icon: 'sliders', label: 'nav.settings' },
+  { icon: 'help', label: 'nav.help', help: true },
 ];
 
 export function Sidebar() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const toast = useToast();
   const go = (index: number) => {
     const item = NAV[index];
     if (index === 0) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else if (item.help) window.open(`${HELP_URL}?lang=${locale}`, '_blank', 'noopener');
     else if (item.section) document.getElementById(item.section)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     else toast(t('nav.soon', { label: t(item.label) }));
   };

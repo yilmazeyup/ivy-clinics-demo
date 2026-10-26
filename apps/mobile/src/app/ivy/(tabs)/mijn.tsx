@@ -1,4 +1,5 @@
 import { CLASS_TYPES } from '@pure-ivy/shared';
+import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
@@ -17,12 +18,15 @@ import { spotLines, useCancelNote, usePilates, type SessionView } from '@/pilate
 import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
+/** The help page with the explainer video and common questions, on the demo site. */
+const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
+
 type Upcoming = { kind: 'appointment'; start: Date; appointment: AppointmentView } | { kind: 'class'; start: Date; session: SessionView };
 
 /** Everything the member has planned or bought: treatments, classes, waitlist spots and orders. */
 export default function MyIvy() {
   const theme = useTheme();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const ivy = useIvy();
   const pilates = usePilates();
   const { orders } = useDemo();
@@ -91,6 +95,7 @@ export default function MyIvy() {
         <List>
           <LinkRow icon="camera" label={t('ivy.journal.title')} onPress={() => router.push('/ivy/journaal')} first />
           <LinkRow icon="globe" label={t('settings.language')} onPress={() => router.push('/settings')} />
+          <LinkRow icon="video" label={t('ivy.mine.help')} onPress={() => Linking.openURL(`${HELP_URL}?lang=${locale}`)} />
         </List>
       </Section>
     </Screen>

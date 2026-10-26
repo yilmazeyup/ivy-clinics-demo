@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A demo with fictional data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Ivy Clinics · hulp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Amiri:wght@400&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f6f1ea;
+        --surface: #ffffff;
+        --ink: #1e1e1c;
+        --muted: #6e6259;
+        --line: #e2d8cc;
+        --ivy: #2f4a3c;
+        --sage: #e1e9e3;
+        --display: 'Cormorant Garamond', 'Amiri', Georgia, serif;
+        --body: 'Jost', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font: 400 17px/1.55 var(--body);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px max(20px, env(safe-area-inset-right, 0px)) 56px max(20px, env(safe-area-inset-left, 0px));
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .logo {
+        height: 26px;
+        display: block;
+      }
+      .head-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .back {
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .lang {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .lang select {
+        font: 500 15px var(--body);
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        height: 40px;
+        padding: 0 10px;
+      }
+      h1 {
+        margin: 56px 0 0;
+        font: 300 clamp(44px, 7vw, 76px) / 1.05 var(--display);
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      h1 em {
+        font-style: italic;
+      }
+      .lead {
+        max-width: 680px;
+        margin: 18px 0 0;
+        font-size: 19px;
+        color: var(--muted);
+      }
+      h2 {
+        margin: 0;
+        font: 400 30px/1.15 var(--display);
+      }
+      .player {
+        margin-top: 40px;
+        display: grid;
+        grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .video {
+        border-radius: 16px;
+        overflow: hidden;
+        background: #e9ded3;
+        border: 1px solid var(--line);
+        box-shadow: 0 24px 50px -30px rgba(30, 30, 28, 0.45);
+      }
+      video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #e9ded3;
+      }
+      .chapters {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 22px;
+      }
+      .chapters ol {
+        list-style: none;
+        margin: 14px 0 0;
+        padding: 0;
+        display: grid;
+      }
+      .chapters button {
+        width: 100%;
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        padding: 10px 0;
+        border: 0;
+        border-top: 1px solid var(--line);
+        background: none;
+        font: 400 16px var(--body);
+        color: var(--ink);
+        text-align: start;
+        cursor: pointer;
+      }
+      .chapters li:first-child button {
+        border-top: 0;
+      }
+      .chapters button time {
+        flex: none;
+        width: 42px;
+        color: var(--muted);
+        font-size: 14px;
+        font-variant-numeric: tabular-nums;
+      }
+      .chapters button[aria-current='true'] {
+        color: var(--ivy);
+        font-weight: 500;
+      }
+      .note {
+        margin: 14px 0 0;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: var(--sage);
+        font-size: 14.5px;
+      }
+      .faq {
+        margin-top: 48px;
+      }
+      .faq-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      details {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 20px;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 500;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::after {
+        content: '+';
+        flex: none;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      details[open] summary::after {
+        content: '–';
+      }
+      details p {
+        margin: 10px 0 0;
+        color: var(--muted);
+      }
+      .button {
+        margin-top: 36px;
+        display: inline-flex;
+        align-items: center;
+        height: 50px;
+        padding: 0 20px;
+        border-radius: 10px;
+        background: var(--ivy);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .button:focus-visible,
+      select:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--ivy);
+        outline-offset: 2px;
+      }
+      footer {
+        margin-top: 40px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      [dir='rtl'] h1,
+      [dir='rtl'] h2 {
+        line-height: 1.35;
+      }
+      @media (max-width: 920px) {
+        .player,
+        .faq-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        h1 {
+          margin-top: 36px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a href="../" id="home"><img class="logo" src="../ivy-logo.svg" alt="Ivy Clinics" /></a>
+        <div class="head-actions">
+          <a class="back" id="back" href="../" data-t="back"></a>
+          <label class="lang">
+            <span data-t="lang"></span>
+            <select id="lang">
+              <option value="nl">Nederlands</option>
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="it">Italiano</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <h1 data-t="title"></h1>
+      <p class="lead" data-t="lead"></p>
+
+      <section class="player">
+        <div class="video">
+          <!-- The video is spoken in Dutch; subtitles follow the page language (Dutch, else English). -->
+          <video id="video" controls preload="metadata" playsinline poster="poster.jpg">
+            <source src="ivy-uitleg.mp4" type="video/mp4" />
+            <track kind="subtitles" srclang="nl" label="Nederlands" src="ivy-uitleg.nl.vtt" />
+            <track kind="subtitles" srclang="en" label="English" src="ivy-uitleg.en.vtt" />
+          </video>
+        </div>
+        <aside class="chapters">
+          <h2 data-t="chaptersTitle"></h2>
+          <ol id="chapters"></ol>
+          <p class="note" data-t="videoNote"></p>
+        </aside>
+      </section>
+
+      <section class="faq">
+        <h2 data-t="faqTitle"></h2>
+        <div class="faq-grid" id="faq"></div>
+      </section>
+
+      <a class="button" id="open" href="../" data-t="open"></a>
+      <footer data-t="footer"></footer>
+    </div>
+
+    <script>
+      const TEXT = {
+        nl: {
+          lang: 'Taal',
+          back: 'Terug naar de demo',
+          title: 'Hulp &amp; <em>uitleg</em>',
+          lead: 'Bekijk de korte video, of zoek je vraag hieronder op. Alles in de demo is fictief: er worden geen echte afspraken of betalingen gedaan.',
+          videoNote: 'Gesproken in het Nederlands, met ondertiteling in het Nederlands en Engels.',
+          chaptersTitle: 'Hoofdstukken',
+          chapters: {
+            welcome: 'Welkom',
+            app: 'De app',
+            book: 'Een behandeling boeken',
+            classes: 'Lessen in de studio',
+            shop: 'Shop en Mijn Ivy',
+            web: 'Op de computer',
+            admin: 'Het beheer',
+            studio: 'Lessen, webshop en de week',
+            end: 'Speel de dag af',
+          },
+          faqTitle: 'Veelgestelde vragen',
+          faq: [
+            ['Hoe boek ik een behandeling?', 'Open Boeken, kies een behandeling en de kliniek bij jou in de buurt. Daarna kies je de specialist, een dag en een tijd. Twijfel je? Begin met een gratis adviesgesprek.'],
+            ['Kan ik mijn afspraak verzetten of annuleren?', 'Ja. Onder Mijn Ivy staan al je afspraken. Verzetten of annuleren is gratis tot 24 uur van tevoren.'],
+            ['Welke lessen zijn er?', 'Reformer pilates in studio 1, en mat pilates, yoga, barre en stretch in studio 2. Bij een reformerles kies je zelf je toestel; bij een matles krijg je een vaste plek.'],
+            ['Wat zijn credits?', 'Een les kost één credit. Je koopt credits als pakket in de shop, of je neemt een abonnement met onbeperkt lessen. Annuleer je op tijd, dan krijg je je credit terug.'],
+            ['Hoe check ik in bij een les?', 'Je les staat in je wallet. Scan de code bij de deur en je bent ingecheckt.'],
+            ['Wat kan de Ivy-assistent?', 'Je typt of zegt wat je wilt, bijvoorbeeld een rustige les op donderdag. De assistent zoekt het op en boekt het voor je. In de demo werken een paar voorbeeldvragen.'],
+            ['Wat ziet het team in het beheer?', 'De cijfers van vandaag, de vier klinieken met wie er nu in behandeling is, de agenda per kamer, de lessen in de studio, de webshop en wat er net gebeurde. Met de knop Uitleg loop je er stap voor stap doorheen.'],
+            ['Is dit echt?', 'Nee, dit is een demo met fictieve klanten en testbetalingen. Er wordt niets echt geboekt, betaald of verstuurd.'],
+          ],
+          open: 'Open de demo',
+          footer: 'Demo · niet voor echte boekingen',
+        },
+        en: {
+          lang: 'Language',
+          back: 'Back to the demo',
+          title: 'Help &amp; <em>guide</em>',
+          lead: 'Watch the short video, or look up your question below. Everything in the demo is fictional: no real appointments or payments are made.',
+          videoNote: 'Spoken in Dutch, with subtitles in Dutch and English.',
+          chaptersTitle: 'Chapters',
+          chapters: {
+            welcome: 'Welcome',
+            app: 'The app',
+            book: 'Booking a treatment',
+            classes: 'Classes in the studio',
+            shop: 'Shop and My Ivy',
+            web: 'On a computer',
+            admin: 'The admin panel',
+            studio: 'Classes, webshop and the week',
+            end: 'Play the day',
+          },
+          faqTitle: 'Frequently asked questions',
+          faq: [
+            ['How do I book a treatment?', 'Open Book, choose a treatment and the clinic near you. Then pick the specialist, a day and a time. Not sure yet? Start with a free consultation.'],
+            ['Can I move or cancel my appointment?', 'Yes. My Ivy lists all your appointments. Moving or cancelling is free up to 24 hours ahead.'],
+            ['Which classes are there?', 'Reformer pilates in studio 1, and mat pilates, yoga, barre and stretch in studio 2. In a reformer class you choose your own reformer; in a mat class you get a fixed spot.'],
+            ['What are credits?', 'A class costs one credit. You buy credits as a pack in the shop, or take a subscription with unlimited classes. Cancel in time and you get your credit back.'],
+            ['How do I check in for a class?', 'Your class is in your wallet. Scan the code at the door and you are checked in.'],
+            ['What can the Ivy assistant do?', 'Type or say what you want, for example a calm class on Thursday. The assistant looks it up and books it for you. In the demo a few example questions work.'],
+            ['What does the team see in the admin panel?', "Today's numbers, the four clinics with who is being treated right now, the diary per room, the classes in the studio, the webshop and what just happened. The Guide button walks you through it step by step."],
+            ['Is this real?', 'No, this is a demo with fictional clients and test payments. Nothing is really booked, paid or sent.'],
+          ],
+          open: 'Open the demo',
+          footer: 'Demo · not for real bookings',
+        },
+        ar: {
+          lang: 'اللغة',
+          back: 'العودة إلى العرض التجريبي',
+          title: 'المساعدة <em>والشرح</em>',
+          lead: 'شاهد الفيديو القصير، أو ابحث عن سؤالك أدناه. كل ما في العرض التجريبي خيالي: لا تُحجز مواعيد حقيقية ولا تُدفع مبالغ حقيقية.',
+          videoNote: 'الفيديو باللغة الهولندية، مع ترجمة بالهولندية والإنجليزية.',
+          chaptersTitle: 'الفصول',
+          chapters: {
+            welcome: 'مرحبًا',
+            app: 'التطبيق',
+            book: 'حجز علاج',
+            classes: 'الحصص في الاستوديو',
+            shop: 'المتجر وحسابي',
+            web: 'على الكمبيوتر',
+            admin: 'لوحة الإدارة',
+            studio: 'الحصص والمتجر والأسبوع',
+            end: 'شغّل اليوم',
+          },
+          faqTitle: 'أسئلة شائعة',
+          faq: [
+            ['كيف أحجز علاجًا؟', 'افتح «الحجز»، واختر العلاج والعيادة القريبة منك، ثم اختر الأخصائي واليوم والوقت. لست متأكدًا بعد؟ ابدأ باستشارة مجانية.'],
+            ['هل يمكنني تغيير موعدي أو إلغاؤه؟', 'نعم. تجد كل مواعيدك في «حسابي». التغيير أو الإلغاء مجاني حتى 24 ساعة قبل الموعد.'],
+            ['ما الحصص المتاحة؟', 'بيلاتس الريفورمر في الاستوديو 1، وبيلاتس البساط واليوغا والبار والتمدد في الاستوديو 2. في حصة الريفورمر تختار جهازك بنفسك، وفي حصة البساط تحصل على مكان ثابت.'],
+            ['ما هي الأرصدة؟', 'الحصة الواحدة تكلّف رصيدًا واحدًا. تشتري الأرصدة كباقة من المتجر، أو تشترك في باقة غير محدودة. إذا ألغيت في الوقت المناسب يعود إليك رصيدك.'],
+            ['كيف أسجّل حضوري في الحصة؟', 'حصتك موجودة في محفظتك. امسح الرمز عند الباب فيُسجَّل حضورك.'],
+            ['ماذا تستطيع مساعدة Ivy أن تفعل؟', 'اكتب أو قل ما تريد، مثل حصة هادئة يوم الخميس. تبحث المساعدة عنها وتحجزها لك. في العرض التجريبي تعمل بعض الأسئلة النموذجية.'],
+            ['ماذا يرى الفريق في لوحة الإدارة؟', 'أرقام اليوم، والعيادات الأربع ومن يتلقى العلاج الآن، وجدول المواعيد لكل غرفة، والحصص في الاستوديو، والمتجر، وما حدث للتو. يأخذك زر «شرح» عبرها خطوة بخطوة.'],
+            ['هل هذا حقيقي؟', 'لا، هذا عرض تجريبي بعملاء خياليين ومدفوعات تجريبية. لا يُحجز أو يُدفع أو يُرسل أي شيء فعليًا.'],
+          ],
+          open: 'افتح العرض التجريبي',
+          footer: 'عرض تجريبي · ليس للحجوزات الحقيقية',
+        },
+        fr: {
+          lang: 'Langue',
+          back: 'Retour à la démo',
+          title: 'Aide &amp; <em>explications</em>',
+          lead: 'Regarde la courte vidéo, ou cherche ta question ci-dessous. Tout est fictif dans la démo : aucun vrai rendez-vous ni paiement.',
+          videoNote: 'En néerlandais, sous-titré en néerlandais et en anglais.',
+          chaptersTitle: 'Chapitres',
+          chapters: {
+            welcome: 'Bienvenue',
+            app: 'L’app',
+            book: 'Réserver un soin',
+            classes: 'Les cours au studio',
+            shop: 'La boutique et Mon Ivy',
+            web: 'Sur ordinateur',
+            admin: 'L’espace de gestion',
+            studio: 'Cours, boutique et semaine',
+            end: 'Jouer la journée',
+          },
+          faqTitle: 'Questions fréquentes',
+          faq: [
+            ['Comment réserver un soin ?', 'Ouvre Réserver, choisis un soin et la clinique près de chez toi. Choisis ensuite le spécialiste, un jour et une heure. Tu hésites ? Commence par une consultation gratuite.'],
+            ['Puis-je déplacer ou annuler mon rendez-vous ?', 'Oui. Tous tes rendez-vous sont dans Mon Ivy. Déplacer ou annuler est gratuit jusqu’à 24 heures avant.'],
+            ['Quels cours y a-t-il ?', 'Du Pilates reformer au studio 1, et du Pilates au tapis, du yoga, de la barre et du stretching au studio 2. Sur reformer, tu choisis ta machine ; au tapis, tu as une place attitrée.'],
+            ['Que sont les crédits ?', 'Un cours coûte un crédit. Tu achètes des crédits en pack dans la boutique, ou tu prends un abonnement illimité. Si tu annules à temps, ton crédit t’est rendu.'],
+            ['Comment m’enregistrer à un cours ?', 'Ton cours est dans ton wallet. Scanne le code à l’entrée, et c’est fait.'],
+            ['Que peut faire l’assistant Ivy ?', 'Écris ou dis ce que tu veux, par exemple un cours calme le jeudi. L’assistant le trouve et le réserve pour toi. Dans la démo, quelques questions d’exemple fonctionnent.'],
+            ['Que voit l’équipe dans l’espace de gestion ?', 'Les chiffres du jour, les quatre cliniques avec les soins en cours, l’agenda par salle, les cours au studio, la boutique et ce qui vient de se passer. Le bouton Guide t’accompagne pas à pas.'],
+            ['Est-ce réel ?', 'Non, c’est une démo avec des clients fictifs et des paiements de test. Rien n’est vraiment réservé, payé ou envoyé.'],
+          ],
+          open: 'Ouvrir la démo',
+          footer: 'Démo · pas pour de vraies réservations',
+        },
+        de: {
+          lang: 'Sprache',
+          back: 'Zurück zur Demo',
+          title: 'Hilfe &amp; <em>Erklärung</em>',
+          lead: 'Sieh dir das kurze Video an oder finde deine Frage unten. In der Demo ist alles erfunden: Es werden keine echten Termine oder Zahlungen gemacht.',
+          videoNote: 'Auf Niederländisch, mit Untertiteln auf Niederländisch und Englisch.',
+          chaptersTitle: 'Kapitel',
+          chapters: {
+            welcome: 'Willkommen',
+            app: 'Die App',
+            book: 'Eine Behandlung buchen',
+            classes: 'Kurse im Studio',
+            shop: 'Shop und Mein Ivy',
+            web: 'Am Computer',
+            admin: 'Die Verwaltung',
+            studio: 'Kurse, Webshop und die Woche',
+            end: 'Tag abspielen',
+          },
+          faqTitle: 'Häufige Fragen',
+          faq: [
+            ['Wie buche ich eine Behandlung?', 'Öffne Buchen, wähle eine Behandlung und die Klinik in deiner Nähe. Dann wählst du die Fachkraft, einen Tag und eine Uhrzeit. Noch unsicher? Starte mit einer kostenlosen Beratung.'],
+            ['Kann ich meinen Termin verschieben oder absagen?', 'Ja. Unter Mein Ivy stehen alle deine Termine. Verschieben oder absagen ist bis 24 Stunden vorher kostenlos.'],
+            ['Welche Kurse gibt es?', 'Reformer-Pilates in Studio 1, dazu Matten-Pilates, Yoga, Barre und Stretching in Studio 2. Beim Reformer-Kurs wählst du dein Gerät selbst, beim Mattenkurs bekommst du einen festen Platz.'],
+            ['Was sind Credits?', 'Ein Kurs kostet einen Credit. Credits kaufst du als Paket im Shop, oder du nimmst ein Abo mit unbegrenzten Kursen. Sagst du rechtzeitig ab, bekommst du den Credit zurück.'],
+            ['Wie checke ich bei einem Kurs ein?', 'Dein Kurs liegt in deiner Wallet. Scanne den Code an der Tür, und du bist eingecheckt.'],
+            ['Was kann der Ivy-Assistent?', 'Schreib oder sag, was du möchtest, zum Beispiel einen ruhigen Kurs am Donnerstag. Der Assistent sucht ihn heraus und bucht ihn für dich. In der Demo funktionieren einige Beispielfragen.'],
+            ['Was sieht das Team in der Verwaltung?', 'Die Zahlen von heute, die vier Kliniken mit den laufenden Behandlungen, den Kalender pro Raum, die Kurse im Studio, den Webshop und was gerade passiert ist. Der Button Erklärung führt Schritt für Schritt hindurch.'],
+            ['Ist das echt?', 'Nein, das ist eine Demo mit erfundenen Kundinnen und Kunden und Testzahlungen. Nichts wird wirklich gebucht, bezahlt oder verschickt.'],
+          ],
+          open: 'Demo öffnen',
+          footer: 'Demo · nicht für echte Buchungen',
+        },
+        it: {
+          lang: 'Lingua',
+          back: 'Torna alla demo',
+          title: 'Aiuto &amp; <em>guida</em>',
+          lead: 'Guarda il breve video, o cerca la tua domanda qui sotto. Nella demo tutto è inventato: nessun appuntamento o pagamento è reale.',
+          videoNote: 'In olandese, con sottotitoli in olandese e in inglese.',
+          chaptersTitle: 'Capitoli',
+          chapters: {
+            welcome: 'Benvenuto',
+            app: 'L’app',
+            book: 'Prenotare un trattamento',
+            classes: 'Le lezioni in studio',
+            shop: 'Lo shop e Il mio Ivy',
+            web: 'Sul computer',
+            admin: 'La gestione',
+            studio: 'Lezioni, shop e la settimana',
+            end: 'Riproduci la giornata',
+          },
+          faqTitle: 'Domande frequenti',
+          faq: [
+            ['Come prenoto un trattamento?', 'Apri Prenota, scegli un trattamento e la clinica vicino a te. Poi scegli lo specialista, un giorno e un orario. Hai dubbi? Inizia con una consulenza gratuita.'],
+            ['Posso spostare o annullare l’appuntamento?', 'Sì. In Il mio Ivy trovi tutti i tuoi appuntamenti. Spostare o annullare è gratis fino a 24 ore prima.'],
+            ['Quali lezioni ci sono?', 'Pilates reformer nello studio 1, e pilates a corpo libero, yoga, barre e stretching nello studio 2. Al reformer scegli tu la macchina; sul tappetino hai un posto fisso.'],
+            ['Cosa sono i crediti?', 'Una lezione costa un credito. Compri i crediti a pacchetti nello shop, oppure scegli un abbonamento illimitato. Se annulli in tempo, il credito ti viene restituito.'],
+            ['Come faccio il check-in a una lezione?', 'La lezione è nel tuo wallet. Scansiona il codice all’ingresso e il check-in è fatto.'],
+            ['Cosa sa fare l’assistente Ivy?', 'Scrivi o di’ cosa vuoi, per esempio una lezione tranquilla di giovedì. L’assistente la cerca e la prenota per te. Nella demo funzionano alcune domande di esempio.'],
+            ['Cosa vede il team nella gestione?', 'I numeri di oggi, le quattro cliniche con i trattamenti in corso, l’agenda per sala, le lezioni in studio, lo shop e cosa è appena successo. Il pulsante Guida ti accompagna passo dopo passo.'],
+            ['È reale?', 'No, è una demo con clienti inventati e pagamenti di prova. Niente viene davvero prenotato, pagato o inviato.'],
+          ],
+          open: 'Apri la demo',
+          footer: 'Demo · non per prenotazioni reali',
+        },
+      };
+
+      const select = document.getElementById('lang');
+      const video = document.getElementById('video');
+      let chapters = [];
+      let lang = 'nl';
+
+      function stored() {
+        try {
+          return localStorage.getItem('demo-lang');
+        } catch {
+          return null;
+        }
+      }
+
+      const clock = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+      /** Dutch viewers get Dutch subtitles; everyone else the English ones. */
+      function subtitles() {
+        const want = lang === 'nl' ? 'nl' : 'en';
+        for (const track of video.textTracks) track.mode = track.language === want ? 'showing' : 'hidden';
+      }
+
+      function renderChapters() {
+        const t = TEXT[lang];
+        const list = document.getElementById('chapters');
+        list.innerHTML = '';
+        for (const chapter of chapters) {
+          const li = document.createElement('li');
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.dataset.start = chapter.start;
+          button.innerHTML = `<time>${clock(chapter.start)}</time><span></span>`;
+          button.querySelector('span').textContent = t.chapters[chapter.id];
+          button.addEventListener('click', () => {
+            video.currentTime = chapter.start + 0.05;
+            video.play();
+          });
+          li.appendChild(button);
+          list.appendChild(li);
+        }
+        markChapter();
+      }
+
+      function markChapter() {
+        const buttons = [...document.querySelectorAll('#chapters button')];
+        const now = video.currentTime;
+        let current = 0;
+        buttons.forEach((b, i) => {
+          if (Number(b.dataset.start) <= now + 0.1) current = i;
+        });
+        buttons.forEach((b, i) => b.setAttribute('aria-current', String(i === current && now > 0)));
+      }
+
+      function renderFaq() {
+        const box = document.getElementById('faq');
+        box.innerHTML = '';
+        for (const [q, a] of TEXT[lang].faq) {
+          const item = document.createElement('details');
+          const summary = document.createElement('summary');
+          summary.textContent = q;
+          const p = document.createElement('p');
+          p.textContent = a;
+          item.append(summary, p);
+          box.appendChild(item);
+        }
+      }
+
+      function apply(next) {
+        lang = TEXT[next] ? next : 'nl';
+        const t = TEXT[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-t]').forEach((el) => {
+          el.innerHTML = t[el.dataset.t];
+        });
+        select.value = lang;
+        select.setAttribute('aria-label', t.lang);
+        // Back to the start page and into the demo, in the same language.
+        document.getElementById('home').href = `../?lang=${lang}`;
+        document.getElementById('back').href = `../?lang=${lang}`;
+        document.getElementById('open').href = `../?lang=${lang}`;
+        renderChapters();
+        renderFaq();
+        subtitles();
+        try {
+          localStorage.setItem('demo-lang', lang);
+        } catch {
+          // Private windows may refuse storage; the page still works.
+        }
+      }
+
+      video.addEventListener('loadedmetadata', subtitles);
+      video.addEventListener('timeupdate', markChapter);
+      select.addEventListener('change', () => apply(select.value));
+      fetch('chapters.json')
+        .then((r) => r.json())
+        .then((list) => {
+          chapters = list;
+          renderChapters();
+        })
+        .catch(() => {});
+      const fromLink = new URLSearchParams(location.search).get('lang');
+      apply(TEXT[fromLink] ? fromLink : TEXT[stored()] ? stored() : 'nl');
+    </script>
+  </body>
+</html>

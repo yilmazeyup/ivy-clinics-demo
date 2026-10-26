@@ -253,6 +253,7 @@ export const en: Messages = {
   'ivy.mine.title': 'My *Ivy*.',
   'ivy.mine.orders': 'Orders',
   'ivy.mine.more': 'More',
+  'ivy.mine.help': 'Help & guide',
   'ivy.journal.title': 'Skin journal',
   'ivy.journal.body': 'Your before and after photos, private. Your specialist only sees them if you want.',
   'ivy.journal.add': 'Add photo',

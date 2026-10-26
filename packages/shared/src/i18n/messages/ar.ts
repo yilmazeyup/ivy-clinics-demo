@@ -254,6 +254,7 @@ export const ar: Messages = {
   'ivy.mine.title': 'حسابي في *Ivy*.',
   'ivy.mine.orders': 'الطلبات',
   'ivy.mine.more': 'المزيد',
+  'ivy.mine.help': 'المساعدة والشرح',
   'ivy.journal.title': 'يوميات البشرة',
   'ivy.journal.body': 'صور ما قبل العلاج وبعده، بخصوصية تامة. لا تراها الأخصائية إلا بموافقتك.',
   'ivy.journal.add': 'إضافة صورة',

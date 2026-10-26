@@ -253,6 +253,7 @@ export const de: Messages = {
   'ivy.mine.title': 'Mein *Ivy*.',
   'ivy.mine.orders': 'Bestellungen',
   'ivy.mine.more': 'Mehr',
+  'ivy.mine.help': 'Hilfe & Erklärung',
   'ivy.journal.title': 'Hauttagebuch',
   'ivy.journal.body': 'Deine Vorher-nachher-Fotos, privat. Deine Spezialistin sieht sie nur, wenn du willst.',
   'ivy.journal.add': 'Foto hinzufügen',

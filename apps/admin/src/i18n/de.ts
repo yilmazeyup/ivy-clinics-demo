@@ -11,6 +11,7 @@ export const de: Messages = {
   'nav.clients': 'Kunden',
   'nav.campaigns': 'Kampagnen',
   'nav.settings': 'Einstellungen',
+  'nav.help': 'Hilfe & Video',
   'nav.soon': '{label} kommt im nächsten Schritt der Demo.',
   'test.title': 'Testumgebung',
   'test.body': 'Alle Namen, Termine, Bestellungen und Zahlungen sind Testdaten. Mollie läuft im Testmodus.',

@@ -12,6 +12,7 @@ export const ar: Messages = {
   'nav.clients': 'العملاء',
   'nav.campaigns': 'الحملات',
   'nav.settings': 'الإعدادات',
+  'nav.help': 'المساعدة والفيديو',
   'nav.soon': '{label}: يأتي في الخطوة التالية من النسخة التجريبية.',
   'test.title': 'بيئة تجريبية',
   'test.body': 'كل الأسماء والمواعيد والطلبات والمدفوعات بيانات تجريبية. Mollie في وضع الاختبار.',

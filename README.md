@@ -7,6 +7,7 @@ Treatments, starting prices, locations, opening hours and the webshop products a
 ivyclinics.nl (October 2026).
 
 - Live demo: https://yilmazeyup.github.io/ivy-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
+- Help page with a Dutch explainer video (subtitles in Dutch and English) and common questions: https://yilmazeyup.github.io/ivy-clinics-demo/hulp/
 - Design canvas: https://claude.ai/artifact/UrYoLqDJGxQNyCYbxrqw34 (private, share it from the canvas' Share menu)
 
 ## Structure

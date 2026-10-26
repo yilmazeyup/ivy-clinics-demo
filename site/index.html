@@ -85,8 +85,47 @@
         font-size: 19px;
         color: var(--muted);
       }
+      /* The way to the explainer video and the questions people ask. */
+      .help-link {
+        margin-top: 26px;
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 18px 12px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        text-decoration: none;
+      }
+      .help-link .play {
+        flex: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--ivy);
+        display: grid;
+        place-items: center;
+      }
+      .help-link .play::after {
+        content: '';
+        margin-inline-start: 3px;
+        border-style: solid;
+        border-width: 8px 0 8px 13px;
+        border-color: transparent transparent transparent #fff;
+      }
+      [dir='rtl'] .help-link .play::after {
+        transform: scaleX(-1);
+      }
+      .help-link strong {
+        display: block;
+        font-weight: 500;
+      }
+      .help-link span span {
+        font-size: 14.5px;
+        color: var(--muted);
+      }
       .parts {
-        margin-top: 48px;
+        margin-top: 40px;
         display: grid;
         grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
         gap: 22px;
@@ -283,6 +322,10 @@
 
       <h1 data-t="title">Ivy Clinics · <em>demo</em></h1>
       <p class="lead" data-t="lead"></p>
+      <a class="help-link" id="open-help" href="hulp/">
+        <span class="play" aria-hidden="true"></span>
+        <span><strong data-t="helpTitle"></strong><span data-t="helpBody"></span></span>
+      </a>
 
       <div class="parts">
         <section class="part">
@@ -335,6 +378,8 @@
           lang: 'Taal',
           title: 'Ivy Clinics · <em>demo</em>',
           lead: 'Dit is een voorbeeld van de nieuwe Ivy Clinics-app en het beheerscherm. Alles is nep: namen, afspraken en betalingen. Klik gerust rond, je kunt niets kapotmaken.',
+          helpTitle: 'Bekijk de uitlegvideo',
+          helpBody: '2,5 minuten · alles over de app en het beheer',
           appTitle: 'De app voor cliënten',
           appBody: 'Zo ziet de app eruit op een telefoon. Cliënten boeken hier een behandeling, een les (pilates, yoga, barre of stretch) of iets uit de webshop.',
           appTry: 'Probeer dit: tik op Boeken, kies HydraFacial en kies een tijd.',
@@ -353,6 +398,8 @@
           lang: 'Language',
           title: 'Ivy Clinics · <em>demo</em>',
           lead: "This is a preview of the new Ivy Clinics app and admin screen. Everything is fake: names, appointments and payments. Click around freely, you can't break anything.",
+          helpTitle: 'Watch the explainer video',
+          helpBody: '2.5 minutes · all about the app and the admin panel',
           appTitle: 'The app for clients',
           appBody: 'This is how the app looks on a phone. Clients book a treatment, a class (pilates, yoga, barre or stretch) or something from the webshop here.',
           appTry: 'Try this: tap Book, choose HydraFacial and pick a time.',
@@ -371,6 +418,8 @@
           lang: 'اللغة',
           title: 'Ivy Clinics · <em>نسخة تجريبية</em>',
           lead: 'هذه معاينة لتطبيق Ivy Clinics الجديد ولوحة الإدارة. كل البيانات وهمية: الأسماء والمواعيد والمدفوعات. تجوّل بحرية، فلن تُفسد شيئًا.',
+          helpTitle: 'شاهد فيديو الشرح',
+          helpBody: 'دقيقتان ونصف · كل شيء عن التطبيق ولوحة الإدارة',
           appTitle: 'التطبيق للعملاء',
           appBody: 'هكذا يبدو التطبيق على الهاتف. يحجز فيه العملاء علاجًا أو حصة (بيلاتس أو يوغا أو بار أو تمدد) أو منتجًا من المتجر الإلكتروني.',
           appTry: 'جرّب: اضغط على «الحجز»، واختر هايدرافيشل، ثم اختر وقتًا.',
@@ -389,6 +438,8 @@
           lang: 'Langue',
           title: 'Ivy Clinics · <em>démo</em>',
           lead: 'Voici un aperçu de la nouvelle app Ivy Clinics et de l’écran de gestion. Tout est fictif : noms, rendez-vous et paiements. Explore librement, tu ne peux rien casser.',
+          helpTitle: 'Regarder la vidéo explicative',
+          helpBody: '2 min 30 · tout sur l’app et l’espace de gestion',
           appTitle: 'L’app pour les clients',
           appBody: 'Voici l’app sur un téléphone. Les clients y réservent un soin, un cours (pilates, yoga, barre ou stretching) ou un produit de la boutique.',
           appTry: 'Essaie : touche Réserver, choisis HydraFacial puis un horaire.',
@@ -407,6 +458,8 @@
           lang: 'Sprache',
           title: 'Ivy Clinics · <em>Demo</em>',
           lead: 'Das ist eine Vorschau der neuen Ivy-Clinics-App und der Verwaltung. Alles ist erfunden: Namen, Termine und Zahlungen. Klick dich ruhig durch, du kannst nichts kaputt machen.',
+          helpTitle: 'Erklärvideo ansehen',
+          helpBody: '2,5 Minuten · alles über die App und die Verwaltung',
           appTitle: 'Die App für Kunden',
           appBody: 'So sieht die App auf dem Handy aus. Hier buchen Kunden eine Behandlung, einen Kurs (Pilates, Yoga, Barre oder Stretching) oder etwas aus dem Shop.',
           appTry: 'Probier es aus: Tippe auf Buchen, wähle HydraFacial und dann eine Uhrzeit.',
@@ -425,6 +478,8 @@
           lang: 'Lingua',
           title: 'Ivy Clinics · <em>demo</em>',
           lead: 'Questa è un’anteprima della nuova app di Ivy Clinics e della schermata di gestione. È tutto finto: nomi, appuntamenti e pagamenti. Esplora pure, non puoi rompere nulla.',
+          helpTitle: 'Guarda il video di presentazione',
+          helpBody: 'Due minuti e mezzo · tutto sull’app e sulla gestione',
           appTitle: 'L’app per i clienti',
           appBody: 'Ecco l’app su un telefono. Qui i clienti prenotano un trattamento, una lezione (pilates, yoga, barre o stretching) o un prodotto dello shop.',
           appTry: 'Prova: tocca Prenota, scegli HydraFacial e poi un orario.',
@@ -468,6 +523,7 @@
         document.getElementById('open-app').href = app;
         document.getElementById('open-admin').href = admin;
         document.getElementById('admin-window').href = admin;
+        document.getElementById('open-help').href = `hulp/?lang=${lang}`;
         const appFrame = document.getElementById('app-frame');
         const adminFrame = document.getElementById('admin-frame');
         if (!appFrame.src.endsWith(app)) appFrame.src = app;
