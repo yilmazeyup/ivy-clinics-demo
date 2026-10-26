@@ -15,7 +15,8 @@ import { createContext, useCallback, useContext, useMemo, useState, type PropsWi
 
 import { cartTotals, shopItem, type CartLine, type Delivery } from '../shop';
 
-export type PureBooking = { sessionId: string; reformer: number };
+/** A booked class; the spot is a reformer in the reformer studio or a mat in studio 2. */
+export type PureBooking = { sessionId: string; spot: number };
 
 export type Order = {
   id: string;
@@ -46,7 +47,7 @@ type DemoContext = DemoData & {
   locale: Locale;
   setBrand: (brand: BrandId) => void;
   setLocale: (locale: Locale) => void;
-  bookClass: (sessionId: string, reformer: number) => boolean;
+  bookClass: (sessionId: string, spot: number) => boolean;
   cancelClass: (sessionId: string) => void;
   joinWaitlist: (sessionId: string) => void;
   bookAppointment: (appointment: Omit<IvyAppointment, 'id'>) => string;
@@ -82,14 +83,14 @@ export function DemoProvider({ children }: PropsWithChildren) {
   const [data, setData] = useState<DemoData>(initialData);
 
   const bookClass = useCallback(
-    (sessionId: string, reformer: number) => {
+    (sessionId: string, spot: number) => {
       if (!data.unlimited && data.credits < 1) return false;
       setData((d) => {
         if (d.bookings.some((b) => b.sessionId === sessionId)) return d;
         return {
           ...d,
           credits: d.unlimited ? d.credits : d.credits - 1,
-          bookings: [...d.bookings, { sessionId, reformer }],
+          bookings: [...d.bookings, { sessionId, spot }],
           waitlist: d.waitlist.filter((id) => id !== sessionId),
         };
       });

@@ -1,4 +1,4 @@
-import { CLASS_TYPES, FREE_CANCEL_HOURS, INSTRUCTORS, WINDOW_REFORMERS, waitlistChance, type PureSession } from '@pure-ivy/shared';
+import { CLASS_TYPES, FREE_CANCEL_HOURS, INSTRUCTORS, onReformer, WINDOW_REFORMERS, waitlistChance, type PureSession } from '@pure-ivy/shared';
 import { useMemo } from 'react';
 
 import { useI18n } from './i18n';
@@ -51,6 +51,13 @@ export function usePilates() {
 export function seatNote(reformer: number): 'pilates.class.byWindow' | 'pilates.class.frontRow' | 'pilates.class.backRow' {
   if (WINDOW_REFORMERS.includes(reformer)) return 'pilates.class.byWindow';
   return reformer <= 4 ? 'pilates.class.frontRow' : 'pilates.class.backRow';
+}
+
+/** Where the member is in class: a reformer and its place in the room, or a spot on a mat in studio 2. */
+export function spotLines(session: PureSession, spot: number) {
+  return onReformer(session.typeId)
+    ? ({ label: 'pilates.class.reformer', note: seatNote(spot), withInstructor: 'pilates.home.withInstructor' } as const)
+    : ({ label: 'pilates.class.spot', note: 'pilates.class.matStudio', withInstructor: 'pilates.home.withInstructorSpot' } as const);
 }
 
 export function freeCancelUntil(session: PureSession): Date {

@@ -6,7 +6,9 @@ import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { damp, el, plankTexture, type Stage } from './stage';
 
 export type SeatState = 'free' | 'booked' | 'in' | 'noshow';
-export type SeatView = { reformer: number; state: SeatState; name?: string };
+export type SeatView = { spot: number; state: SeatState; name?: string };
+/** Studio 1 has eight reformers; studio 2 is the same room laid out with twelve mats. */
+export type StudioLayout = 'reformer' | 'mat';
 export type Tip = { title: string; detail: string };
 
 /** Ivy's palette on the studio model: sage for a booking, deep ivy for a member who is in. */
@@ -22,15 +24,21 @@ const SCAN = '#5E9A72';
 const PULSE = '#4F7A60';
 
 // Two rows of four, facing the mirror wall. Reformers 1 and 5 stand by the windows, as in the app.
-const SPOTS: [number, number][] = [
+const REFORMER_SPOTS: [number, number][] = [
   [-3.45, -1.15], [-1.15, -1.15], [1.15, -1.15], [3.45, -1.15],
   [-3.45, 1.85], [-1.15, 1.85], [1.15, 1.85], [3.45, 1.85],
 ];
 
-type Reformer = {
+// Three rows of four mats, clear of the check-in desk by the door.
+const MAT_SPOTS: [number, number][] = [-1.6, 0.6, 2.8].flatMap((z) => [-3.75, -1.55, 0.65, 2.85].map((x): [number, number] => [x, z]));
+
+type Spot = {
   number: number;
   group: THREE.Group;
+  /** The part that changes colour and moves: a reformer's carriage, or the mat itself. */
   carriage: THREE.Group;
+  rest: THREE.Vector3;
+  slides: boolean;
   pad: THREE.MeshStandardMaterial;
   target: THREE.Color;
   state: SeatState;
@@ -44,10 +52,10 @@ type Reformer = {
 
 type Pulse = { mesh: THREE.Mesh; age: number };
 
-/** The pilates studio as an architect's model: eight reformers that light up as members book and check in. */
+/** The studio as an architect's model: reformers or mats that light up as members book and check in. */
 export class StudioScene {
   private readonly root = new THREE.Group();
-  private readonly reformers: Reformer[] = [];
+  private readonly spots: Spot[] = [];
   private readonly pulses: Pulse[] = [];
   private readonly sun: THREE.DirectionalLight;
   private readonly lamps: THREE.DirectionalLight;
@@ -65,8 +73,9 @@ export class StudioScene {
 
   constructor(
     private readonly stage: Stage,
-    private readonly describe: (reformer: number) => Tip | null,
+    private readonly describe: (spot: number) => Tip | null,
     private readonly words: { instructor: string; checkin: string; noShow: string },
+    layout: StudioLayout = 'reformer',
   ) {
     stage.scene.add(this.root);
 
@@ -160,7 +169,7 @@ export class StudioScene {
     this.root.add(desk, scanner);
     stage.label(el('scene-tag scene-tag--instructor', words.checkin), this.root, [4.6, 1.6, 3.3]);
 
-    // The eight reformers, sharing their geometry.
+    // The reformers or the mats, sharing their geometry.
     const geo = {
       leg: new THREE.BoxGeometry(0.07, 0.2, 0.07),
       rail: new RoundedBoxGeometry(0.07, 0.09, 2.4, 2, 0.02),
@@ -171,59 +180,71 @@ export class StudioScene {
       bar: new RoundedBoxGeometry(0.66, 0.045, 0.045, 2, 0.015),
       upright: new THREE.BoxGeometry(0.04, 0.34, 0.04),
       spring: new THREE.BoxGeometry(0.022, 0.022, 0.42),
+      mat: new RoundedBoxGeometry(0.66, 0.03, 1.8, 2, 0.012),
+      block: new RoundedBoxGeometry(0.24, 0.1, 0.15, 2, 0.02),
     };
     const springColors = [IVY_COLORS.ivy, INK, INK, '#9AA0A6'].map(
       (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.3 }),
     );
     const targets: THREE.Object3D[] = [];
 
-    SPOTS.forEach(([px, pz], index) => {
+    const mats = layout === 'mat';
+    (mats ? MAT_SPOTS : REFORMER_SPOTS).forEach(([px, pz], index) => {
       const number = index + 1;
       const group = new THREE.Group();
       group.position.set(px, 0, pz);
-      group.userData.reformer = number;
-
-      for (const [lx, lz] of [[-0.27, -1.12], [0.27, -1.12], [-0.27, 1.12], [0.27, 1.12]]) {
-        const leg = new THREE.Mesh(geo.leg, metal);
-        leg.position.set(lx, 0.1, lz);
-        group.add(leg);
-      }
-      for (const side of [-0.275, 0.275]) {
-        const rail = new THREE.Mesh(geo.rail, oak);
-        rail.position.set(side, 0.245, 0);
-        group.add(rail);
-      }
-      for (const end of [-1.16, 1.16]) {
-        const cap = new THREE.Mesh(geo.cap, oak);
-        cap.position.set(0, 0.24, end);
-        group.add(cap);
-      }
-      [-0.12, -0.04, 0.04, 0.12].forEach((sx, i) => {
-        const spring = new THREE.Mesh(geo.spring, springColors[i]);
-        spring.position.set(sx, 0.25, -0.84);
-        group.add(spring);
-      });
-      for (const side of [-0.3, 0.3]) {
-        const upright = new THREE.Mesh(geo.upright, metal);
-        upright.position.set(side, 0.43, -1.06);
-        group.add(upright);
-      }
-      const bar = new THREE.Mesh(geo.bar, metal);
-      bar.position.set(0, 0.61, -1.06);
-      group.add(bar);
-
+      group.userData.spot = number;
       const pad = new THREE.MeshStandardMaterial({ color: SEAT_COLORS.free, roughness: 0.82 });
       const carriage = new THREE.Group();
-      carriage.position.set(0, 0.34, 0.2);
-      const cushion = new THREE.Mesh(geo.pad, pad);
-      const head = new THREE.Mesh(geo.head, pad);
-      head.position.set(0, 0.06, 0.38);
-      carriage.add(cushion, head);
-      for (const side of [-0.13, 0.13]) {
-        const block = new THREE.Mesh(geo.shoulder, leather);
-        block.position.set(side, 0.1, 0.2);
-        carriage.add(block);
+      const rest = mats ? new THREE.Vector3(0, 0.015, 0) : new THREE.Vector3(0, 0.34, 0.2);
+
+      if (mats) {
+        // A mat with a cork block at the head end, towards the mirror.
+        const mat = new THREE.Mesh(geo.mat, pad);
+        const block = new THREE.Mesh(geo.block, oak);
+        block.position.set(0.18, 0.065, -0.72);
+        carriage.add(mat, block);
+      } else {
+        for (const [lx, lz] of [[-0.27, -1.12], [0.27, -1.12], [-0.27, 1.12], [0.27, 1.12]]) {
+          const leg = new THREE.Mesh(geo.leg, metal);
+          leg.position.set(lx, 0.1, lz);
+          group.add(leg);
+        }
+        for (const side of [-0.275, 0.275]) {
+          const rail = new THREE.Mesh(geo.rail, oak);
+          rail.position.set(side, 0.245, 0);
+          group.add(rail);
+        }
+        for (const end of [-1.16, 1.16]) {
+          const cap = new THREE.Mesh(geo.cap, oak);
+          cap.position.set(0, 0.24, end);
+          group.add(cap);
+        }
+        [-0.12, -0.04, 0.04, 0.12].forEach((sx, i) => {
+          const spring = new THREE.Mesh(geo.spring, springColors[i]);
+          spring.position.set(sx, 0.25, -0.84);
+          group.add(spring);
+        });
+        for (const side of [-0.3, 0.3]) {
+          const upright = new THREE.Mesh(geo.upright, metal);
+          upright.position.set(side, 0.43, -1.06);
+          group.add(upright);
+        }
+        const bar = new THREE.Mesh(geo.bar, metal);
+        bar.position.set(0, 0.61, -1.06);
+        group.add(bar);
+
+        const cushion = new THREE.Mesh(geo.pad, pad);
+        const head = new THREE.Mesh(geo.head, pad);
+        head.position.set(0, 0.06, 0.38);
+        carriage.add(cushion, head);
+        for (const side of [-0.13, 0.13]) {
+          const block = new THREE.Mesh(geo.shoulder, leather);
+          block.position.set(side, 0.1, 0.2);
+          carriage.add(block);
+        }
       }
+      carriage.position.copy(rest);
       group.add(carriage);
       group.traverse((o) => {
         if (o instanceof THREE.Mesh) {
@@ -233,32 +254,34 @@ export class StudioScene {
       });
 
       const tag = el('scene-tag');
-      stage.label(tag, group, [0, 1.0, 0.25]);
-      stage.label(el('scene-floor-number', String(number)), group, [0, 0.02, -1.55]);
+      stage.label(tag, group, mats ? [0, 0.55, 0] : [0, 1.0, 0.25]);
+      stage.label(el('scene-floor-number', String(number)), group, [0, 0.02, mats ? -1.15 : -1.55]);
 
       this.root.add(group);
       targets.push(group);
-      this.reformers.push({
+      this.spots.push({
         number,
         group,
         carriage,
+        rest,
+        slides: !mats,
         pad,
         target: new THREE.Color(SEAT_COLORS.free),
         state: 'free',
         pop: 0,
         slide: 0,
         drop: stage.reducedMotion ? 1 : 0,
-        delay: 0.2 + index * 0.07,
+        delay: 0.2 + index * (mats ? 0.05 : 0.07),
         phase: index * 0.83,
         tag,
       });
     });
 
-    // Tooltip shown above whichever reformer the pointer is on.
+    // Tooltip shown above whichever reformer or mat the pointer is on.
     this.tip = stage.label(this.tipEl, this.root, [0, 1.45, 0]);
     this.tip.visible = false;
     stage.setHoverTargets(targets, (object) => {
-      const number = object?.userData.reformer as number | undefined;
+      const number = object?.userData.spot as number | undefined;
       const info = number ? this.describe(number) : null;
       if (!object || !info) {
         this.tip.visible = false;
@@ -295,16 +318,16 @@ export class StudioScene {
   update(seats: SeatView[], options: { live: boolean; instructor: string }) {
     this.live = options.live;
     this.instructorEl.innerHTML = `${options.instructor} <span>${this.words.instructor}</span>`;
-    for (const reformer of this.reformers) {
-      const seat = seats.find((s) => s.reformer === reformer.number);
+    for (const spot of this.spots) {
+      const seat = seats.find((s) => s.spot === spot.number);
       const state: SeatState = seat?.state ?? 'free';
-      if (state !== reformer.state) {
-        if (state === 'in' && reformer.state === 'booked') this.pulse(reformer);
-        reformer.pop = 1;
-        reformer.state = state;
-        reformer.target.set(SEAT_COLORS[state]);
+      if (state !== spot.state) {
+        if (state === 'in' && spot.state === 'booked') this.pulse(spot);
+        spot.pop = 1;
+        spot.state = state;
+        spot.target.set(SEAT_COLORS[state]);
       }
-      const tag = reformer.tag;
+      const tag = spot.tag;
       tag.className = `scene-tag scene-tag--${state}`;
       tag.innerHTML = seat?.name ? `${state === 'in' ? '<b>✓</b> ' : ''}${seat.name}${state === 'noshow' ? ` · ${this.words.noShow}` : ''}` : '';
     }
@@ -330,7 +353,7 @@ export class StudioScene {
     this.stage.scene.remove(this.root);
   }
 
-  private pulse(reformer: Reformer) {
+  private pulse(spot: Spot) {
     // A square frame on the floor that widens and fades: the scan at the door.
     const shape = new THREE.Shape();
     shape.moveTo(-0.55, -1.45).lineTo(0.55, -1.45).lineTo(0.55, 1.45).lineTo(-0.55, 1.45).lineTo(-0.55, -1.45);
@@ -342,7 +365,7 @@ export class StudioScene {
       new THREE.MeshBasicMaterial({ color: PULSE, transparent: true, depthWrite: false }),
     );
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(reformer.group.position.x, 0.015, reformer.group.position.z);
+    mesh.position.set(spot.group.position.x, 0.015, spot.group.position.z);
     this.root.add(mesh);
     this.pulses.push({ mesh, age: 0 });
     this.scanGlow = 1;
@@ -352,7 +375,7 @@ export class StudioScene {
     this.wallsUp = damp(this.wallsUp, 1, this.stage.reducedMotion ? 100 : 4.5, delta);
     this.walls.scale.y = Math.max(0.001, this.wallsUp);
 
-    for (const r of this.reformers) {
+    for (const r of this.spots) {
       // Lower into place one by one when the scene opens; the cushion bounces as it lands.
       if (r.drop < 1 && time > r.delay) {
         r.drop = Math.min(1, r.drop + delta * 1.6);
@@ -365,7 +388,7 @@ export class StudioScene {
       r.pop = damp(r.pop, 0, 5, delta);
       const moving = this.live && r.state === 'in' && !this.stage.reducedMotion;
       r.slide = damp(r.slide, moving ? -0.12 + Math.sin(time * 1.5 + r.phase) * 0.16 : 0, 6, delta);
-      r.carriage.position.set(0, 0.34 + r.pop * 0.12, 0.2 + r.slide);
+      r.carriage.position.set(r.rest.x, r.rest.y + r.pop * 0.12, r.rest.z + (r.slides ? r.slide : 0));
     }
 
     this.scanGlow = damp(this.scanGlow, 0, 2.5, delta);

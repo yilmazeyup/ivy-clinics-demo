@@ -1,4 +1,4 @@
-import { addDays, LOCATIONS, productById, PURE_CAPACITY, sameDay, startOfDay } from '@pure-ivy/shared';
+import { addDays, LOCATIONS, productById, sameDay, startOfDay } from '@pure-ivy/shared';
 import { useEffect, useRef, useState } from 'react';
 
 import { AgendaView } from '../components/AgendaView';
@@ -14,7 +14,8 @@ import {
   checkedIn,
   classRevenue,
   focusClass,
-  freeReformers,
+  freeSpots,
+  onMats,
   passSales,
   phaseOf as classPhase,
   pilatesClasses,
@@ -194,8 +195,8 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
 
       if (roll < 0.72) {
         const upcoming = list.filter((c) => classPhase(c, at) === 'later' || classPhase(c, at) === 'soon');
-        const open = upcoming.filter((c) => freeReformers(c).length > 0);
-        const full = upcoming.filter((c) => freeReformers(c).length === 0);
+        const open = upcoming.filter((c) => freeSpots(c).length > 0);
+        const full = upcoming.filter((c) => freeSpots(c).length === 0);
         const cancellable = list.filter((c) => classPhase(c, at) === 'later' && c.seats.length > 0);
         if (sub < 0.45 && open.length) {
           const c = pick(r, open);
@@ -208,7 +209,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
                 source: 'pilates',
                 icon: 'calendar',
                 title: { key: 'ev.classBooked.title', args: { member: booked.seat.member, class: c.name } },
-                detail: { key: 'ev.classBooked.detail', args: { time: c.start, n: booked.seat.reformer } },
+                detail: { key: 'ev.classBooked.detail', args: { time: c.start, spot: { spot: booked.seat.spot, mat: onMats(c) } } },
               }),
             );
             return;
@@ -246,7 +247,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         if (cancellable.length) {
           const c = pick(r, cancellable);
           const seat = pick(r, c.seats);
-          const result = cancelSeat(c, seat.reformer, seed);
+          const result = cancelSeat(c, seat.spot, seed);
           setClasses((cs) => cs.map((x) => (x.id === c.id ? result.next : x)));
           const events = [
             item({
@@ -264,7 +265,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
                 source: 'pilates',
                 icon: 'queue',
                 title: { key: 'ev.promoted.title' },
-                detail: { key: 'ev.promoted.detail', args: { member: result.promoted.member, n: seat.reformer } },
+                detail: { key: 'ev.promoted.detail', args: { member: result.promoted.member, spot: { spot: seat.spot, mat: onMats(c) } } },
                 accent: true,
               }),
             );
@@ -295,7 +296,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
   const seenSeats = useRef<Set<string> | null>(null);
   useEffect(() => {
     const inside = new Set<string>();
-    for (const c of classes) for (const s of c.seats) if (checkedIn(s, c, now)) inside.add(`${c.id}|${s.reformer}|${s.member}`);
+    for (const c of classes) for (const s of c.seats) if (checkedIn(s, c, now)) inside.add(`${c.id}|${s.spot}|${s.member}`);
     const before = seenSeats.current;
     seenSeats.current = inside;
     if (!before) return;
@@ -388,13 +389,13 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
   });
 
   const booked = classes.reduce((n, c) => n + c.seats.length, 0);
-  const capacity = classes.length * PURE_CAPACITY;
-  const fullClasses = classes.filter((c) => freeReformers(c).length === 0).length;
+  const capacity = classes.reduce((n, c) => n + c.capacity, 0);
+  const fullClasses = classes.filter((c) => freeSpots(c).length === 0).length;
   const apptsPerHour = Array.from({ length: 12 }, (_, i) => appts.filter((a) => a.start.getHours() === 9 + i).length);
   const ordersPerHour = Array.from({ length: 17 }, (_, i) => todaysOrders.filter((o) => o.at.getHours() === 7 + i).length);
 
   const selected = (selectedClass === null ? focusClass(classes, now) : classes.find((c) => c.id === selectedClass)) ?? classes[0];
-  const busiest = classes.find((c) => freeReformers(c).length === 0 && c.waitlist > 0);
+  const busiest = classes.find((c) => freeSpots(c).length === 0 && c.waitlist > 0);
   const aftercare = productById('alhydran')!;
   const aftercareLeft = Math.max(
     0,
@@ -461,7 +462,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
       <LiveFeed items={feed} now={now} />
       <AgendaView appts={appts} day={clinicsDay} now={now} />
       <StudioView
-        key={`studio-${locale}`}
+        key={`studio-${locale}-${onMats(selected) ? 'mat' : 'reformer'}`}
         classes={classes}
         selected={selected}
         now={now}

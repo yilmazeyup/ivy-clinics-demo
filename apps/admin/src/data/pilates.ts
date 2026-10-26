@@ -1,16 +1,10 @@
-import {
-  CLASS_TYPES,
-  generatePureSessions,
-  INSTRUCTORS,
-  PURE_CAPACITY,
-  startOfDay,
-  type PureLevel,
-} from '@pure-ivy/shared';
+import { CLASS_TYPES, generatePureSessions, INSTRUCTORS, startOfDay, type Discipline, type PureLevel } from '@pure-ivy/shared';
 
 import { between, personName, rng } from './random';
 
 export type Seat = {
-  reformer: number;
+  /** A reformer in studio 1, or a mat in studio 2. */
+  spot: number;
   member: string;
   /** Minutes before the start at which the member scans in at the door; null is a no-show. */
   checkInBefore: number | null;
@@ -21,6 +15,7 @@ export type Seat = {
 export type PilatesClass = {
   id: string;
   name: string;
+  discipline: Discipline;
   level: PureLevel;
   instructor: string;
   start: Date;
@@ -36,10 +31,10 @@ export type ClassPhase = 'done' | 'live' | 'soon' | 'later';
 /** What a seat brings in on average: a credit from the 10-class pass, or a share of the monthly unlimited. */
 export const seatValue = (seat: Seat) => (seat.credits === 'unlimited' ? 15 : 21);
 
-function makeSeat(seed: string, reformer: number): Seat {
+function makeSeat(seed: string, spot: number): Seat {
   const r = rng(seed);
   return {
-    reformer,
+    spot,
     member: personName(r),
     checkInBefore: r() < 0.06 ? null : between(r, 1, 26),
     credits: r() < 0.3 ? 'unlimited' : between(r, 0, 14),
@@ -47,11 +42,15 @@ function makeSeat(seed: string, reformer: number): Seat {
   };
 }
 
-/** The day's classes from the member app's schedule, with a member on every booked reformer. */
+/** Mat classes (yoga, barre, mat pilates, stretch) are in studio 2; reformer classes in studio 1. */
+export const onMats = (c: PilatesClass) => c.discipline !== 'reformer';
+
+/** The day's classes from the member app's schedule, with a member on every booked spot. */
 export function pilatesClasses(day: Date): PilatesClass[] {
   return generatePureSessions(startOfDay(day), 1).map((s) => ({
     id: s.id,
     name: CLASS_TYPES[s.typeId].name,
+    discipline: CLASS_TYPES[s.typeId].discipline,
     level: CLASS_TYPES[s.typeId].level,
     instructor: INSTRUCTORS[s.instructorId].name,
     start: s.start,
@@ -84,28 +83,28 @@ export function focusClass(classes: PilatesClass[], now: Date): PilatesClass | u
   );
 }
 
-export function freeReformers(c: PilatesClass): number[] {
-  const taken = new Set(c.seats.map((s) => s.reformer));
-  return Array.from({ length: PURE_CAPACITY }, (_, i) => i + 1).filter((n) => !taken.has(n));
+export function freeSpots(c: PilatesClass): number[] {
+  const taken = new Set(c.seats.map((s) => s.spot));
+  return Array.from({ length: c.capacity }, (_, i) => i + 1).filter((n) => !taken.has(n));
 }
 
-/** A new booking on a free reformer, used by the live feed. */
+/** A new booking on a free spot, used by the live feed. */
 export function bookSeat(c: PilatesClass, seed: string): { next: PilatesClass; seat: Seat } | null {
-  const free = freeReformers(c);
+  const free = freeSpots(c);
   if (free.length === 0) return null;
   const r = rng(seed);
   const seat = { ...makeSeat(seed, free[Math.floor(r() * free.length)]), checkInBefore: between(r, 2, 20) };
-  return { next: { ...c, seats: [...c.seats, seat].sort((a, b) => a.reformer - b.reformer) }, seat };
+  return { next: { ...c, seats: [...c.seats, seat].sort((a, b) => a.spot - b.spot) }, seat };
 }
 
-/** Cancels a seat; when people are waiting, the first of them gets the reformer straight away. */
-export function cancelSeat(c: PilatesClass, reformer: number, seed: string): { next: PilatesClass; cancelled: Seat; promoted: Seat | null } {
-  const cancelled = c.seats.find((s) => s.reformer === reformer)!;
-  const rest = c.seats.filter((s) => s.reformer !== reformer);
+/** Cancels a seat; when people are waiting, the first of them gets the spot straight away. */
+export function cancelSeat(c: PilatesClass, spot: number, seed: string): { next: PilatesClass; cancelled: Seat; promoted: Seat | null } {
+  const cancelled = c.seats.find((s) => s.spot === spot)!;
+  const rest = c.seats.filter((s) => s.spot !== spot);
   if (c.waitlist === 0) return { next: { ...c, seats: rest }, cancelled, promoted: null };
-  const promoted = { ...makeSeat(seed, reformer), checkInBefore: between(rng(`${seed}-in`), 2, 20) };
+  const promoted = { ...makeSeat(seed, spot), checkInBefore: between(rng(`${seed}-in`), 2, 20) };
   return {
-    next: { ...c, seats: [...rest, promoted].sort((a, b) => a.reformer - b.reformer), waitlist: c.waitlist - 1 },
+    next: { ...c, seats: [...rest, promoted].sort((a, b) => a.spot - b.spot), waitlist: c.waitlist - 1 },
     cancelled,
     promoted,
   };

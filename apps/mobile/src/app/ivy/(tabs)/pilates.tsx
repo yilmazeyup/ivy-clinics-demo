@@ -1,4 +1,4 @@
-import { addDays, CLASS_TYPES, sameDay, startOfDay, timeOfDay } from '@pure-ivy/shared';
+import { addDays, CLASS_TYPES, DISCIPLINES, sameDay, startOfDay, timeOfDay, type Discipline } from '@pure-ivy/shared';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -34,9 +34,12 @@ export default function PilatesSchedule() {
   const days = useMemo(() => Array.from({ length: 14 }, (_, i) => addDays(startOfDay(pilates.now), i)), [pilates.now]);
   const [day, setDay] = useState(days[0]);
   const [filter, setFilter] = useState<Filter>('all');
+  const [kind, setKind] = useState<Discipline | 'all'>('all');
   const { wide } = useLayout();
 
-  const sessions = pilates.upcoming.filter((s) => sameDay(s.start, day) && matches(s, filter));
+  const sessions = pilates.upcoming.filter(
+    (s) => sameDay(s.start, day) && matches(s, filter) && (kind === 'all' || CLASS_TYPES[s.typeId].discipline === kind),
+  );
   const parts = PARTS.map((part) => ({ part, items: sessions.filter((s) => timeOfDay(s.start) === part) })).filter((p) => p.items.length > 0);
 
   return (
@@ -51,6 +54,12 @@ export default function PilatesSchedule() {
       <CreditsBar />
 
       <DayStrip days={days} selected={day} onSelect={setDay} isMarked={(d) => pilates.myClasses.some((s) => sameDay(s.start, d))} />
+
+      <Rail gap={8}>
+        {(['all', ...DISCIPLINES] as const).map((d) => (
+          <Chip key={d} label={t(`class.discipline.${d}`)} selected={kind === d} onPress={() => setKind(d)} />
+        ))}
+      </Rail>
 
       <Rail gap={8}>
         {FILTERS.map((f) => (
@@ -110,7 +119,7 @@ function ClassRow({ session }: { session: SessionView }) {
         <Txt variant="heading" numberOfLines={2}>
           {session.name}
         </Txt>
-        <Txt variant="small" color={theme.c.muted} numberOfLines={1}>{`${session.instructor} · ${t(`level.${type.level}`)}`}</Txt>
+        <Txt variant="small" color={theme.c.muted} numberOfLines={1}>{`${t(`class.discipline.${type.discipline}`)} · ${session.instructor} · ${t(`level.${type.level}`)}`}</Txt>
       </View>
       <Status session={session} />
     </Pressable>

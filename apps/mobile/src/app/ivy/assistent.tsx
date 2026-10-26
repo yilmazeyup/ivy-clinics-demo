@@ -1,4 +1,4 @@
-import { CLASS_TYPES, IVY_MEMBER, sameDay, WINDOW_REFORMERS } from '@pure-ivy/shared';
+import { CLASS_TYPES, IVY_MEMBER, onReformer, sameDay, WINDOW_REFORMERS } from '@pure-ivy/shared';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -40,7 +40,7 @@ export default function PureAssistant() {
 
   // The first Thursday ahead with calm evening classes, e.g. 19:15 Stretch & Release and 20:30 Slow Flow.
   const calmThursday = pilates.upcoming.filter(
-    (s) => s.start.getDay() === 4 && s.start.getHours() >= 18 && CLASS_TYPES[s.typeId].level === 'calm',
+    (s) => s.start.getDay() === 4 && s.start.getHours() >= 18 && CLASS_TYPES[s.typeId].level === 'calm' && onReformer(s.typeId),
   );
   const thursday = calmThursday.filter((s) => sameDay(s.start, calmThursday[0]?.start ?? new Date(0)));
   const target = thursday.find((s) => s.start.getHours() === 19) ?? thursday[0];
@@ -58,7 +58,7 @@ export default function PureAssistant() {
   const bookTarget = (): NewMessage[] => {
     if (!target) return [{ kind: 'text', from: 'bot', text: t('pilates.ai.fallback') }];
     if (target.booking) {
-      return [{ kind: 'booked', sessionId: target.id, reformer: target.booking.reformer, creditsLeft: pilates.credits }];
+      return [{ kind: 'booked', sessionId: target.id, reformer: target.booking.spot, creditsLeft: pilates.credits }];
     }
     const reformer = WINDOW_REFORMERS.find((n) => !target.taken.includes(n)) ?? [1, 2, 3, 4, 5, 6, 7, 8].find((n) => !target.taken.includes(n));
     if (!reformer || !pilates.bookClass(target.id, reformer)) {

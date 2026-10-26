@@ -16,7 +16,15 @@ const MESSAGES: Record<Locale, Messages> = { nl, en, ar, fr, de, it };
 const INTL: Record<Locale, string> = { nl: 'nl-NL', en: 'en-GB', ar: 'ar-u-nu-latn', fr: 'fr-FR', de: 'de-DE', it: 'it-IT' };
 
 /** A value in a translated sentence; dates, treatments and products are localized when shown. */
-export type Arg = string | number | Date | { treatment: TreatmentId } | { msg: MessageKey } | { product: ProductId; extra?: number };
+export type Arg =
+  | string
+  | number
+  | Date
+  | { treatment: TreatmentId }
+  | { msg: MessageKey }
+  | { product: ProductId; extra?: number }
+  /** A place in class: "reformer 3", or "plek 3" on a mat in studio 2. */
+  | { spot: number; mat: boolean };
 export type Line = { key: MessageKey; args?: Record<string, Arg> };
 
 type PluralBase = 'phase.free' | 'shop.title' | 'shop.note' | 'ev.checkin.title';
@@ -37,6 +45,7 @@ function makeI18n(locale: Locale) {
     if (arg instanceof Date) return clock(arg);
     if (typeof arg === 'object' && 'treatment' in arg) return treatmentById(arg.treatment).name[locale];
     if (typeof arg === 'object' && 'msg' in arg) return MESSAGES[locale][arg.msg];
+    if (typeof arg === 'object' && 'spot' in arg) return MESSAGES[locale][arg.mat ? 'spot.mat' : 'spot.reformer'].replace('{n}', String(arg.spot));
     if (typeof arg === 'object' && 'product' in arg) {
       const product = productById(arg.product);
       const name = product ? (product.brand ? `${product.brand} ${product.name[locale]}` : product.name[locale]) : '';

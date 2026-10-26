@@ -1,4 +1,4 @@
-import { CLASS_TYPES, IVY_MEMBER } from '@pure-ivy/shared';
+import { CLASS_TYPES, IVY_MEMBER, onReformer } from '@pure-ivy/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -12,7 +12,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { seatNote, usePilates, type SessionView } from '@/pilates';
+import { spotLines, usePilates, type SessionView } from '@/pilates';
 import { useTheme } from '@/theme';
 
 function close() {
@@ -52,10 +52,12 @@ function Ticket({ session }: { session: SessionView }) {
   const { t, dayShort, time } = useI18n();
   const pilates = usePilates();
   const toast = useToast();
-  const reformer = session.booking?.reformer ?? 0;
-  const neighbour = [reformer - 1, reformer + 1].find(
-    (n) => n >= 1 && n <= 8 && Math.ceil(n / 4) === Math.ceil(reformer / 4) && !session.taken.includes(n),
-  );
+  const spot = session.booking?.spot ?? 0;
+  const lines = spotLines(session, spot);
+  // "Train together": only reformers have a neighbour in the same row worth naming.
+  const neighbour = onReformer(session.typeId)
+    ? [spot - 1, spot + 1].find((n) => n >= 1 && n <= 8 && Math.ceil(n / 4) === Math.ceil(spot / 4) && !session.taken.includes(n))
+    : undefined;
 
   return (
     <Screen gap={22}>
@@ -71,7 +73,7 @@ function Ticket({ session }: { session: SessionView }) {
               {session.name}
             </Txt>
             <Txt variant="small" color={theme.c.onPhotoMuted}>
-              {t('pilates.home.withInstructor', { name: session.instructor, n: reformer })}
+              {t(lines.withInstructor, { name: session.instructor, n: spot })}
             </Txt>
           </View>
         </Photo>
@@ -81,7 +83,7 @@ function Ticket({ session }: { session: SessionView }) {
             <Detail label={t('pilates.confirm.time')} value={`${time(session.start)}–${time(session.end)}`} />
           </View>
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <Detail label={t('pilates.class.reformer', { n: reformer })} value={t(seatNote(reformer))} />
+            <Detail label={t(lines.label, { n: spot })} value={t(lines.note)} />
             <Detail label={t('pilates.confirm.member')} value={`${IVY_MEMBER.firstName} ${IVY_MEMBER.lastName}`} />
           </View>
         </View>

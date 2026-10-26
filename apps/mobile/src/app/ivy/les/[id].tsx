@@ -1,4 +1,4 @@
-import { CLASS_TYPES, PURE_CAPACITY } from '@pure-ivy/shared';
+import { CLASS_TYPES, onReformer, PURE_CAPACITY } from '@pure-ivy/shared';
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ import { Footer, Screen } from '@/components/Screen';
 import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { seatNote, useCancelNote, usePilates, type SessionView } from '@/pilates';
+import { seatNote, spotLines, useCancelNote, usePilates, type SessionView } from '@/pilates';
 import { useTheme } from '@/theme';
 
 const ROWS = [
@@ -48,8 +48,12 @@ function ClassDetail({ session }: { session: SessionView }) {
   const pilates = usePilates();
   const toast = useToast();
   const type = CLASS_TYPES[session.typeId];
-  const isFree = (n: number) => !session.taken.includes(n) && session.booking?.reformer !== n;
-  const [picked, setPicked] = useState<number | null>(() => PREFERRED.find(isFree) ?? null);
+  const reformer = onReformer(session.typeId);
+  const isFree = (n: number) => !session.taken.includes(n) && session.booking?.spot !== n;
+  // On the reformers you choose your spot; on the mats the first free spot is yours.
+  const [picked, setPicked] = useState<number | null>(
+    () => (reformer ? PREFERRED : Array.from({ length: session.capacity }, (_, i) => i + 1)).find(isFree) ?? null,
+  );
   const cancelNote = useCancelNote();
 
   const book = () => {
@@ -64,13 +68,14 @@ function ClassDetail({ session }: { session: SessionView }) {
 
   let footer;
   if (session.booking) {
-    const reformer = session.booking.reformer;
+    const spot = session.booking.spot;
+    const lines = spotLines(session, spot);
     footer = (
       <Footer>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <View style={{ flex: 1 }}>
             <Txt variant="bodyStrong">{t('pilates.class.alreadyBooked')}</Txt>
-            <Txt variant="small" color={theme.c.muted} numberOfLines={1}>{`${t('pilates.class.reformer', { n: reformer })} · ${t(seatNote(reformer))}`}</Txt>
+            <Txt variant="small" color={theme.c.muted} numberOfLines={1}>{`${t(lines.label, { n: spot })} · ${t(lines.note)}`}</Txt>
           </View>
           <Button
             kind="secondary"
@@ -171,7 +176,11 @@ function ClassDetail({ session }: { session: SessionView }) {
           {text(type.description)}
         </Txt>
 
-        <ReformerPicker session={session} picked={session.booking ? null : picked} onPick={setPicked} />
+        {reformer ? (
+          <ReformerPicker session={session} picked={session.booking ? null : picked} onPick={setPicked} />
+        ) : (
+          <MatSpot session={session} spot={session.booking?.spot ?? picked} />
+        )}
       </View>
     </Screen>
   );
@@ -179,10 +188,36 @@ function ClassDetail({ session }: { session: SessionView }) {
 
 type SpotState = 'free' | 'taken' | 'picked' | 'mine';
 
+/** Classes on mats in studio 2: no map to choose from, just a fixed spot and everything ready. */
+function MatSpot({ session, spot }: { session: SessionView; spot: number | null }) {
+  const theme = useTheme();
+  const { t } = useI18n();
+  const free = session.capacity - session.taken.length - (session.booking ? 1 : 0);
+  return (
+    <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 18, gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
+        <Txt variant="heading">{t('pilates.class.matTitle')}</Txt>
+        <Txt variant="small" color={theme.c.muted}>
+          {t('pilates.class.freeOf', { free, total: session.capacity })}
+        </Txt>
+      </View>
+      <Txt variant="body" color={theme.c.muted}>
+        {t('pilates.class.matBody')}
+      </Txt>
+      {spot ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 2 }}>
+          <Icon name="check" size={18} strokeWidth={2.2} />
+          <Txt variant="bodyStrong">{`${t('pilates.class.spot', { n: spot })} · ${t('pilates.class.matStudio')}`}</Txt>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 function ReformerPicker({ session, picked, onPick }: { session: SessionView; picked: number | null; onPick: (n: number) => void }) {
   const theme = useTheme();
   const { t } = useI18n();
-  const mine = session.booking?.reformer;
+  const mine = session.booking?.spot;
   const free = PURE_CAPACITY - session.taken.length - (mine ? 1 : 0);
   const stateOf = (n: number): SpotState => {
     if (n === mine) return 'mine';

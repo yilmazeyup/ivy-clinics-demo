@@ -906,6 +906,16 @@ li {
   font-weight: 500;
 }
 
+.cs-kind {
+  margin-top: -4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.class-chip[aria-pressed='true'] .cs-kind {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .cs-status {
   font-size: 11.5px;
   color: var(--muted);

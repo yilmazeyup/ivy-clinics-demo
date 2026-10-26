@@ -63,6 +63,11 @@ export const PHOTO_KEYS = [
   'pure-detail',
   'pure-arches',
   'pure-core',
+  'pure-mat',
+  'pure-yoga',
+  'pure-yin',
+  'pure-barre',
+  'pure-breathe',
 ] as const;
 
 export type PhotoKey = (typeof PHOTO_KEYS)[number];

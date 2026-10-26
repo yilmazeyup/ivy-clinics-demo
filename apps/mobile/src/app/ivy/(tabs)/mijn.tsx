@@ -13,7 +13,7 @@ import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, roleKey, useIvy, type AppointmentView } from '@/ivy';
-import { seatNote, useCancelNote, usePilates, type SessionView } from '@/pilates';
+import { spotLines, useCancelNote, usePilates, type SessionView } from '@/pilates';
 import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
@@ -168,7 +168,8 @@ function ClassCard({ session }: { session: SessionView }) {
   const { t, relativeDay, time } = useI18n();
   const pilates = usePilates();
   const toast = useToast();
-  const reformer = session.booking?.reformer ?? 0;
+  const spot = session.booking?.spot ?? 0;
+  const lines = spotLines(session, spot);
   const cancelNote = useCancelNote();
 
   return (
@@ -182,7 +183,7 @@ function ClassCard({ session }: { session: SessionView }) {
         <View style={{ flex: 1, justifyContent: 'center', gap: 3 }}>
           <Txt variant="smallStrong" color={theme.c.muted}>{`${relativeDay(session.start)} · ${time(session.start)}`}</Txt>
           <Txt variant="heading">{session.name}</Txt>
-          <Txt variant="small" color={theme.c.muted}>{`${t('pilates.class.reformer', { n: reformer })} · ${t(seatNote(reformer))}`}</Txt>
+          <Txt variant="small" color={theme.c.muted}>{`${t(lines.label, { n: spot })} · ${t(lines.note)}`}</Txt>
         </View>
       </Pressable>
       <View style={{ flexDirection: 'row', gap: 8 }}>

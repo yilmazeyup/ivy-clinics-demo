@@ -11,7 +11,7 @@ import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, useIvy, type AppointmentView } from '@/ivy';
 import { useLayout } from '@/layout';
-import { usePilates, type SessionView } from '@/pilates';
+import { spotLines, usePilates, type SessionView } from '@/pilates';
 import { useTheme } from '@/theme';
 
 export default function IvyHome() {
@@ -175,7 +175,7 @@ function NextClass({ session }: { session: SessionView }) {
           {`${relativeDay(session.start)} · ${time(session.start)}`}
         </Txt>
         <Txt variant="small" color={theme.c.muted} numberOfLines={1}>
-          {t('pilates.home.withInstructor', { name: session.instructor, n: session.booking?.reformer ?? '' })}
+          {t(spotLines(session, session.booking?.spot ?? 0).withInstructor, { name: session.instructor, n: session.booking?.spot ?? '' })}
         </Txt>
       </View>
       <Button kind="secondary" size="sm" icon="wallet" label={t('pilates.home.wallet')} onPress={() => router.push(`/ivy/ticket/${session.id}`)} />

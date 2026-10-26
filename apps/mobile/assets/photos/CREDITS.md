@@ -25,3 +25,8 @@ All photos are from Unsplash, used under the Unsplash License (https://unsplash.
 | pure-detail.jpg | https://unsplash.com/photos/woman-doing-pilates-workout-on-a-reformer-machine-hiHBILFNah4 |
 | pure-arches.jpg | https://unsplash.com/photos/modern-pilates-studio-with-reformer-machines-and-elegant-design-GQuXJnv4t60 |
 | pure-core.jpg | https://unsplash.com/photos/woman-performs-pilates-on-a-reformer-machine-lKe5jm-Sypw |
+| pure-mat.jpg | https://unsplash.com/photos/woman-in-boat-pose-on-yoga-mat-c6C6ZkJ92g4 |
+| pure-yoga.jpg | https://unsplash.com/photos/woman-performing-yoga-t1NEMSm1rgI |
+| pure-yin.jpg | https://unsplash.com/photos/woman-in-childs-pose-on-yoga-mat-EzAXxLsqgXQ |
+| pure-barre.jpg | https://unsplash.com/photos/woman-stretching-leg-with-instructor-at-barre-KCLuRlZxITU |
+| pure-breathe.jpg | https://unsplash.com/photos/woman-in-yoga-pants-sits-on-mat-EZlGYH-e93c |

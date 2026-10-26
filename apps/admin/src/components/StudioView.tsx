@@ -1,8 +1,8 @@
-import { PURE_CAPACITY, WINDOW_REFORMERS } from '@pure-ivy/shared';
+import { WINDOW_REFORMERS } from '@pure-ivy/shared';
 import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 
 import { hourOf } from '../data/format';
-import { checkedIn, freeReformers, phaseOf, type ClassPhase, type PilatesClass } from '../data/pilates';
+import { checkedIn, freeSpots, onMats, phaseOf, type ClassPhase, type PilatesClass } from '../data/pilates';
 import { useI18n, type I18n } from '../i18n';
 import { Stage } from '../three/stage';
 import { SEAT_COLORS, StudioScene, type SeatView, type Tip } from '../three/studio';
@@ -22,7 +22,7 @@ function phaseText(c: PilatesClass, phase: ClassPhase, now: Date, { t, tn }: I18
   if (phase === 'done') return t('phase.done', { n: c.seats.filter((s) => checkedIn(s, c, now)).length, total: c.seats.length });
   if (phase === 'live') return t('phase.live');
   if (phase === 'soon') return t('phase.soon', { n: Math.max(1, Math.round((c.start.getTime() - now.getTime()) / 60000)) });
-  const free = freeReformers(c).length;
+  const free = freeSpots(c).length;
   if (free === 0) return c.waitlist > 0 ? t('phase.fullWaiting', { n: c.waitlist }) : t('phase.full');
   return tn('phase.free', free);
 }
@@ -33,7 +33,8 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
   const { t, clock } = i18n;
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<StudioScene | null>(null);
-  const describe = useRef<(reformer: number) => Tip | null>(() => null);
+  const describe = useRef<(spot: number) => Tip | null>(() => null);
+  const mats = onMats(selected);
   const phase = phaseOf(selected, now);
 
   const seats = useMemo<SeatView[]>(
@@ -41,19 +42,19 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
       selected.seats.map((seat) => {
         const inside = checkedIn(seat, selected, now);
         const state = inside ? 'in' : phase === 'done' ? 'noshow' : 'booked';
-        return { reformer: seat.reformer, state, name: seat.member };
+        return { spot: seat.spot, state, name: seat.member };
       }),
     [selected, now, phase],
   );
 
-  describe.current = (reformer) => {
-    const seat = selected.seats.find((s) => s.reformer === reformer);
-    const place = t(WINDOW_REFORMERS.includes(reformer) ? 'seat.window' : reformer <= 4 ? 'seat.front' : 'seat.back');
-    if (!seat) return { title: t('seat.reformer', { n: reformer }), detail: t('seat.freeAt', { place }) };
+  describe.current = (spot) => {
+    const seat = selected.seats.find((s) => s.spot === spot);
+    const place = mats ? t('seat.matRoom') : t(WINDOW_REFORMERS.includes(spot) ? 'seat.window' : spot <= 4 ? 'seat.front' : 'seat.back');
+    if (!seat) return { title: t(mats ? 'seat.spot' : 'seat.reformer', { n: spot }), detail: t('seat.freeAt', { place }) };
     const visits = seat.visits === 1 ? t('seat.firstClass') : t('seat.nthClass', { n: seat.visits });
     const credits = seat.credits === 'unlimited' ? t('seat.unlimited') : t('seat.credits', { n: seat.credits });
     const state = t(checkedIn(seat, selected, now) ? 'seat.in' : phase === 'done' ? 'seat.noShow' : 'seat.waiting');
-    return { title: t('seat.title', { member: seat.member, n: reformer }), detail: `${visits} · ${credits} · ${state}` };
+    return { title: t(mats ? 'seat.titleSpot' : 'seat.title', { member: seat.member, n: spot }), detail: `${visits} · ${credits} · ${state}` };
   };
 
   useEffect(() => {
@@ -65,18 +66,19 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
       maxDistance: 24,
       fitAspect: 1.45,
     });
-    const studio = new StudioScene(stage, (n) => describe.current(n), {
-      instructor: t('pilates.instructor'),
-      checkin: t('pilates.checkin'),
-      noShow: t('pilates.noShow'),
-    });
+    const studio = new StudioScene(
+      stage,
+      (n) => describe.current(n),
+      { instructor: t('pilates.instructor'), checkin: t('pilates.checkin'), noShow: t('pilates.noShow') },
+      mats ? 'mat' : 'reformer',
+    );
     scene.current = studio;
     return () => {
       studio.dispose();
       stage.dispose();
       scene.current = null;
     };
-    // Built once per mount; the parent remounts this view when the language changes.
+    // Built once per mount; the parent remounts this view when the language or the room (reformers or mats) changes.
   }, []);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
   return (
     <section id="pilates" className="card scene-card studio-card rise" style={{ '--d': '380ms' } as CSSProperties}>
       <CardHead
-        eyebrow={t('pilates.eyebrow')}
+        eyebrow={`${t('pilates.eyebrow')} · ${t(`class.${selected.discipline}`)}`}
         title={
           <>
             {selected.name} <span className="title-time">{clock(selected.start)}</span>
@@ -118,7 +120,7 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
         <div className="scene-overlay">
           <span>{t('pilates.booked', { n: seats.length })}</span>
           <span>{t('pilates.inside', { n: inside })}</span>
-          <span>{t('pilates.free', { n: PURE_CAPACITY - seats.length })}</span>
+          <span>{t('pilates.free', { n: selected.capacity - seats.length })}</span>
           {selected.waitlist > 0 ? <span>{t('pilates.waitlist', { n: selected.waitlist })}</span> : null}
         </div>
         <div className="scene-legend">
@@ -148,7 +150,8 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
                 {p === 'live' ? <i className="live-dot" /> : null}
               </span>
               <span className="cs-name">{c.name}</span>
-              <Squares total={PURE_CAPACITY} filled={c.seats.length} size={8} />
+              <span className="cs-kind">{t(`class.${c.discipline}`)}</span>
+              <Squares total={c.capacity} filled={c.seats.length} size={8} />
               <span className="cs-status">{phaseText(c, p, now, i18n)}</span>
             </button>
           );

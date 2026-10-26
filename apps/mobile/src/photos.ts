@@ -23,4 +23,9 @@ export const PHOTOS: Record<PhotoKey, number> = {
   'pure-detail': require('../assets/photos/pure-detail.jpg'),
   'pure-arches': require('../assets/photos/pure-arches.jpg'),
   'pure-core': require('../assets/photos/pure-core.jpg'),
+  'pure-mat': require('../assets/photos/pure-mat.jpg'),
+  'pure-yoga': require('../assets/photos/pure-yoga.jpg'),
+  'pure-yin': require('../assets/photos/pure-yin.jpg'),
+  'pure-barre': require('../assets/photos/pure-barre.jpg'),
+  'pure-breathe': require('../assets/photos/pure-breathe.jpg'),
 };
