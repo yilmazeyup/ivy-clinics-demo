@@ -4,9 +4,9 @@ export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'nl';
 
-/** Each language in its own script, so people can find theirs; Dutch is the exception and shows its English name, by request. */
+/** Each language in its own script, so people can find theirs. */
 export const LOCALE_NAMES: Record<Locale, string> = {
-  nl: 'Dutch',
+  nl: 'Nederlands',
   en: 'English',
   ar: 'العربية',
   fr: 'Français',
