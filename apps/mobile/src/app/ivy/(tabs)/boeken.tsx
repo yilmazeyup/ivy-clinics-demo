@@ -22,6 +22,7 @@ import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName } from '@/ivy';
+import { useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
 type Category = 'all' | TreatmentCategory;
@@ -34,6 +35,7 @@ export default function IvyBook() {
   const [category, setCategory] = useState<Category>('all');
   const [location, setLocation] = useState<LocationId>(IVY_MEMBER.locationId);
   const [concern, setConcern] = useState<ConcernId | null>(null);
+  const { wide } = useLayout();
 
   // A concern tapped on Home arrives as a route parameter; `at` makes a repeated tap count again.
   useEffect(() => {
@@ -53,7 +55,7 @@ export default function IvyBook() {
     router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: treatment.id, location } });
 
   return (
-    <Screen gap={22}>
+    <Screen gap={22} width="page">
       <View style={{ gap: 8 }}>
         <Txt variant="display">{t('ivy.book.title')}</Txt>
         <Txt variant="body" color={theme.c.muted}>
@@ -91,9 +93,12 @@ export default function IvyBook() {
 
       {showConsult ? <ConsultCard onPress={() => open(treatmentById('consult'))} /> : null}
 
-      <View style={{ gap: 4 }}>
+      {/* Two columns of treatments on a computer screen. */}
+      <View style={wide ? { flexDirection: 'row', flexWrap: 'wrap', columnGap: 40 } : { gap: 4 }}>
         {treatments.map((tr, index) => (
-          <TreatmentRow key={tr.id} treatment={tr} first={index === 0} onPress={() => open(tr)} />
+          <View key={tr.id} style={wide ? { flexBasis: '40%', flexGrow: 1 } : undefined}>
+            <TreatmentRow treatment={tr} first={index < (wide ? 2 : 1)} onPress={() => open(tr)} />
+          </View>
         ))}
       </View>
     </Screen>

@@ -1,7 +1,7 @@
 import { PRODUCTS, productsAfter, PURE_PACKAGES, type PurePackage, type ShopCategory } from '@pure-ivy/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { CartButton } from '@/components/CartButton';
@@ -14,6 +14,7 @@ import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { useIvy } from '@/ivy';
+import { PAGE_WIDTH, useLayout } from '@/layout';
 import { PACKAGE_PHOTOS, packageItemId } from '@/shop';
 import { useDemo } from '@/state/demo';
 import { useTheme } from '@/theme';
@@ -24,7 +25,7 @@ const CATEGORIES: Category[] = ['all', 'pilates', 'face', 'aftercare', 'body', '
 
 export default function Shop() {
   const theme = useTheme();
-  const { width } = useWindowDimensions();
+  const { wide, inner } = useLayout();
   const { t, text } = useI18n();
   const ivy = useIvy();
   const params = useLocalSearchParams<{ category?: string; at?: string }>();
@@ -40,10 +41,13 @@ export default function Shop() {
   const basis = ivy.next ?? ivy.past[0];
   const picks = basis ? productsAfter(basis.treatmentId) : [];
   const products = PRODUCTS.filter((p) => category === 'all' || p.category === category);
-  const tile = Math.floor((width - 40 - 12) / 2);
+  // Two products per row on a phone, four on a computer screen.
+  const columns = wide ? 4 : 2;
+  const columnGap = wide ? 20 : 12;
+  const tile = Math.floor((inner(PAGE_WIDTH) - columnGap * (columns - 1)) / columns);
 
   return (
-    <Screen gap={22}>
+    <Screen gap={22} width="page">
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <Txt variant="display" style={{ flex: 1 }}>
           {t('shop.title')}
@@ -62,9 +66,9 @@ export default function Shop() {
               {t('shop.forYouBody', { name: basis.specialist.name })}
             </Txt>
           </View>
-          <Rail gap={12}>
+          <Rail gap={columnGap}>
             {picks.map((p) => (
-              <ProductCard key={p.id} product={p} width={148} />
+              <ProductCard key={p.id} product={p} width={wide ? tile : 148} />
             ))}
           </Rail>
         </View>
@@ -77,13 +81,15 @@ export default function Shop() {
       </Rail>
 
       {category === 'pilates' ? (
-        <View style={{ gap: 12 }}>
+        <View style={wide ? { flexDirection: 'row', flexWrap: 'wrap', gap: 20 } : { gap: 12 }}>
           {PURE_PACKAGES.map((pkg) => (
-            <PackageCard key={pkg.id} pkg={pkg} />
+            <View key={pkg.id} style={wide ? { flexBasis: '30%', flexGrow: 1 } : undefined}>
+              <PackageCard pkg={pkg} />
+            </View>
           ))}
         </View>
       ) : (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 12, rowGap: 20 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap, rowGap: wide ? 32 : 20 }}>
           {products.map((p) => (
             <ProductCard key={p.id} product={p} width={tile} />
           ))}

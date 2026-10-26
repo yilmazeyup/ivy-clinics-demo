@@ -17,7 +17,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { Button, IconButton } from '@/components/Button';
 import { Chip } from '@/components/Chip';
@@ -28,6 +28,7 @@ import { Footer, Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, roleKey, useIvy } from '@/ivy';
+import { DETAIL_WIDTH, useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
 type Params = { treatmentId: string; location?: string; specialist?: string; slot?: string; replace?: string };
@@ -41,7 +42,7 @@ export default function IvyBooking() {
 
 function Booking({ treatment, params }: { treatment: Treatment; params: Params }) {
   const theme = useTheme();
-  const { width } = useWindowDimensions();
+  const { wide, inner } = useLayout();
   const { t, text, euro, time, dayShort } = useI18n();
   const ivy = useIvy();
   const replacing = params.replace ? ivy.byId(params.replace) : undefined;
@@ -67,7 +68,9 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
   const slots = slotsOn(day);
   const last = ivy.lastSpecialistFor(treatment.id);
   const firstTime = treatment.category === 'injectables' && !ivy.past.some((a) => a.treatmentId === treatment.id);
-  const tile = (width - 40 - 16) / 3;
+  // Three times per row on a phone, five on a computer screen.
+  const columns = wide ? 5 : 3;
+  const tile = (inner(DETAIL_WIDTH) - 8 * (columns - 1)) / columns;
   // Moving an appointment keeps the deposit that was already paid.
   const deposit = replacing ? 0 : treatment.deposit;
 

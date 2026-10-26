@@ -11,6 +11,7 @@ import { Photo } from '@/components/Photo';
 import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
+import { useLayout } from '@/layout';
 import { usePilates, type SessionView } from '@/pilates';
 import { useTheme } from '@/theme';
 
@@ -33,12 +34,13 @@ export default function PilatesSchedule() {
   const days = useMemo(() => Array.from({ length: 14 }, (_, i) => addDays(startOfDay(pilates.now), i)), [pilates.now]);
   const [day, setDay] = useState(days[0]);
   const [filter, setFilter] = useState<Filter>('all');
+  const { wide } = useLayout();
 
   const sessions = pilates.upcoming.filter((s) => sameDay(s.start, day) && matches(s, filter));
   const parts = PARTS.map((part) => ({ part, items: sessions.filter((s) => timeOfDay(s.start) === part) })).filter((p) => p.items.length > 0);
 
   return (
-    <Screen gap={18}>
+    <Screen gap={18} width="page">
       <View style={{ gap: 8 }}>
         <Txt variant="display">{t('ivy.pilates.title')}</Txt>
         <Txt variant="body" color={theme.c.muted}>
@@ -68,9 +70,14 @@ export default function PilatesSchedule() {
             <Txt variant="eyebrow" color={theme.c.muted}>
               {t(`pilates.schedule.${part}`)}
             </Txt>
-            {items.map((s) => (
-              <ClassRow key={s.id} session={s} />
-            ))}
+            {/* Two classes side by side on a computer screen. */}
+            <View style={wide ? { flexDirection: 'row', flexWrap: 'wrap', gap: 12 } : { gap: 10 }}>
+              {items.map((s) => (
+                <View key={s.id} style={wide ? { flexBasis: '40%', flexGrow: 1 } : undefined}>
+                  <ClassRow session={s} />
+                </View>
+              ))}
+            </View>
           </View>
         ))
       )}
