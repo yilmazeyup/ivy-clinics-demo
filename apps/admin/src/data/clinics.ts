@@ -11,7 +11,7 @@ import {
   type Specialist,
   type Treatment,
   type TreatmentId,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 
 import { personName, pick, rng, type Rng } from './random';
 

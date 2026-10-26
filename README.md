@@ -28,7 +28,7 @@ npm run ios
 
 The admin panel has its own install, outside the npm workspaces: npm 10 crashes while resolving
 Vite 8's optional peer dependencies inside the workspace, so `apps/admin/.npmrc` turns automatic
-peer installs off and `@pure-ivy/shared` is linked with `file:`.
+peer installs off and `@pure-clinics/shared` is linked with `file:`.
 
 ```bash
 npm --prefix apps/admin install

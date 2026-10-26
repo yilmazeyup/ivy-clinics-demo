@@ -1,4 +1,4 @@
-import { CLINIC_COLORS, IVY_MEMBER } from '@pure-ivy/shared';
+import { CLINIC_COLORS, MEMBER } from '@pure-clinics/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
@@ -9,7 +9,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName, roleKey, useIvy } from '@/ivy';
+import { cityName, roleKey, useClinic } from '@/clinic';
 import { useTheme } from '@/theme';
 
 // Back to the tabs underneath, then to the Home tab.
@@ -18,23 +18,23 @@ function home() {
   router.navigate('/');
 }
 
-export default function IvyConfirmation() {
+export default function ConfirmationScreen() {
   const theme = useTheme();
   const { id, moved } = useLocalSearchParams<{ id: string; moved?: string }>();
   const { t, text, euro, dayLong, time } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const toast = useToast();
-  const appointment = ivy.byId(id);
+  const appointment = clinic.byId(id);
   if (!appointment) return <Redirect href="/" />;
   const { treatment, specialist, location } = appointment;
   const end = new Date(appointment.start.getTime() + treatment.minutes * 60000);
   const status = moved
-    ? t('ivy.confirm.moved')
+    ? t('clinic.confirm.moved')
     : treatment.deposit
-      ? t('ivy.confirm.paid', { amount: euro(treatment.deposit) })
+      ? t('clinic.confirm.paid', { amount: euro(treatment.deposit) })
       : treatment.priceFrom
-        ? t('ivy.confirm.booked')
-        : t('ivy.confirm.free');
+        ? t('clinic.confirm.booked')
+        : t('clinic.confirm.free');
 
   return (
     <Screen gap={24}>
@@ -43,7 +43,7 @@ export default function IvyConfirmation() {
       </View>
 
       <View style={{ gap: 10 }}>
-        <Txt variant="hero">{t('ivy.confirm.title', { name: IVY_MEMBER.firstName })}</Txt>
+        <Txt variant="hero">{t('clinic.confirm.title', { name: MEMBER.firstName })}</Txt>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Icon name="check" size={18} color={theme.c.primary} strokeWidth={2} />
           <Txt variant="body" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
@@ -65,8 +65,8 @@ export default function IvyConfirmation() {
       </View>
 
       <View style={{ flexDirection: 'row', gap: 10 }}>
-        <Button kind="secondary" size="sm" icon="calendar" label={t('ivy.confirm.calendar')} onPress={() => toast(t('common.demoNote'))} style={{ flex: 1 }} />
-        <Button kind="secondary" size="sm" icon="pin" label={t('ivy.confirm.route')} onPress={() => toast(t('common.demoNote'))} style={{ flex: 1 }} />
+        <Button kind="secondary" size="sm" icon="calendar" label={t('clinic.confirm.calendar')} onPress={() => toast(t('common.demoNote'))} style={{ flex: 1 }} />
+        <Button kind="secondary" size="sm" icon="pin" label={t('clinic.confirm.route')} onPress={() => toast(t('common.demoNote'))} style={{ flex: 1 }} />
       </View>
 
       <Pressable
@@ -86,15 +86,15 @@ export default function IvyConfirmation() {
           <Icon name="list" size={20} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <Txt variant="bodyStrong">{t('ivy.confirm.intake')}</Txt>
+          <Txt variant="bodyStrong">{t('clinic.confirm.intake')}</Txt>
           <Txt variant="small" color={CLINIC_COLORS.body}>
-            {t('ivy.confirm.intakeBody', { name: specialist.name })}
+            {t('clinic.confirm.intakeBody', { name: specialist.name })}
           </Txt>
         </View>
         <Icon name="chevron" size={18} color={theme.c.muted} />
       </Pressable>
 
-      <Button label={t('ivy.confirm.home')} onPress={home} />
+      <Button label={t('clinic.confirm.home')} onPress={home} />
     </Screen>
   );
 }

@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 // Screens opened by a link still get the tabs underneath, so modals open as sheets and back works.
 export const unstable_settings = { anchor: '(tabs)' };
 
-export default function IvyLayout() {
+export default function ClinicLayout() {
   const theme = useTheme();
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>

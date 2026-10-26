@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const assets = resolve(root, 'dist-artifact/assets');
-const out = resolve(process.argv[2] ?? resolve(root, 'dist-artifact/pure-ivy-beheer.html'));
+const out = resolve(process.argv[2] ?? resolve(root, 'dist-artifact/pure-clinics-beheer.html'));
 
 const files = readdirSync(assets);
 const read = (ext) => {

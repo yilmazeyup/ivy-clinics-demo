@@ -1,4 +1,4 @@
-import { DELIVERY_DAYS, productById, treatmentById, type Product } from '@pure-ivy/shared';
+import { DELIVERY_DAYS, productById, treatmentById, type Product } from '@pure-clinics/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';

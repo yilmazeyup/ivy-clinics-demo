@@ -1,4 +1,4 @@
-import { LOCALE_NAMES, LOCALES } from '@pure-ivy/shared';
+import { LOCALE_NAMES, LOCALES } from '@pure-clinics/shared';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';

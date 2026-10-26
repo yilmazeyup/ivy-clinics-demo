@@ -15,7 +15,7 @@ import {
   type MessageKey,
   type PluralKey,
   type Vars,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import { useMemo } from 'react';
 
 import { useDemo } from './state/demo';

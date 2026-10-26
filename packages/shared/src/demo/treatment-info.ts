@@ -1,6 +1,6 @@
 import type { PhotoKey } from '../brands';
 import type { L10n } from '../i18n/locales';
-import type { ConcernId, TreatmentId } from './ivy';
+import type { ConcernId, TreatmentId } from './clinic';
 import { CONCERN_INFO, TREATMENT_INFO } from './treatment-texts';
 
 /**

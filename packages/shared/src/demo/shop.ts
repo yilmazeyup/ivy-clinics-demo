@@ -1,6 +1,6 @@
 import type { PhotoKey } from '../brands';
 import type { L10n } from '../i18n/locales';
-import type { TreatmentId } from './ivy';
+import type { TreatmentId } from './clinic';
 
 // The brands Pure Clinics works with, as named on pureclinics.nl: ZO Skin Health, Lycogel, WiQo and XL Hair. Its own webshop
 // is not in use yet, so this catalogue, its prices and SHIPPING_FEE are demo values. The descriptions are our own summaries.
@@ -58,7 +58,7 @@ export const PRODUCTS: Product[] = [
       'Milder Reiniger, der Schmutz und Make-up entfernt, ohne deine Haut auszutrocknen. Die Basis jedes ZO-Protokolls.',
       'Detergente delicato che rimuove impurità e trucco senza seccare la pelle. La base di ogni protocollo ZO.',
     ),
-    texture: { photo: 'ivy-cream', zoom: 1.8, x: 0.25, y: 0.55 },
+    texture: { photo: 'stock-cream', zoom: 1.8, x: 0.25, y: 0.55 },
     after: ['acne', 'deepclean', 'peel', 'pigment'],
   },
   {
@@ -75,7 +75,7 @@ export const PRODUCTS: Product[] = [
       'Serum, das deine Haut täglich schützt und repariert; oft Teil des Heimprotokolls bei Pigmentflecken und Akne.',
       'Siero che protegge e ripara la pelle ogni giorno; spesso parte del protocollo a casa per macchie e acne.',
     ),
-    texture: { photo: 'ivy-serum', zoom: 1.6, x: 0.35, y: 0.6 },
+    texture: { photo: 'stock-serum', zoom: 1.6, x: 0.35, y: 0.6 },
     after: ['pigment', 'acne', 'tca', 'skinpen'],
   },
   {
@@ -92,7 +92,7 @@ export const PRODUCTS: Product[] = [
       'Leicht getönter Sonnenschutz für jeden Tag, vor allem nach Laser, IPL und Peelings.',
       'Protezione solare leggermente colorata, per ogni giorno e soprattutto dopo laser, IPL e peeling.',
     ),
-    texture: { photo: 'ivy-cream', zoom: 1.4, x: 0.5, y: 0.5 },
+    texture: { photo: 'stock-cream', zoom: 1.4, x: 0.5, y: 0.5 },
     after: ['laser', 'ipl', 'couperose', 'pigment', 'tca', 'peel', 'skinpen', 'sylfirm', 'tixel', 'tattoo'],
   },
   {
@@ -109,7 +109,7 @@ export const PRODUCTS: Product[] = [
       'Atmungsaktive Camouflage-Creme mit SPF 30, die Rötungen und Farbunterschiede abdeckt, auch direkt nach einer Behandlung.',
       'Crema coprente traspirante con SPF 30 che copre rossori e discromie, anche subito dopo un trattamento.',
     ),
-    texture: { photo: 'ivy-cream', zoom: 2, x: 0.7, y: 0.4 },
+    texture: { photo: 'stock-cream', zoom: 2, x: 0.7, y: 0.4 },
     after: ['camouflage', 'couperose', 'ipl', 'eyes'],
   },
   {
@@ -126,7 +126,7 @@ export const PRODUCTS: Product[] = [
       'Pflegende Creme, die du nach einer PRX-Behandlung eine Woche lang zweimal täglich verwendest.',
       'Crema nutriente da usare due volte al giorno per una settimana dopo un trattamento PRX.',
     ),
-    texture: { photo: 'ivy-cream', zoom: 1.2, x: 0.4, y: 0.6 },
+    texture: { photo: 'stock-cream', zoom: 1.2, x: 0.4, y: 0.6 },
     after: ['prx', 'facial'],
   },
   {
@@ -143,7 +143,7 @@ export const PRODUCTS: Product[] = [
       'Milde Shampoo, das die Kopfhaut während deiner XL-Hair-Behandlung stärkt.',
       'Shampoo delicato che rinforza il cuoio capelluto durante il trattamento XL Hair.',
     ),
-    texture: { photo: 'ivy-serum', zoom: 2.2, x: 0.6, y: 0.35 },
+    texture: { photo: 'stock-serum', zoom: 2.2, x: 0.6, y: 0.35 },
     after: ['xlhair'],
   },
   {
@@ -160,7 +160,7 @@ export const PRODUCTS: Product[] = [
       'Für eine gesunde Kopfhaut, die Basis für kräftigeres Haar.',
       'Per un cuoio capelluto sano, la base di capelli più forti.',
     ),
-    texture: { photo: 'ivy-serum', zoom: 1.8, x: 0.8, y: 0.6 },
+    texture: { photo: 'stock-serum', zoom: 1.8, x: 0.8, y: 0.6 },
     after: ['xlhair'],
   },
   {
@@ -177,7 +177,7 @@ export const PRODUCTS: Product[] = [
       'Pflegendes Spray für die Kopfhaut, täglich zwischen den Behandlungen.',
       'Spray nutriente per il cuoio capelluto, ogni giorno tra un trattamento e l’altro.',
     ),
-    texture: { photo: 'ivy-serum', zoom: 1.3, x: 0.5, y: 0.5 },
+    texture: { photo: 'stock-serum', zoom: 1.3, x: 0.5, y: 0.5 },
     soldOut: true,
     after: ['xlhair'],
   },
@@ -195,7 +195,7 @@ export const PRODUCTS: Product[] = [
       'Die Produkte aus deiner Camouflage-Therapie, in deinem Farbton gemischt.',
       'I prodotti della tua terapia camouflage, miscelati nella tua tonalità.',
     ),
-    texture: { photo: 'ivy-cream', zoom: 1.1, x: 0.5, y: 0.45 },
+    texture: { photo: 'stock-cream', zoom: 1.1, x: 0.5, y: 0.45 },
   },
   {
     id: 'laser-aftercare-set',
@@ -211,7 +211,7 @@ export const PRODUCTS: Product[] = [
       'Gentle Cleanser und Smart Tone SPF 50 von ZO Skin Health zusammen: alles für die Wochen nach deiner Laserbehandlung.',
       'Gentle Cleanser e Smart Tone SPF 50 di ZO Skin Health insieme: tutto per le settimane dopo il laser.',
     ),
-    texture: { photo: 'ivy-serum', zoom: 1, x: 0.5, y: 0.5 },
+    texture: { photo: 'stock-serum', zoom: 1, x: 0.5, y: 0.5 },
     after: ['laser'],
   },
 ];

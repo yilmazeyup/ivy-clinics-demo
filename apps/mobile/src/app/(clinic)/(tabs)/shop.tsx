@@ -1,4 +1,4 @@
-import { PRODUCTS, productsAfter, type ShopCategory } from '@pure-ivy/shared';
+import { PRODUCTS, productsAfter, type ShopCategory } from '@pure-clinics/shared';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -10,7 +10,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { useIvy } from '@/ivy';
+import { useClinic } from '@/clinic';
 import { PAGE_WIDTH, useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
@@ -21,7 +21,7 @@ export default function Shop() {
   const theme = useTheme();
   const { wide, inner } = useLayout();
   const { t, text } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const params = useLocalSearchParams<{ category?: string; at?: string }>();
   const [category, setCategory] = useState<Category>('all');
 
@@ -32,7 +32,7 @@ export default function Shop() {
   }, [params.category, params.at]);
 
   // Suggestions follow the member's next treatment, or else the most recent one.
-  const basis = ivy.next ?? ivy.past[0];
+  const basis = clinic.next ?? clinic.past[0];
   const picks = basis ? productsAfter(basis.treatmentId) : [];
   const products = PRODUCTS.filter((p) => category === 'all' || p.category === category);
   // Two products per row on a phone, four on a computer screen.

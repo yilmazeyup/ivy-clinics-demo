@@ -18,9 +18,9 @@ export const CLINIC_COLORS = {
 } as const;
 
 export const PHOTO_KEYS = [
-  'ivy-cream',
-  'ivy-lashes',
-  'ivy-serum',
+  'stock-cream',
+  'stock-lashes',
+  'stock-serum',
   'pc-consult',
   'pc-laser',
   'pc-smooth',

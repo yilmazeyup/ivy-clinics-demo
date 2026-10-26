@@ -1,4 +1,4 @@
-import { PRODUCTS, type ProductId } from '@pure-ivy/shared';
+import { PRODUCTS, type ProductId } from '@pure-clinics/shared';
 import type { CSSProperties } from 'react';
 
 import { orderTotal, ordersUntil, stockOf, type Order } from '../data/shop';

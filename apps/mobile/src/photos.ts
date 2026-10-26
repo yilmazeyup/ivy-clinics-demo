@@ -1,10 +1,10 @@
-import type { PhotoKey } from '@pure-ivy/shared';
+import type { PhotoKey } from '@pure-clinics/shared';
 
 // Metro needs static require() calls, so every photo is listed here once; each resolves to an asset id.
 export const PHOTOS: Record<PhotoKey, number> = {
-  'ivy-cream': require('../assets/photos/ivy-cream.jpg'),
-  'ivy-lashes': require('../assets/photos/ivy-lashes.jpg'),
-  'ivy-serum': require('../assets/photos/ivy-serum.jpg'),
+  'stock-cream': require('../assets/photos/stock-cream.jpg'),
+  'stock-lashes': require('../assets/photos/stock-lashes.jpg'),
+  'stock-serum': require('../assets/photos/stock-serum.jpg'),
   'pc-consult': require('../assets/photos/pc-consult.jpg'),
   'pc-laser': require('../assets/photos/pc-laser.jpg'),
   'pc-smooth': require('../assets/photos/pc-smooth.jpg'),

@@ -11,7 +11,7 @@
     "artifact": "vite build --config vite.artifact.config.ts && node scripts/artifact.mjs"
   },
   "dependencies": {
-    "@pure-ivy/shared": "file:../../packages/shared",
+    "@pure-clinics/shared": "file:../../packages/shared",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "three": "0.186.1"

@@ -1,4 +1,4 @@
-import { DELIVERY_DAYS, CLINIC_COLORS, IVY_MEMBER, locationById } from '@pure-ivy/shared';
+import { DELIVERY_DAYS, CLINIC_COLORS, MEMBER, locationById } from '@pure-clinics/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
@@ -8,7 +8,7 @@ import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName } from '@/ivy';
+import { cityName } from '@/clinic';
 import { shopItem } from '@/shop';
 import { useDemo } from '@/state/demo';
 import { useTheme } from '@/theme';
@@ -41,7 +41,7 @@ export default function OrderConfirmation() {
       </View>
 
       <View style={{ gap: 10 }}>
-        <Txt variant="hero">{t('shop.orderTitle', { name: IVY_MEMBER.firstName })}</Txt>
+        <Txt variant="hero">{t('shop.orderTitle', { name: MEMBER.firstName })}</Txt>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Icon name="check" size={18} color={theme.c.primary} strokeWidth={2} />
           <Txt variant="body" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
@@ -71,7 +71,7 @@ export default function OrderConfirmation() {
               <Txt variant="body" color={theme.c.muted}>
                 {t('shop.shipping')}
               </Txt>
-              <Txt variant="body">{order.shipping ? euro(order.shipping) : t('ivy.price.free')}</Txt>
+              <Txt variant="body">{order.shipping ? euro(order.shipping) : t('clinic.price.free')}</Txt>
             </View>
           ) : null}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -83,7 +83,7 @@ export default function OrderConfirmation() {
 
       <View style={{ gap: 10 }}>
         <Button label={t('shop.continue')} onPress={() => leaveTo('/shop')} />
-        <Button kind="secondary" label={t('ivy.confirm.home')} onPress={() => leaveTo('/')} />
+        <Button kind="secondary" label={t('clinic.confirm.home')} onPress={() => leaveTo('/')} />
       </View>
     </Screen>
   );

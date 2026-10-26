@@ -2,7 +2,7 @@ import {
   addDays,
   DEALS,
   freeSlots,
-  IVY_MEMBER,
+  MEMBER,
   LASER_ZONES,
   LOCATIONS,
   openingHours,
@@ -17,7 +17,7 @@ import {
   type LocationId,
   type SpecialistId,
   type Treatment,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import * as Haptics from 'expo-haptics';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
@@ -31,13 +31,13 @@ import { Photo } from '@/components/Photo';
 import { Footer, Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName, roleKey, useIvy } from '@/ivy';
+import { cityName, roleKey, useClinic } from '@/clinic';
 import { DETAIL_WIDTH, useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
 type Params = { treatmentId: string; location?: string; specialist?: string; slot?: string; replace?: string; deal?: string };
 
-export default function IvyBooking() {
+export default function BookingScreen() {
   const params = useLocalSearchParams<Params>();
   const treatment = TREATMENTS.find((tr) => tr.id === params.treatmentId);
   if (!treatment) return <Redirect href="/boeken" />;
@@ -48,21 +48,21 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
   const theme = useTheme();
   const { wide, inner } = useLayout();
   const { t, text, euro, time, dayShort } = useI18n();
-  const ivy = useIvy();
-  const replacing = params.replace ? ivy.byId(params.replace) : undefined;
+  const clinic = useClinic();
+  const replacing = params.replace ? clinic.byId(params.replace) : undefined;
 
   const [locationId, setLocationId] = useState<LocationId>(
-    () => LOCATIONS.find((l) => l.id === params.location)?.id ?? replacing?.locationId ?? IVY_MEMBER.locationId,
+    () => LOCATIONS.find((l) => l.id === params.location)?.id ?? replacing?.locationId ?? MEMBER.locationId,
   );
   const team = specialistsFor(treatment, locationId);
   const [specialistId, setSpecialistId] = useState<SpecialistId | 'any'>(
     () => team.find((s) => s.id === params.specialist)?.id ?? 'any',
   );
   // The member's other appointments block those times; the one being moved does not.
-  const busy = useMemo(() => ivy.appointments.filter((a) => a.id !== params.replace), [ivy.appointments, params.replace]);
-  const days = useMemo(() => Array.from({ length: 14 }, (_, i) => addDays(startOfDay(ivy.now), i)), [ivy.now]);
+  const busy = useMemo(() => clinic.appointments.filter((a) => a.id !== params.replace), [clinic.appointments, params.replace]);
+  const days = useMemo(() => Array.from({ length: 14 }, (_, i) => addDays(startOfDay(clinic.now), i)), [clinic.now]);
   const slotsOn = (day: Date, who: SpecialistId | 'any' = specialistId, where: LocationId = locationId) =>
-    freeSlots(treatment, who, day, ivy.now, where, busy);
+    freeSlots(treatment, who, day, clinic.now, where, busy);
 
   const suggested = params.slot ? new Date(Number(params.slot)) : null;
   const [day, setDay] = useState<Date>(() => (suggested ? startOfDay(suggested) : (days.find((d) => slotsOn(d).length > 0) ?? days[0])));
@@ -70,12 +70,12 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
     suggested ? (slotsOn(startOfDay(suggested)).find((s) => s.start.getTime() === suggested.getTime()) ?? null) : null,
   );
   const slots = slotsOn(day);
-  const last = ivy.lastSpecialistFor(treatment.id);
-  const firstTime = treatment.id !== 'consult' && treatment.category !== 'beauty' && !ivy.past.some((a) => a.treatmentId === treatment.id);
+  const last = clinic.lastSpecialistFor(treatment.id);
+  const firstTime = treatment.id !== 'consult' && treatment.category !== 'beauty' && !clinic.past.some((a) => a.treatmentId === treatment.id);
   // Laser is priced per zone. A deal from Home fixes the zones; someone who had laser before starts with last time's zones.
   const laser = treatment.id === 'laser';
   const [deal, setDeal] = useState<Deal | null>(() => DEALS.find((d) => d.id === params.deal) ?? null);
-  const [zones, setZones] = useState<string[]>(() => (ivy.past.some((a) => a.treatmentId === 'laser') ? ['armpits', 'bikini'] : []));
+  const [zones, setZones] = useState<string[]>(() => (clinic.past.some((a) => a.treatmentId === 'laser') ? ['armpits', 'bikini'] : []));
   const [pack, setPack] = useState(false);
   const zoneTotal = zones.reduce((sum, id) => sum + (LASER_ZONES.find((z) => z.id === id)?.price ?? 0), 0);
   const perTime = deal ? deal.price : pack ? packagePrice(zoneTotal) : zoneTotal;
@@ -103,8 +103,8 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
 
   const confirm = () => {
     if (!slot) return;
-    const id = ivy.bookAppointment({ treatmentId: treatment.id, specialistId: slot.specialistId, locationId, start: slot.start });
-    if (replacing) ivy.cancelAppointment(replacing.id);
+    const id = clinic.bookAppointment({ treatmentId: treatment.id, specialistId: slot.specialistId, locationId, start: slot.start });
+    if (replacing) clinic.cancelAppointment(replacing.id);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.replace({ pathname: '/bevestiging/[id]', params: replacing ? { id, moved: '1' } : { id } });
   };
@@ -120,18 +120,18 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
             {replacing
               ? ''
               : deposit
-                ? t('ivy.book.deposit', { amount: euro(deposit) })
+                ? t('clinic.book.deposit', { amount: euro(deposit) })
                 : laser
                   ? euro(perTime)
                   : treatment.priceFrom
-                    ? t('ivy.price.from', { price: euro(treatment.priceFrom) })
-                    : t('ivy.price.free')}
+                    ? t('clinic.price.from', { price: euro(treatment.priceFrom) })
+                    : t('clinic.price.free')}
           </Txt>
         </View>
       ) : null}
-      <Button label={deposit ? t('ivy.book.continue') : t('ivy.book.confirmFree')} disabled={!slot || needsZone} onPress={confirm} />
+      <Button label={deposit ? t('clinic.book.continue') : t('clinic.book.confirmFree')} disabled={!slot || needsZone} onPress={confirm} />
       <Txt variant="caption" color={theme.c.muted} align="center">
-        {t('ivy.book.policy')}
+        {t('clinic.book.policy')}
       </Txt>
     </Footer>
   );
@@ -141,18 +141,18 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <IconButton icon="back" label={t('common.back')} tone="surface" onPress={() => router.back()} />
         <Txt variant="small" color={theme.c.muted}>
-          {t('ivy.book.step', { n: 2 })}
+          {t('clinic.book.step', { n: 2 })}
         </Txt>
       </View>
 
-      <Txt variant="display">{t('ivy.book.moment')}</Txt>
+      <Txt variant="display">{t('clinic.book.moment')}</Txt>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 10 }}>
         <Photo photo={treatment.photo} style={{ width: 56, height: 68, borderRadius: theme.r.small }} />
         <View style={{ flex: 1, gap: 2 }}>
           <Txt variant="bodyStrong">{text(treatment.name)}</Txt>
           <Txt variant="small" color={theme.c.muted}>
-            {`${t('common.minutes', { n: treatment.minutes })} · ${treatment.priceFrom ? t('ivy.price.from', { price: euro(treatment.priceFrom) }) : t('ivy.price.free')}`}
+            {`${t('common.minutes', { n: treatment.minutes })} · ${treatment.priceFrom ? t('clinic.price.from', { price: euro(treatment.priceFrom) }) : t('clinic.price.free')}`}
           </Txt>
         </View>
         <Pressable accessibilityRole="button" onPress={() => router.back()} hitSlop={10} style={{ paddingHorizontal: 8 }}>
@@ -166,7 +166,7 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, borderWidth: 1, borderColor: theme.c.line }}>
           <Icon name="leaf" size={18} color={theme.c.primary} />
           <Txt variant="small" color={theme.c.ink} style={{ flex: 1 }}>
-            {t('ivy.book.firstTime')}
+            {t('clinic.book.firstTime')}
           </Txt>
         </View>
       ) : null}
@@ -175,14 +175,14 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, backgroundColor: theme.c.sand }}>
           <Icon name="wallet" size={18} color={theme.c.primary} />
           <Txt variant="small" color={theme.c.ink} style={{ flex: 1 }}>
-            {t('ivy.book.insurance')}
+            {t('clinic.book.insurance')}
           </Txt>
         </View>
       ) : null}
 
       {laser && deal ? <DealCard deal={deal} onChange={() => setDeal(null)} /> : null}
       {laser && !deal ? (
-        <Group label={t('ivy.zones.title')}>
+        <Group label={t('clinic.zones.title')}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {LASER_ZONES.map((z) => {
               const on = zones.includes(z.id);
@@ -231,19 +231,19 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
               {pack ? <Icon name="check" size={14} color={theme.c.onPrimary} strokeWidth={2.4} /> : null}
             </View>
             <View style={{ flex: 1, gap: 2 }}>
-              <Txt variant="bodyStrong">{t('ivy.zones.package')}</Txt>
+              <Txt variant="bodyStrong">{t('clinic.zones.package')}</Txt>
               <Txt variant="small" color={theme.c.muted}>
-                {t('ivy.zones.hint')}
+                {t('clinic.zones.hint')}
               </Txt>
             </View>
           </Pressable>
           <Txt variant="bodyStrong" color={zones.length ? theme.c.ink : theme.c.muted}>
-            {zones.length ? t('ivy.zones.total', { price: euro(perTime) }) : t('ivy.zones.none')}
+            {zones.length ? t('clinic.zones.total', { price: euro(perTime) }) : t('clinic.zones.none')}
           </Txt>
         </Group>
       ) : null}
 
-      <Group label={t('ivy.book.location')}>
+      <Group label={t('clinic.book.location')}>
         <Rail gap={8}>
           {LOCATIONS.map((l) => (
             <Chip key={l.id} label={cityName(l)} icon={l.id === locationId ? 'pin' : undefined} selected={l.id === locationId} onPress={() => chooseLocation(l.id)} />
@@ -251,14 +251,14 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         </Rail>
       </Group>
 
-      <Group label={t('ivy.book.specialist')}>
+      <Group label={t('clinic.book.specialist')}>
         <Rail gap={8}>
-          <PersonTile name={t('ivy.book.anyone')} note={t('ivy.book.firstAvailable')} selected={specialistId === 'any'} onPress={() => chooseSpecialist('any')} />
+          <PersonTile name={t('clinic.book.anyone')} note={t('clinic.book.firstAvailable')} selected={specialistId === 'any'} onPress={() => chooseSpecialist('any')} />
           {team.map((s) => (
             <PersonTile
               key={s.id}
               name={s.name}
-              note={s.id === last ? t('ivy.book.sameAsLast') : t(roleKey(s.role))}
+              note={s.id === last ? t('clinic.book.sameAsLast') : t(roleKey(s.role))}
               selected={specialistId === s.id}
               onPress={() => chooseSpecialist(s.id)}
             />
@@ -266,7 +266,7 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
         </Rail>
       </Group>
 
-      <Group label={t('ivy.book.dates')}>
+      <Group label={t('clinic.book.dates')}>
         <DayStrip
           days={days}
           selected={day}
@@ -275,18 +275,18 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
             setSlot(null);
           }}
           isDisabled={(d) => openingHours(d, locationId) === null}
-          isMarked={(d) => ivy.upcoming.some((a) => sameDay(a.start, d))}
+          isMarked={(d) => clinic.upcoming.some((a) => sameDay(a.start, d))}
         />
       </Group>
 
-      <Group label={specialistId === 'any' ? t('ivy.book.timesAll') : t('ivy.book.timesWith', { name: specialistById(specialistId).name })}>
+      <Group label={specialistId === 'any' ? t('clinic.book.timesAll') : t('clinic.book.timesWith', { name: specialistById(specialistId).name })}>
         {openingHours(day, locationId) === null ? (
           <Txt variant="body" color={theme.c.muted}>
-            {t('ivy.book.closed')}
+            {t('clinic.book.closed')}
           </Txt>
         ) : slots.length === 0 ? (
           <Txt variant="body" color={theme.c.muted}>
-            {t('ivy.book.noTimes')}
+            {t('clinic.book.noTimes')}
           </Txt>
         ) : (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -336,23 +336,23 @@ function DealCard({ deal, onChange }: { deal: Deal; onChange: () => void }) {
   const theme = useTheme();
   const { t, text, euro } = useI18n();
   return (
-    <Group label={`${t('ivy.deals.eyebrow')} · ${t(`ivy.deals.${deal.group}`)}`}>
+    <Group label={`${t('clinic.deals.eyebrow')} · ${t(`clinic.deals.${deal.group}`)}`}>
       <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, padding: 16, gap: 6 }}>
         <Txt variant="heading">{text(deal.zones)}</Txt>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
           <Txt variant="title">{euro(deal.price)}</Txt>
           {deal.was ? (
             <Txt variant="small" color={theme.c.muted} style={{ textDecorationLine: 'line-through' }}>
-              {t('ivy.deals.was', { price: euro(deal.was) })}
+              {t('clinic.deals.was', { price: euro(deal.was) })}
             </Txt>
           ) : null}
         </View>
         <Txt variant="caption" color={theme.c.muted}>
-          {t('ivy.deals.note')}
+          {t('clinic.deals.note')}
         </Txt>
         <Pressable accessibilityRole="button" onPress={onChange} hitSlop={8} style={{ alignSelf: 'flex-start', marginTop: 4 }}>
           <Txt variant="smallStrong" color={theme.c.primary}>
-            {t('ivy.zones.title')}
+            {t('clinic.zones.title')}
           </Txt>
         </Pressable>
       </View>

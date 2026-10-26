@@ -1,4 +1,4 @@
-import { LOCALES, productById, treatmentById, type L10n, type Locale, type ProductId, type TreatmentId } from '@pure-ivy/shared';
+import { LOCALES, productById, treatmentById, type L10n, type Locale, type ProductId, type TreatmentId } from '@pure-clinics/shared';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { ar } from './ar';

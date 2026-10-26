@@ -1,4 +1,4 @@
-import { LOCALE_NAMES, LOCALES, type Locale } from '@pure-ivy/shared';
+import { LOCALE_NAMES, LOCALES, type Locale } from '@pure-clinics/shared';
 
 import { Accent, useI18n, useSetLocale, type MessageKey } from '../i18n';
 import { Icon, type IconName } from './Icon';

@@ -1,4 +1,4 @@
-import { splitAccents } from '@pure-ivy/shared';
+import { splitAccents } from '@pure-clinics/shared';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, type TextProps, type TextStyle } from 'react-native';
 

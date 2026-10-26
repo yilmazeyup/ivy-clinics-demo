@@ -1,4 +1,4 @@
-import { CONCERNS, DEALS, CLINIC_COLORS, IVY_MEMBER, LASER_SERIES, locationById, PURE_CLINICS, specialistById, timeOfDay, type Deal } from '@pure-ivy/shared';
+import { CONCERNS, DEALS, CLINIC_COLORS, MEMBER, LASER_SERIES, locationById, PURE_CLINICS, specialistById, timeOfDay, type Deal } from '@pure-clinics/shared';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
@@ -9,24 +9,24 @@ import { PureLogo } from '@/components/PureLogo';
 import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName, useIvy, type AppointmentView } from '@/ivy';
+import { cityName, useClinic, type AppointmentView } from '@/clinic';
 import { useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
-export default function IvyHome() {
+export default function HomeScreen() {
   const theme = useTheme();
   const { t, relativeDayInline, time } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const { wide } = useLayout();
-  const greetingKey = `ivy.greeting.${timeOfDay(ivy.now)}` as const;
+  const greetingKey = `clinic.greeting.${timeOfDay(clinic.now)}` as const;
 
   const greeting = (
     <View style={{ gap: 8, flex: wide ? 1 : undefined }}>
       <Txt variant="hero" style={wide ? { fontSize: 54, lineHeight: 58 } : undefined}>
-        {t(greetingKey, { name: IVY_MEMBER.firstName })}
+        {t(greetingKey, { name: MEMBER.firstName })}
       </Txt>
       <Txt variant="body" color={theme.c.muted}>
-        {ivy.next ? t('ivy.home.nextLine', { when: `${relativeDayInline(ivy.next.start)} · ${time(ivy.next.start)}` }) : t('ivy.home.noNext')}
+        {clinic.next ? t('clinic.home.nextLine', { when: `${relativeDayInline(clinic.next.start)} · ${time(clinic.next.start)}` }) : t('clinic.home.noNext')}
       </Txt>
     </View>
   );
@@ -38,13 +38,13 @@ export default function IvyHome() {
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 40 }}>
           {greeting}
           <View style={{ width: 440 }}>
-            <AskIvy />
+            <AskAssistant />
           </View>
         </View>
         <View style={{ flexDirection: 'row', gap: 24 }}>
-          {ivy.next ? (
+          {clinic.next ? (
             <View style={{ flex: 3 }}>
-              <NextAppointment appointment={ivy.next} fill />
+              <NextAppointment appointment={clinic.next} fill />
             </View>
           ) : null}
           <View style={{ flex: 2, gap: 24 }}>
@@ -78,8 +78,8 @@ export default function IvyHome() {
 
       {greeting}
 
-      <AskIvy />
-      {ivy.next ? <NextAppointment appointment={ivy.next} /> : null}
+      <AskAssistant />
+      {clinic.next ? <NextAppointment appointment={clinic.next} /> : null}
       <FollowUp />
       <Deals />
       <Concerns />
@@ -99,13 +99,13 @@ function NextAppointment({ appointment, fill }: { appointment: AppointmentView; 
       <Photo photo={appointment.treatment.photo} scrim style={fill ? { flex: 1, minHeight: 360, borderRadius: theme.r.card } : { height: 236, borderRadius: theme.r.card }}>
         <View style={{ position: 'absolute', start: 18, end: 18, bottom: 16, gap: 4 }}>
           <Txt variant="eyebrow" color={theme.c.onPhotoMuted}>
-            {t('ivy.home.next')}
+            {t('clinic.home.next')}
           </Txt>
           <Txt variant="title" color="#FFFFFF" accentColor="#FFFFFF">
             {text(appointment.treatment.name)}
           </Txt>
           <Txt variant="small" color={theme.c.onPhotoMuted}>
-            {`${relativeDay(appointment.start)} · ${time(appointment.start)} · ${t('ivy.home.with', { name: appointment.specialist.name })} · ${cityName(appointment.location)}`}
+            {`${relativeDay(appointment.start)} · ${time(appointment.start)} · ${t('clinic.home.with', { name: appointment.specialist.name })} · ${cityName(appointment.location)}`}
           </Txt>
         </View>
       </Photo>
@@ -114,7 +114,7 @@ function NextAppointment({ appointment, fill }: { appointment: AppointmentView; 
 }
 
 /** The assistant books and moves appointments; the demo answers a few example questions. */
-function AskIvy() {
+function AskAssistant() {
   const theme = useTheme();
   const { t } = useI18n();
   return (
@@ -135,7 +135,7 @@ function AskIvy() {
     >
       <Icon name="sparkle" size={20} color={theme.c.sand} />
       <Txt variant="body" color={theme.c.onPhotoMuted} style={{ flex: 1 }} numberOfLines={2}>
-        {t('ivy.home.ask')}
+        {t('clinic.home.ask')}
       </Txt>
       <View style={{ width: 42, height: 42, borderRadius: theme.r.control, backgroundColor: '#3A3935', alignItems: 'center', justifyContent: 'center' }}>
         <Icon name="mic" size={19} color="#FFFFFF" />
@@ -148,7 +148,7 @@ function AskIvy() {
 function FollowUp() {
   const theme = useTheme();
   const { t, time, relativeDayInline } = useI18n();
-  const { followUp } = useIvy();
+  const { followUp } = useClinic();
   if (!followUp) return null;
   const specialist = specialistById(followUp.slot.specialistId);
   const location = locationById(followUp.locationId);
@@ -157,11 +157,11 @@ function FollowUp() {
       <Photo photo={followUp.treatment.photo} style={{ width: 116 }} position="top" />
       <View style={{ flex: 1, padding: 16, gap: 8 }}>
         <Txt variant="small" color={theme.c.muted}>
-          {t('ivy.home.followUpEyebrow', { n: followUp.weeksAgo })}
+          {t('clinic.home.followUpEyebrow', { n: followUp.weeksAgo })}
         </Txt>
-        <Txt variant="heading">{t('ivy.home.followUpTitle')}</Txt>
+        <Txt variant="heading">{t('clinic.home.followUpTitle')}</Txt>
         <Txt variant="small" color={CLINIC_COLORS.body}>
-          {t('ivy.home.followUpBody', {
+          {t('clinic.home.followUpBody', {
             session: followUp.session,
             total: LASER_SERIES,
             name: specialist.name,
@@ -171,7 +171,7 @@ function FollowUp() {
         </Txt>
         <Button
           size="sm"
-          label={t('ivy.home.followUpCta')}
+          label={t('clinic.home.followUpCta')}
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() =>
             router.push({
@@ -198,9 +198,9 @@ function Deals() {
   return (
     <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 18, gap: 12, flex: 1 }}>
       <Txt variant="eyebrow" color={theme.c.muted}>
-        {t('ivy.deals.eyebrow')}
+        {t('clinic.deals.eyebrow')}
       </Txt>
-      <Txt variant="title">{t('ivy.deals.title')}</Txt>
+      <Txt variant="title">{t('clinic.deals.title')}</Txt>
       <View>
         {shown.map((deal, index) => (
           <Pressable
@@ -219,7 +219,7 @@ function Deals() {
           >
             <View style={{ flex: 1, gap: 2 }}>
               <Txt variant="caption" color={theme.c.muted}>
-                {t(`ivy.deals.${deal.group}`)}
+                {t(`clinic.deals.${deal.group}`)}
               </Txt>
               <Txt variant="bodyStrong">{text(deal.zones)}</Txt>
             </View>
@@ -227,7 +227,7 @@ function Deals() {
               <Txt variant="heading">{euro(deal.price)}</Txt>
               {deal.was ? (
                 <Txt variant="caption" color={theme.c.muted} style={{ textDecorationLine: 'line-through' }}>
-                  {t('ivy.deals.was', { price: euro(deal.was) })}
+                  {t('clinic.deals.was', { price: euro(deal.was) })}
                 </Txt>
               ) : null}
             </View>
@@ -236,9 +236,9 @@ function Deals() {
         ))}
       </View>
       <Txt variant="caption" color={theme.c.muted}>
-        {t('ivy.deals.note')}
+        {t('clinic.deals.note')}
       </Txt>
-      <Button size="sm" label={t('ivy.deals.cta')} onPress={() => router.push('/afspraak/laser')} style={{ alignSelf: 'flex-start', marginTop: 2 }} />
+      <Button size="sm" label={t('clinic.deals.cta')} onPress={() => router.push('/afspraak/laser')} style={{ alignSelf: 'flex-start', marginTop: 2 }} />
     </View>
   );
 }
@@ -256,13 +256,13 @@ function Concerns() {
     >
       <Photo photo={concern.photo} style={{ height: wide ? 230 : 172, borderRadius: theme.r.photo }} />
       <Txt variant="bodyStrong" numberOfLines={2}>
-        {t(`ivy.concern.${concern.id}`)}
+        {t(`clinic.concern.${concern.id}`)}
       </Txt>
     </Pressable>
   ));
   return (
     <View style={{ gap: wide ? 18 : 14 }}>
-      <Txt variant="title">{t('ivy.home.concerns')}</Txt>
+      <Txt variant="title">{t('clinic.home.concerns')}</Txt>
       {/* Two rows of four photos on a computer screen; a row to swipe through on a phone. */}
       {wide ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 18, rowGap: 26 }}>{cards}</View> : <Rail gap={12}>{cards}</Rail>}
     </View>
@@ -277,13 +277,13 @@ function Consult({ compact }: { compact?: boolean }) {
       {compact ? null : <Photo photo="pc-room" style={{ height: 156 }} />}
       <View style={{ padding: 18, gap: 8 }}>
         <Txt variant="eyebrow" color={theme.c.muted}>
-          {t('ivy.home.consultEyebrow')}
+          {t('clinic.home.consultEyebrow')}
         </Txt>
-        <Txt variant="title">{t('ivy.home.consultTitle')}</Txt>
+        <Txt variant="title">{t('clinic.home.consultTitle')}</Txt>
         <Txt variant="body" color={CLINIC_COLORS.body}>
-          {t('ivy.home.consultBody')}
+          {t('clinic.home.consultBody')}
         </Txt>
-        <Button label={t('ivy.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ marginTop: 8 }} />
+        <Button label={t('clinic.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ marginTop: 8 }} />
       </View>
     </View>
   );
@@ -314,14 +314,14 @@ function SkinAdvice({ fill }: { fill?: boolean }) {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Icon name="sparkle" size={14} color={theme.c.onPhoto} />
             <Txt variant="eyebrow" color={theme.c.onPhotoMuted}>
-              {t('ivy.home.aiEyebrow')}
+              {t('clinic.home.aiEyebrow')}
             </Txt>
           </View>
           <Txt variant="title" color="#FFFFFF" accentColor="#FFFFFF">
-            {t('ivy.home.aiTitle')}
+            {t('clinic.home.aiTitle')}
           </Txt>
           <Txt variant="small" color={theme.c.onPhotoMuted}>
-            {t('ivy.home.aiBody')}
+            {t('clinic.home.aiBody')}
           </Txt>
         </View>
       </Photo>
@@ -334,9 +334,9 @@ function Facts() {
   const theme = useTheme();
   const { t, num } = useI18n();
   const facts = [
-    { value: `${num(PURE_CLINICS.clients)}+`, label: t('ivy.home.clients') },
-    { value: String(PURE_CLINICS.years), label: t('ivy.home.years') },
-    { value: '2', label: t('ivy.home.locations') },
+    { value: `${num(PURE_CLINICS.clients)}+`, label: t('clinic.home.clients') },
+    { value: String(PURE_CLINICS.years), label: t('clinic.home.years') },
+    { value: '2', label: t('clinic.home.locations') },
   ];
   return (
     <View style={{ gap: 14 }}>
@@ -363,7 +363,7 @@ function Facts() {
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
         <Icon name="clock" size={15} color={theme.c.muted} />
         <Txt variant="small" color={theme.c.muted}>
-          {t('ivy.hours')}
+          {t('clinic.hours')}
         </Txt>
       </View>
     </View>

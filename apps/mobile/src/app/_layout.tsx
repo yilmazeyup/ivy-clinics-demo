@@ -7,7 +7,7 @@ import {
 import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_600SemiBold } from '@expo-google-fonts/ibm-plex-sans-arabic';
 import { Jost_300Light, Jost_400Regular, Jost_500Medium } from '@expo-google-fonts/jost';
 import { useFonts } from 'expo-font';
-import { LOCALES, type Locale } from '@pure-ivy/shared';
+import { LOCALES, type Locale } from '@pure-clinics/shared';
 import * as Linking from 'expo-linking';
 import { LocaleProvider, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';

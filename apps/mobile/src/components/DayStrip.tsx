@@ -1,4 +1,4 @@
-import { sameDay } from '@pure-ivy/shared';
+import { sameDay } from '@pure-clinics/shared';
 import * as Haptics from 'expo-haptics';
 import { Pressable, View } from 'react-native';
 

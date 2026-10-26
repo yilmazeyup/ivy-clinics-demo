@@ -70,7 +70,7 @@ type WeekHours = Record<number, { open: number; close: number } | null>;
 
 export type ClinicLocation = { id: LocationId; city: string; address: string; phone: string; hours: WeekHours };
 
-export type IvyAppointment = {
+export type Appointment = {
   id: string;
   treatmentId: TreatmentId;
   specialistId: SpecialistId;
@@ -553,7 +553,7 @@ export const TREATMENTS: Treatment[] = [
     minutes: 30,
     priceFrom: 35,
     deposit: 0,
-    photo: 'ivy-lashes',
+    photo: 'stock-lashes',
   },
   {
     id: 'nails',
@@ -637,7 +637,7 @@ export function timeOfDay(date: Date): 'morning' | 'afternoon' | 'evening' {
   return 'evening';
 }
 
-export const IVY_MEMBER = { firstName: 'Lisa', lastName: 'de Vries', locationId: 'nijmegen' as LocationId };
+export const MEMBER = { firstName: 'Lisa', lastName: 'de Vries', locationId: 'nijmegen' as LocationId };
 
 /**
  * Opening hours on a day: of one location, or without a location the span of all of them
@@ -694,7 +694,7 @@ export function freeSlots(
   day: Date,
   now: Date,
   locationId: LocationId,
-  extraBusy: IvyAppointment[] = [],
+  extraBusy: Appointment[] = [],
 ): FreeSlot[] {
   const hours = openingHours(day, locationId);
   if (!hours) return [];
@@ -729,7 +729,7 @@ export function freeSlots(
 }
 
 /** The member's history and next visit: acne therapy coming up, and two laser sessions behind her. */
-export function initialIvyAppointments(now: Date): IvyAppointment[] {
+export function initialAppointments(now: Date): Appointment[] {
   const today = startOfDay(now);
   let next = addDays(today, 3);
   while (!specialistById('eva').days.includes(next.getDay())) next = addDays(next, 1);
@@ -749,7 +749,7 @@ export const LASER_SERIES = 8;
  */
 export function followUpSuggestion(
   now: Date,
-  booked: IvyAppointment[],
+  booked: Appointment[],
 ): { treatment: Treatment; slot: FreeSlot; weeksAgo: number; session: number; locationId: LocationId } | null {
   const laser = booked.filter((a) => a.treatmentId === 'laser');
   const past = laser.filter((a) => a.start.getTime() < now.getTime()).sort((a, b) => b.start.getTime() - a.start.getTime());

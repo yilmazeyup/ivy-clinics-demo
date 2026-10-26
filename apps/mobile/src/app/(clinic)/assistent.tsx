@@ -3,7 +3,7 @@ import {
   DEALS,
   freeSlots,
   inSentence,
-  IVY_MEMBER,
+  MEMBER,
   LASER_ZONES,
   locationById,
   packagePrice,
@@ -13,7 +13,7 @@ import {
   type FreeSlot,
   type LocationId,
   type TreatmentId,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import * as Haptics from 'expo-haptics';
 import { router, type Href } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -26,7 +26,7 @@ import { Photo } from '@/components/Photo';
 import { Rail, useModalTop } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName, useIvy } from '@/ivy';
+import { cityName, useClinic } from '@/clinic';
 import { useTheme } from '@/theme';
 
 /** Free times the assistant offers: for a new intake, or to move an existing appointment (`replace`). */
@@ -49,11 +49,11 @@ export default function PureAssistant() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { t, text, euro, locale } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const scroll = useRef<ScrollViewInstance>(null);
   const nextId = useRef(1);
   const [messages, setMessages] = useState<Message[]>(() => [
-    { id: 0, kind: 'text', from: 'bot', text: t('ivy.assistant.intro', { name: IVY_MEMBER.firstName }) },
+    { id: 0, kind: 'text', from: 'bot', text: t('clinic.assistant.intro', { name: MEMBER.firstName }) },
   ]);
   const [typing, setTyping] = useState(false);
   const [used, setUsed] = useState<Prompt[]>([]);
@@ -64,9 +64,9 @@ export default function PureAssistant() {
   const consult = treatmentById('consult');
   const evening = (() => {
     for (let i = 0; i < 21; i++) {
-      const day = addDays(startOfDay(ivy.now), i);
+      const day = addDays(startOfDay(clinic.now), i);
       if (day.getDay() !== 3) continue;
-      const slots = freeSlots(consult, 'any', day, ivy.now, 'nijmegen', ivy.appointments).filter((s) => s.start.getHours() >= 18);
+      const slots = freeSlots(consult, 'any', day, clinic.now, 'nijmegen', clinic.appointments).filter((s) => s.start.getHours() >= 18);
       if (slots.length > 0) return slots.slice(0, 3);
     }
     return [];
@@ -84,27 +84,27 @@ export default function PureAssistant() {
 
   const bookFirst = (): NewMessage[] => {
     const slot = evening[0];
-    if (!slot) return [{ kind: 'text', from: 'bot', text: t('ivy.assistant.fallback') }];
-    const appointmentId = ivy.bookAppointment({ treatmentId: 'consult', specialistId: slot.specialistId, locationId: 'nijmegen', start: slot.start });
+    if (!slot) return [{ kind: 'text', from: 'bot', text: t('clinic.assistant.fallback') }];
+    const appointmentId = clinic.bookAppointment({ treatmentId: 'consult', specialistId: slot.specialistId, locationId: 'nijmegen', start: slot.start });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     return [{ kind: 'booked', appointmentId }];
   };
 
   // The next appointment with its first free times on later days, with the same specialist.
   const reschedule = (): NewMessage[] => {
-    const next = ivy.next;
-    if (!next) return [{ kind: 'text', from: 'bot', text: t('ivy.assistant.reply.none') }];
-    const others = ivy.appointments.filter((a) => a.id !== next.id);
+    const next = clinic.next;
+    if (!next) return [{ kind: 'text', from: 'bot', text: t('clinic.assistant.reply.none') }];
+    const others = clinic.appointments.filter((a) => a.id !== next.id);
     const slots: FreeSlot[] = [];
     for (let i = 1; i <= 14 && slots.length < 3; i++) {
       const day = addDays(startOfDay(next.start), i);
-      slots.push(...freeSlots(next.treatment, next.specialistId, day, ivy.now, next.locationId, others).slice(0, 3 - slots.length));
+      slots.push(...freeSlots(next.treatment, next.specialistId, day, clinic.now, next.locationId, others).slice(0, 3 - slots.length));
     }
     return [
       {
         kind: 'text',
         from: 'bot',
-        text: t('ivy.assistant.reply.reschedule', { treatment: inSentence(text(next.treatment.name), locale), name: next.specialist.name }),
+        text: t('clinic.assistant.reply.reschedule', { treatment: inSentence(text(next.treatment.name), locale), name: next.specialist.name }),
       },
       { kind: 'options', treatmentId: next.treatmentId, locationId: next.locationId, slots, replace: next.id },
     ];
@@ -114,8 +114,8 @@ export default function PureAssistant() {
     const total = LASER_ZONES.filter((z) => PRICE_ZONES.includes(z.id)).reduce((sum, z) => sum + z.price, 0);
     const deal = DEALS.find((d) => d.id === PRICE_DEAL);
     return [
-      { kind: 'text', from: 'bot', text: t('ivy.assistant.reply.price', { total: euro(total), package: euro(packagePrice(total)), deal: euro(deal?.price ?? total) }) },
-      { kind: 'link', label: t('ivy.assistant.link.deal'), href: { pathname: '/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: PRICE_DEAL } } },
+      { kind: 'text', from: 'bot', text: t('clinic.assistant.reply.price', { total: euro(total), package: euro(packagePrice(total)), deal: euro(deal?.price ?? total) }) },
+      { kind: 'link', label: t('clinic.assistant.link.deal'), href: { pathname: '/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: PRICE_DEAL } } },
     ];
   };
 
@@ -123,19 +123,19 @@ export default function PureAssistant() {
     if (typing) return;
     setUsed((list) => [...list, prompt]);
     if (prompt === 'q1') {
-      push({ kind: 'text', from: 'user', text: t('ivy.assistant.q1') });
+      push({ kind: 'text', from: 'user', text: t('clinic.assistant.q1') });
       reply([
-        { kind: 'text', from: 'bot', text: t('ivy.assistant.a1') },
+        { kind: 'text', from: 'bot', text: t('clinic.assistant.a1') },
         { kind: 'options', treatmentId: 'consult', locationId: 'nijmegen', slots: evening },
       ]);
     } else if (prompt === 'q2') {
-      push({ kind: 'text', from: 'user', text: t('ivy.assistant.q2') });
+      push({ kind: 'text', from: 'user', text: t('clinic.assistant.q2') });
       reply(bookFirst());
     } else {
-      push({ kind: 'text', from: 'user', text: t(`ivy.assistant.chip.${prompt}`) });
+      push({ kind: 'text', from: 'user', text: t(`clinic.assistant.chip.${prompt}`) });
       if (prompt === 'reschedule') reply(reschedule());
       else if (prompt === 'price') reply(price());
-      else reply([{ kind: 'text', from: 'bot', text: t('ivy.assistant.reply.insurance') }]);
+      else reply([{ kind: 'text', from: 'bot', text: t('clinic.assistant.reply.insurance') }]);
     }
   };
 
@@ -144,7 +144,7 @@ export default function PureAssistant() {
     if (!typed || typing) return;
     setDraft('');
     push({ kind: 'text', from: 'user', text: typed });
-    reply([{ kind: 'text', from: 'bot', text: t('ivy.assistant.fallback') }]);
+    reply([{ kind: 'text', from: 'bot', text: t('clinic.assistant.fallback') }]);
   };
 
   // The first suggested intake books like the follow-up question; any other time opens the booking screen on it.
@@ -172,7 +172,7 @@ export default function PureAssistant() {
     ...(used.includes('q1') && !booked ? (['q2'] as Prompt[]) : []),
     ...(['reschedule', 'price', 'insurance'] as Prompt[]).filter((p) => !used.includes(p)),
   ];
-  const label = (p: Prompt) => (p === 'q1' || p === 'q2' ? t(`ivy.assistant.${p}`) : t(`ivy.assistant.chip.${p}`));
+  const label = (p: Prompt) => (p === 'q1' || p === 'q2' ? t(`clinic.assistant.${p}`) : t(`clinic.assistant.chip.${p}`));
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.c.bg }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -192,9 +192,9 @@ export default function PureAssistant() {
           <Icon name="sparkle" size={20} color={theme.c.sand} />
         </View>
         <View style={{ flex: 1 }}>
-          <Txt variant="heading">{t('ivy.assistant.title')}</Txt>
+          <Txt variant="heading">{t('clinic.assistant.title')}</Txt>
           <Txt variant="small" color={theme.c.muted}>
-            {t('ivy.assistant.subtitle')}
+            {t('clinic.assistant.subtitle')}
           </Txt>
         </View>
         <IconButton icon="close" label={t('common.close')} tone="surface" onPress={() => router.back()} />
@@ -251,7 +251,7 @@ export default function PureAssistant() {
             value={draft}
             onChangeText={setDraft}
             onSubmitEditing={send}
-            placeholder={t('ivy.assistant.placeholder')}
+            placeholder={t('clinic.assistant.placeholder')}
             placeholderTextColor={theme.c.muted}
             returnKeyType="send"
             style={{
@@ -271,7 +271,7 @@ export default function PureAssistant() {
           ) : (
             <IconButton
               icon="mic"
-              label={t('ivy.assistant.mic')}
+              label={t('clinic.assistant.mic')}
               tone="ink"
               onPress={() => push({ kind: 'text', from: 'bot', text: t('common.demoNote') })}
               size={46}
@@ -330,7 +330,7 @@ function Options({ choice, onPick }: { choice: SlotChoice; onPick: (choice: Slot
   if (choice.slots.length === 0) {
     return (
       <Txt variant="small" color={theme.c.muted}>
-        {t('ivy.book.noTimes')}
+        {t('clinic.book.noTimes')}
       </Txt>
     );
   }
@@ -371,8 +371,8 @@ function Options({ choice, onPick }: { choice: SlotChoice; onPick: (choice: Slot
 function Booked({ appointmentId }: { appointmentId: string }) {
   const theme = useTheme();
   const { t, dayShort, time } = useI18n();
-  const ivy = useIvy();
-  const appointment = ivy.byId(appointmentId);
+  const clinic = useClinic();
+  const appointment = clinic.byId(appointmentId);
   if (!appointment) return null;
   return (
     <View style={{ alignSelf: 'stretch', borderRadius: theme.r.card, backgroundColor: theme.c.ink, padding: 16, gap: 12 }}>
@@ -381,11 +381,11 @@ function Booked({ appointmentId }: { appointmentId: string }) {
           <Icon name="check" size={17} strokeWidth={2.4} />
         </View>
         <Txt variant="bodyStrong" color="#FFFFFF" style={{ flex: 1 }}>
-          {t('ivy.assistant.bookedTitle')}
+          {t('clinic.assistant.bookedTitle')}
         </Txt>
       </View>
       <Txt variant="small" color={theme.c.onPhotoMuted}>
-        {t('ivy.assistant.bookedBody', {
+        {t('clinic.assistant.bookedBody', {
           when: `${dayShort(appointment.start)} ${time(appointment.start)}`,
           name: appointment.specialist.name,
           city: cityName(appointment.location),

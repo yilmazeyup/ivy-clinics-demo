@@ -1,4 +1,4 @@
-import { LOCATIONS, openingHours, sameDay, type TreatmentCategory } from '@pure-ivy/shared';
+import { LOCATIONS, openingHours, sameDay, type TreatmentCategory } from '@pure-clinics/shared';
 import type { CSSProperties } from 'react';
 
 import { isOpen, phaseOf, ROOMS, works, type Appt } from '../data/clinics';

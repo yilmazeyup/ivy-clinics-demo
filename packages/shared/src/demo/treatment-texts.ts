@@ -1,6 +1,6 @@
 // Treatment details and concern explanations in six languages, written for the app from pureclinics.nl (October 2026).
 import type { L10n } from '../i18n/locales';
-import type { ConcernId, TreatmentId } from './ivy';
+import type { ConcernId, TreatmentId } from './clinic';
 import type { TreatmentInfo } from './treatment-info';
 
 const t = (nl: string, en: string, ar: string, fr: string, de: string, it: string): L10n => ({ nl, en, ar, fr, de, it });

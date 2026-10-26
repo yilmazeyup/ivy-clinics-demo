@@ -1,4 +1,4 @@
-import type { Product } from '@pure-ivy/shared';
+import type { Product } from '@pure-clinics/shared';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 

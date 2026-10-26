@@ -1,4 +1,4 @@
-import { addDays, LOCATIONS, productById, sameDay, startOfDay } from '@pure-ivy/shared';
+import { addDays, LOCATIONS, productById, sameDay, startOfDay } from '@pure-clinics/shared';
 import { useEffect, useRef, useState } from 'react';
 
 import { AgendaView } from '../components/AgendaView';

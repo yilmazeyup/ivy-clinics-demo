@@ -1,4 +1,4 @@
-import { LOCATIONS, PURE_CLINICS, openingHours } from '@pure-ivy/shared';
+import { LOCATIONS, PURE_CLINICS, openingHours } from '@pure-clinics/shared';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
@@ -12,7 +12,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName, roleKey, useIvy, type AppointmentView } from '@/ivy';
+import { cityName, roleKey, useClinic, type AppointmentView } from '@/clinic';
 import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
@@ -20,27 +20,27 @@ import { useTheme } from '@/theme';
 const HELP_URL = 'https://yilmazeyup.github.io/pure-clinics-demo/hulp/';
 
 /** Everything the member has planned or bought, the membership, and how to reach both clinics. */
-export default function MyIvy() {
+export default function MyPure() {
   const theme = useTheme();
   const { t, locale } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const { orders } = useDemo();
-  const upcoming = ivy.upcoming;
+  const upcoming = clinic.upcoming;
 
   return (
     <Screen gap={26}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Txt variant="display">{t('ivy.mine.title')}</Txt>
+        <Txt variant="display">{t('clinic.mine.title')}</Txt>
         <IconButton icon="globe" label={t('common.settings')} tone="surface" onPress={() => router.push('/settings')} />
       </View>
 
-      <Section title={t('ivy.appts.upcoming')}>
+      <Section title={t('clinic.appts.upcoming')}>
         {upcoming.length === 0 ? (
           <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, padding: 20, gap: 14 }}>
             <Txt variant="body" color={theme.c.muted}>
-              {t('ivy.appts.empty')}
+              {t('clinic.appts.empty')}
             </Txt>
-            <Button size="sm" label={t('ivy.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ alignSelf: 'flex-start' }} />
+            <Button size="sm" label={t('clinic.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ alignSelf: 'flex-start' }} />
           </View>
         ) : (
           upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} />)
@@ -50,7 +50,7 @@ export default function MyIvy() {
       <Membership />
 
       {orders.length > 0 ? (
-        <Section title={t('ivy.mine.orders')}>
+        <Section title={t('clinic.mine.orders')}>
           <List>
             {orders.map((order, index) => (
               <OrderRow key={order.id} order={order} first={index === 0} />
@@ -59,10 +59,10 @@ export default function MyIvy() {
         </Section>
       ) : null}
 
-      {ivy.past.length > 0 ? (
-        <Section title={t('ivy.appts.past')}>
+      {clinic.past.length > 0 ? (
+        <Section title={t('clinic.appts.past')}>
           <List>
-            {ivy.past.map((a, index) => (
+            {clinic.past.map((a, index) => (
               <PastRow key={a.id} appointment={a} first={index === 0} />
             ))}
           </List>
@@ -71,11 +71,11 @@ export default function MyIvy() {
 
       <Contact />
 
-      <Section title={t('ivy.mine.more')}>
+      <Section title={t('clinic.mine.more')}>
         <List>
-          <LinkRow icon="camera" label={t('ivy.journal.title')} onPress={() => router.push('/journaal')} first />
+          <LinkRow icon="camera" label={t('clinic.journal.title')} onPress={() => router.push('/journaal')} first />
           <LinkRow icon="globe" label={t('settings.language')} onPress={() => router.push('/settings')} />
-          <LinkRow icon="video" label={t('ivy.mine.help')} onPress={() => Linking.openURL(`${HELP_URL}?lang=${locale}`)} />
+          <LinkRow icon="video" label={t('clinic.mine.help')} onPress={() => Linking.openURL(`${HELP_URL}?lang=${locale}`)} />
         </List>
       </Section>
     </Screen>
@@ -102,7 +102,7 @@ function List({ children }: { children: ReactNode }) {
 function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
   const theme = useTheme();
   const { t, text, relativeDay, time } = useI18n();
-  const ivy = useIvy();
+  const clinic = useClinic();
   const toast = useToast();
   const { treatment, specialist, location } = appointment;
 
@@ -113,7 +113,7 @@ function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
         <View style={{ gap: 3 }}>
           <Txt variant="smallStrong" color={theme.c.muted}>{`${relativeDay(appointment.start)} · ${time(appointment.start)}`}</Txt>
           <Txt variant="title">{text(treatment.name)}</Txt>
-          <Txt variant="small" color={theme.c.muted}>{`${t('ivy.home.with', { name: specialist.name })} · ${t(roleKey(specialist.role))}`}</Txt>
+          <Txt variant="small" color={theme.c.muted}>{`${t('clinic.home.with', { name: specialist.name })} · ${t(roleKey(specialist.role))}`}</Txt>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Icon name="pin" size={16} color={theme.c.muted} />
@@ -138,8 +138,8 @@ function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
             label={t('common.cancel')}
             style={{ flex: 1 }}
             onPress={() => {
-              ivy.cancelAppointment(appointment.id);
-              toast(t('ivy.appts.cancelled'));
+              clinic.cancelAppointment(appointment.id);
+              toast(t('clinic.appts.cancelled'));
             }}
           />
         </View>
@@ -154,16 +154,16 @@ function Membership() {
   const { t } = useI18n();
   const { member, joinMembership } = useDemo();
   const toast = useToast();
-  const perks = [t('ivy.member.perk1'), t('ivy.member.perk2'), t('ivy.member.perk3'), t('ivy.member.perk4')];
+  const perks = [t('clinic.member.perk1'), t('clinic.member.perk2'), t('clinic.member.perk3'), t('clinic.member.perk4')];
   return (
     <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, padding: 18, gap: 12 }}>
       <Txt variant="eyebrow" color={theme.c.muted}>
-        {t('ivy.member.eyebrow')}
+        {t('clinic.member.eyebrow')}
       </Txt>
-      <Txt variant="title">{member ? t('ivy.member.joined') : t('ivy.member.title')}</Txt>
+      <Txt variant="title">{member ? t('clinic.member.joined') : t('clinic.member.title')}</Txt>
       {member ? null : (
         <Txt variant="body" color={theme.c.muted}>
-          {t('ivy.member.body')}
+          {t('clinic.member.body')}
         </Txt>
       )}
       <View style={{ gap: 8 }}>
@@ -179,11 +179,11 @@ function Membership() {
       {member ? null : (
         <Button
           size="sm"
-          label={t('ivy.member.join')}
+          label={t('clinic.member.join')}
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() => {
             joinMembership();
-            toast(t('ivy.member.joined'));
+            toast(t('clinic.member.joined'));
           }}
         />
       )}
@@ -199,7 +199,7 @@ function Contact() {
   // The left-to-right mark keeps "09:00–17:00" in order inside Arabic text.
   const hours = (h: { open: number; close: number }) => `\u200E${String(h.open).padStart(2, '0')}:00–${String(h.close).padStart(2, '0')}:00`;
   return (
-    <Section title={t('ivy.contact.title')}>
+    <Section title={t('clinic.contact.title')}>
       <List>
         {LOCATIONS.map((location, index) => {
           const today = openingHours(now, location.id);
@@ -225,11 +225,11 @@ function Contact() {
                   {location.address}
                 </Txt>
                 <Txt variant="small" color={theme.c.muted}>
-                  {today ? t('ivy.contact.today', { hours: hours(today) }) : t('ivy.contact.closed')}
+                  {today ? t('clinic.contact.today', { hours: hours(today) }) : t('clinic.contact.closed')}
                 </Txt>
               </View>
               <Txt variant="smallStrong" color={theme.c.primary}>
-                {t('ivy.contact.call', { phone: location.phone })}
+                {t('clinic.contact.call', { phone: location.phone })}
               </Txt>
             </Pressable>
           );
@@ -318,7 +318,7 @@ function PastRow({ appointment, first }: { appointment: AppointmentView; first: 
         }
       >
         <Txt variant="smallStrong" color={theme.c.primary}>
-          {t('ivy.appts.bookAgain')}
+          {t('clinic.appts.bookAgain')}
         </Txt>
       </Pressable>
     </View>

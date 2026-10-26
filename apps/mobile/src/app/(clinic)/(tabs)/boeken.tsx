@@ -2,7 +2,7 @@ import {
   CONCERNS,
   concernInfo,
   CLINIC_COLORS,
-  IVY_MEMBER,
+  MEMBER,
   LOCATIONS,
   TREATMENTS,
   treatmentById,
@@ -10,7 +10,7 @@ import {
   type LocationId,
   type Treatment,
   type TreatmentCategory,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -22,19 +22,19 @@ import { Photo } from '@/components/Photo';
 import { Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName } from '@/ivy';
+import { cityName } from '@/clinic';
 import { useLayout } from '@/layout';
 import { useTheme } from '@/theme';
 
 type Category = 'all' | TreatmentCategory;
 const CATEGORIES: Category[] = ['all', 'consult', 'removal', 'conditions', 'skin', 'hair', 'beauty'];
 
-export default function IvyBook() {
+export default function BookScreen() {
   const theme = useTheme();
   const { t } = useI18n();
   const params = useLocalSearchParams<{ concern?: string; at?: string }>();
   const [category, setCategory] = useState<Category>('all');
-  const [location, setLocation] = useState<LocationId>(IVY_MEMBER.locationId);
+  const [location, setLocation] = useState<LocationId>(MEMBER.locationId);
   const [concern, setConcern] = useState<ConcernId | null>(null);
   const { wide } = useLayout();
 
@@ -58,9 +58,9 @@ export default function IvyBook() {
   return (
     <Screen gap={22} width="page">
       <View style={{ gap: 8 }}>
-        <Txt variant="display">{t('ivy.book.title')}</Txt>
+        <Txt variant="display">{t('clinic.book.title')}</Txt>
         <Txt variant="body" color={theme.c.muted}>
-          {t('ivy.book.intro')}
+          {t('clinic.book.intro')}
         </Txt>
       </View>
 
@@ -68,7 +68,7 @@ export default function IvyBook() {
 
       <View style={{ gap: 10 }}>
         <Txt variant="eyebrow" color={theme.c.muted}>
-          {t('ivy.book.location')}
+          {t('clinic.book.location')}
         </Txt>
         <Rail gap={8}>
           {LOCATIONS.map((l) => (
@@ -79,12 +79,12 @@ export default function IvyBook() {
 
       <Rail gap={8}>
         {concern ? (
-          <Chip label={t(`ivy.concern.${concern}`)} selected iconAfter="close" onPress={() => setConcern(null)} />
+          <Chip label={t(`clinic.concern.${concern}`)} selected iconAfter="close" onPress={() => setConcern(null)} />
         ) : null}
         {CATEGORIES.map((c) => (
           <Chip
             key={c}
-            label={t(`ivy.cat.${c}`)}
+            label={t(`clinic.cat.${c}`)}
             selected={!concern && category === c}
             onPress={() => {
               setConcern(null);
@@ -114,9 +114,9 @@ export default function IvyBook() {
 function Steps() {
   const theme = useTheme();
   const { t } = useI18n();
-  const steps = [t('ivy.steps.1'), t('ivy.steps.2'), t('ivy.steps.3'), t('ivy.steps.4')];
+  const steps = [t('clinic.steps.1'), t('clinic.steps.2'), t('clinic.steps.3'), t('clinic.steps.4')];
   return (
-    <View accessibilityRole="list" accessibilityLabel={t('ivy.steps.title')} style={{ flexDirection: 'row', gap: 6 }}>
+    <View accessibilityRole="list" accessibilityLabel={t('clinic.steps.title')} style={{ flexDirection: 'row', gap: 6 }}>
       {steps.map((step, index) => (
         <View key={step} style={{ flex: 1, gap: 6, paddingTop: 10, borderTopWidth: 2, borderTopColor: index === 0 ? theme.c.ink : theme.c.line }}>
           <Txt variant="caption" color={theme.c.muted}>
@@ -136,7 +136,7 @@ function ConcernNote({ concern }: { concern: ConcernId }) {
   return (
     <View style={{ padding: 16, gap: 6, borderRadius: theme.r.card, backgroundColor: theme.c.surface, borderWidth: 1, borderColor: theme.c.line }}>
       <Txt variant="eyebrow" color={theme.c.muted}>
-        {t('ivy.concern.about', { concern: t(`ivy.concern.${concern}`) })}
+        {t('clinic.concern.about', { concern: t(`clinic.concern.${concern}`) })}
       </Txt>
       <Txt variant="body">{text(concernInfo(concern))}</Txt>
     </View>
@@ -161,12 +161,12 @@ function ConsultCard({ onPress }: { onPress: () => void }) {
     >
       <Photo photo={consult.photo} style={{ width: 112 }} />
       <View style={{ flex: 1, padding: 16, gap: 6 }}>
-        <Badge label={t('ivy.book.startHere')} tone="ink" />
+        <Badge label={t('clinic.book.startHere')} tone="ink" />
         <Txt variant="heading">{text(consult.name)}</Txt>
         <Txt variant="small" color={CLINIC_COLORS.body}>
           {text(consult.description)}
         </Txt>
-        <Txt variant="smallStrong">{`${t('common.minutes', { n: consult.minutes })} · ${t('ivy.price.free')}`}</Txt>
+        <Txt variant="smallStrong">{`${t('common.minutes', { n: consult.minutes })} · ${t('clinic.price.free')}`}</Txt>
       </View>
     </Pressable>
   );
@@ -193,15 +193,15 @@ function TreatmentRow({ treatment, first, onPress }: { treatment: Treatment; fir
       <View style={{ flex: 1, gap: 3 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Txt variant="caption" color={theme.c.muted}>
-            {t(`ivy.cat.${treatment.category}`)}
+            {t(`clinic.cat.${treatment.category}`)}
           </Txt>
-          {treatment.insurable ? <Badge label={t('ivy.book.insurable')} tone="outline" /> : null}
+          {treatment.insurable ? <Badge label={t('clinic.book.insurable')} tone="outline" /> : null}
         </View>
         <Txt variant="heading">{text(treatment.name)}</Txt>
         <Txt variant="small" color={theme.c.muted} numberOfLines={2}>
           {text(treatment.description)}
         </Txt>
-        <Txt variant="smallStrong">{`${t('common.minutes', { n: treatment.minutes })} · ${t('ivy.price.from', { price: euro(treatment.priceFrom) })}`}</Txt>
+        <Txt variant="smallStrong">{`${t('common.minutes', { n: treatment.minutes })} · ${t('clinic.price.from', { price: euro(treatment.priceFrom) })}`}</Txt>
       </View>
       <Icon name="chevron" size={18} color={theme.c.muted} />
     </Pressable>

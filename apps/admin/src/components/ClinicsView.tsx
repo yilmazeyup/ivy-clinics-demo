@@ -1,4 +1,4 @@
-import { CLINIC_COLORS, LOCATIONS, openingHours, sameDay, type TreatmentCategory } from '@pure-ivy/shared';
+import { CLINIC_COLORS, LOCATIONS, openingHours, sameDay, type TreatmentCategory } from '@pure-clinics/shared';
 import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 
 import { isOpen, phaseOf, revenueOf, ROOMS, works, type Appt } from '../data/clinics';

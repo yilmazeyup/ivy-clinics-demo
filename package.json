@@ -1,5 +1,5 @@
 {
-  "name": "pure-ivy",
+  "name": "pure-clinics",
   "private": true,
   "workspaces": [
     "apps/mobile",

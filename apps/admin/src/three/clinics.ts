@@ -1,4 +1,4 @@
-import { CLINIC_COLORS } from '@pure-ivy/shared';
+import { CLINIC_COLORS } from '@pure-clinics/shared';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';

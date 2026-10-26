@@ -8,7 +8,7 @@ import {
   treatmentInfo,
   type Treatment,
   type TreatmentInfo,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
@@ -42,12 +42,12 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
   const products = productsAfter(treatment.id);
   // A free intake first makes sense for skin treatments, not for the intake itself or the beauty studio.
   const intakeFirst = treatment.id !== 'consult' && treatment.category !== 'beauty';
-  const price = treatment.priceFrom ? t('ivy.price.from', { price: euro(treatment.priceFrom) }) : t('ivy.price.free');
+  const price = treatment.priceFrom ? t('clinic.price.from', { price: euro(treatment.priceFrom) }) : t('clinic.price.free');
 
   const footer = (
     <Footer>
       <Button
-        label={t('ivy.info.book')}
+        label={t('clinic.info.book')}
         iconAfter="arrow"
         onPress={() => router.push({ pathname: '/afspraak/[treatmentId]', params: { treatmentId: treatment.id, ...(location ? { location } : {}) } })}
       />
@@ -66,9 +66,9 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         <View style={{ gap: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Txt variant="eyebrow" color={theme.c.muted}>
-              {t(`ivy.cat.${treatment.category}`)}
+              {t(`clinic.cat.${treatment.category}`)}
             </Txt>
-            {treatment.insurable ? <Badge label={t('ivy.book.insurable')} tone="outline" /> : null}
+            {treatment.insurable ? <Badge label={t('clinic.book.insurable')} tone="outline" /> : null}
           </View>
           <Txt variant="display">{text(treatment.name)}</Txt>
           <Txt variant="body" color={theme.c.ink}>
@@ -94,9 +94,9 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
           >
             <Icon name="sparkle" size={20} />
             <View style={{ flex: 1, gap: 2 }}>
-              <Txt variant="bodyStrong">{t('ivy.info.intakeFirst')}</Txt>
+              <Txt variant="bodyStrong">{t('clinic.info.intakeFirst')}</Txt>
               <Txt variant="small" color={theme.c.muted}>
-                {t('ivy.home.consultBody')}
+                {t('clinic.home.consultBody')}
               </Txt>
             </View>
             <Icon name="chevron" size={18} color={theme.c.muted} />
@@ -104,7 +104,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         ) : null}
 
         {helps.length > 0 ? (
-          <Section title={t('ivy.info.helps')}>
+          <Section title={t('clinic.info.helps')}>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {helps.map((c) => (
                 <Pressable
@@ -120,7 +120,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
                     opacity: pressed ? 0.8 : 1,
                   })}
                 >
-                  <Txt variant="smallStrong">{t(`ivy.concern.${c.id}`)}</Txt>
+                  <Txt variant="smallStrong">{t(`clinic.concern.${c.id}`)}</Txt>
                 </Pressable>
               ))}
             </View>
@@ -128,7 +128,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         ) : null}
 
         {info ? (
-          <Section title={t('ivy.info.how')}>
+          <Section title={t('clinic.info.how')}>
             <Txt variant="body" color={theme.c.ink}>
               {text(info.how)}
             </Txt>
@@ -138,7 +138,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         {treatment.id === 'laser' ? <ZonePrices /> : null}
 
         {info?.results ? (
-          <Section title={t('ivy.info.results')}>
+          <Section title={t('clinic.info.results')}>
             <Txt variant="body" color={theme.c.ink}>
               {text(info.results)}
             </Txt>
@@ -148,7 +148,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         <BeforeAfter treatment={treatment} />
 
         {info?.aftercare?.length ? (
-          <Section title={t('ivy.info.aftercare')}>
+          <Section title={t('clinic.info.aftercare')}>
             <View style={{ gap: 10 }}>
               {info.aftercare.map((tip) => (
                 <View key={tip.nl} style={{ flexDirection: 'row', gap: 10 }}>
@@ -166,13 +166,13 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
           <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, backgroundColor: theme.c.sand }}>
             <Icon name="wallet" size={18} color={theme.c.primary} />
             <Txt variant="small" color={theme.c.ink} style={{ flex: 1 }}>
-              {t('ivy.book.insurance')}
+              {t('clinic.book.insurance')}
             </Txt>
           </View>
         ) : null}
 
         {products.length > 0 ? (
-          <Section title={t('ivy.info.products')}>
+          <Section title={t('clinic.info.products')}>
             <Rail gap={12}>
               {products.map((p) => (
                 <ProductCard key={p.id} product={p} width={148} />
@@ -182,7 +182,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         ) : null}
 
         {info?.faq?.length ? (
-          <Section title={t('ivy.info.faq')}>
+          <Section title={t('clinic.info.faq')}>
             <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, paddingHorizontal: 16 }}>
               {info.faq.map((item, index) => (
                 <Question key={item.q.nl} q={text(item.q)} a={text(item.a)} first={index === 0} />
@@ -205,14 +205,14 @@ function BeforeAfter({ treatment }: { treatment: Treatment }) {
   // The photos are 800 × 434; one fills the column on a computer, and the next one peeks in on a phone.
   const width = photos.length === 1 || wide ? inner(DETAIL_WIDTH) : 300;
   return (
-    <Section title={t('ivy.info.results2')}>
+    <Section title={t('clinic.info.results2')}>
       <Rail gap={12}>
         {photos.map((photo) => (
           <Photo key={photo} photo={photo} style={{ width, height: Math.round((width * 434) / 800), borderRadius: theme.r.photo }} />
         ))}
       </Rail>
       <Txt variant="small" color={theme.c.muted}>
-        {t('ivy.info.results2Note')}
+        {t('clinic.info.results2Note')}
       </Txt>
     </Section>
   );
@@ -223,11 +223,11 @@ function Facts({ treatment, info, price }: { treatment: Treatment; info: Treatme
   const theme = useTheme();
   const { t, text } = useI18n();
   const facts = [
-    { label: t('ivy.info.minutes'), value: t('common.minutes', { n: treatment.minutes }) },
-    info?.sessions ? { label: t('ivy.info.sessions'), value: text(info.sessions) } : null,
-    info?.interval ? { label: t('ivy.info.interval'), value: text(info.interval) } : null,
-    info?.downtime ? { label: t('ivy.info.downtime'), value: text(info.downtime) } : null,
-    { label: t('ivy.info.price'), value: price },
+    { label: t('clinic.info.minutes'), value: t('common.minutes', { n: treatment.minutes }) },
+    info?.sessions ? { label: t('clinic.info.sessions'), value: text(info.sessions) } : null,
+    info?.interval ? { label: t('clinic.info.interval'), value: text(info.interval) } : null,
+    info?.downtime ? { label: t('clinic.info.downtime'), value: text(info.downtime) } : null,
+    { label: t('clinic.info.price'), value: price },
   ].filter((f): f is { label: string; value: string } => f !== null);
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -248,7 +248,7 @@ function ZonePrices() {
   const theme = useTheme();
   const { t, text, euro } = useI18n();
   return (
-    <Section title={t('ivy.info.zones')}>
+    <Section title={t('clinic.info.zones')}>
       <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, paddingHorizontal: 16 }}>
         {LASER_ZONES.map((zone, index) => (
           <View
@@ -266,7 +266,7 @@ function ZonePrices() {
               {text(zone.name)}
             </Txt>
             <Txt variant="small" color={theme.c.muted}>
-              {t('ivy.info.zonePackage', { price: euro(packagePrice(zone.price)) })}
+              {t('clinic.info.zonePackage', { price: euro(packagePrice(zone.price)) })}
             </Txt>
             <Txt variant="bodyStrong" style={{ minWidth: 56, textAlign: 'right' }}>
               {euro(zone.price)}
@@ -275,7 +275,7 @@ function ZonePrices() {
         ))}
       </View>
       <Txt variant="small" color={theme.c.muted}>
-        {t('ivy.zones.hint')}
+        {t('clinic.zones.hint')}
       </Txt>
     </Section>
   );

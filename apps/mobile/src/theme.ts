@@ -1,4 +1,4 @@
-import { CLINIC_COLORS, isRTL, type Locale } from '@pure-ivy/shared';
+import { CLINIC_COLORS, isRTL, type Locale } from '@pure-clinics/shared';
 import { useMemo } from 'react';
 
 import { useDemo } from './state/demo';

@@ -1,11 +1,11 @@
 import {
   dateKey,
   DEFAULT_LOCALE,
-  initialIvyAppointments,
-  type IvyAppointment,
+  initialAppointments,
+  type Appointment,
   type Locale,
   type LocationId,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react';
 
 import { cartTotals, type CartLine, type Delivery } from '../shop';
@@ -26,7 +26,7 @@ type DemoData = {
   now: Date;
   /** Whether the member joined the Pure Clinics membership in this demo. */
   member: boolean;
-  appointments: IvyAppointment[];
+  appointments: Appointment[];
   cart: CartLine[];
   orders: Order[];
 };
@@ -35,7 +35,7 @@ type DemoContext = DemoData & {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   joinMembership: () => void;
-  bookAppointment: (appointment: Omit<IvyAppointment, 'id'>) => string;
+  bookAppointment: (appointment: Omit<Appointment, 'id'>) => string;
   cancelAppointment: (id: string) => void;
   addToCart: (id: string, qty?: number) => void;
   setCartQty: (id: string, qty: number) => void;
@@ -48,7 +48,7 @@ function initialData(): DemoData {
   return {
     now,
     member: false,
-    appointments: initialIvyAppointments(now),
+    appointments: initialAppointments(now),
     cart: [],
     orders: [],
   };
@@ -62,7 +62,7 @@ export function DemoProvider({ children }: PropsWithChildren) {
 
   const joinMembership = useCallback(() => setData((d) => ({ ...d, member: true })), []);
 
-  const bookAppointment = useCallback((appointment: Omit<IvyAppointment, 'id'>) => {
+  const bookAppointment = useCallback((appointment: Omit<Appointment, 'id'>) => {
     const id = `appt-${appointment.start.getTime()}`;
     setData((d) => ({ ...d, appointments: [...d.appointments, { ...appointment, id }] }));
     return id;

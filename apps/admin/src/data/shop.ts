@@ -1,4 +1,4 @@
-import { dateKey, PRODUCTS, SHIPPING_FEE, startOfDay, treatmentById, type Product, type ProductId } from '@pure-ivy/shared';
+import { dateKey, PRODUCTS, SHIPPING_FEE, startOfDay, treatmentById, type Product, type ProductId } from '@pure-clinics/shared';
 
 import { between, personName, pick, rng } from './random';
 

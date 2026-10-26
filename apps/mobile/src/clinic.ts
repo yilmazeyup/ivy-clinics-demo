@@ -4,27 +4,27 @@ import {
   specialistById,
   treatmentById,
   type ClinicLocation,
-  type IvyAppointment,
+  type Appointment,
   type Specialist,
   type SpecialistId,
   type Treatment,
   type TreatmentId,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import { useMemo } from 'react';
 
 import { useDemo } from './state/demo';
 
-export type AppointmentView = IvyAppointment & {
+export type AppointmentView = Appointment & {
   treatment: Treatment;
   specialist: Specialist;
   location: ClinicLocation;
 };
 
 /** Clinic data joined with the member's own appointments, ready for screens. */
-export function useIvy() {
+export function useClinic() {
   const demo = useDemo();
   return useMemo(() => {
-    const view = (a: IvyAppointment): AppointmentView => ({
+    const view = (a: Appointment): AppointmentView => ({
       ...a,
       treatment: treatmentById(a.treatmentId),
       specialist: specialistById(a.specialistId),
@@ -53,5 +53,5 @@ export function cityName(location: ClinicLocation): string {
 }
 
 export function roleKey(role: Specialist['role']) {
-  return `ivy.role.${role}` as const;
+  return `clinic.role.${role}` as const;
 }

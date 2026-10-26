@@ -1,4 +1,4 @@
-import { productById, SHIPPING_FEE, type Product } from '@pure-ivy/shared';
+import { productById, SHIPPING_FEE, type Product } from '@pure-clinics/shared';
 
 export type CartLine = { id: string; qty: number };
 export type Delivery = 'ship' | 'pickup';

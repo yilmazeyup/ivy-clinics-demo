@@ -6,7 +6,7 @@ import {
   type ConcernId,
   type Treatment,
   type TreatmentId,
-} from '@pure-ivy/shared';
+} from '@pure-clinics/shared';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
@@ -28,7 +28,7 @@ const QUESTIONS = 4;
 const NOT_FOR_REACTIVE: TreatmentId[] = ['tca', 'skinpen', 'tixel'];
 
 /** Four questions and an optional selfie, then a short list of treatments and the free intake. */
-export default function IvyAdvice() {
+export default function AdviceScreen() {
   const theme = useTheme();
   const { t } = useI18n();
   const [step, setStep] = useState(0);
@@ -44,20 +44,20 @@ export default function IvyAdvice() {
   const footer =
     step < 3 ? (
       <Footer>
-        <Button label={t('ivy.ai.next')} disabled={!answered} iconAfter="arrow" onPress={next} />
+        <Button label={t('clinic.ai.next')} disabled={!answered} iconAfter="arrow" onPress={next} />
       </Footer>
     ) : step === 3 ? (
       <Footer>
         <Button
           icon="camera"
-          label={t('ivy.ai.selfie')}
+          label={t('clinic.ai.selfie')}
           onPress={next}
         />
-        <Button kind="quiet" label={t('ivy.ai.skip')} onPress={next} />
+        <Button kind="quiet" label={t('clinic.ai.skip')} onPress={next} />
       </Footer>
     ) : (
       <Footer>
-        <Button label={t('ivy.home.consultCta')} onPress={() => router.replace('/afspraak/consult')} />
+        <Button label={t('clinic.home.consultCta')} onPress={() => router.replace('/afspraak/consult')} />
       </Footer>
     );
 
@@ -70,11 +70,11 @@ export default function IvyAdvice() {
           ) : null}
           <View style={{ flex: 1 }}>
             <Txt variant="eyebrow" color={theme.c.muted}>
-              {t('ivy.ai.title')}
+              {t('clinic.ai.title')}
             </Txt>
             {!result ? (
               <Txt variant="small" color={theme.c.muted}>
-                {t('ivy.ai.step', { n: step + 1 })}
+                {t('clinic.ai.step', { n: step + 1 })}
               </Txt>
             ) : null}
           </View>
@@ -88,13 +88,13 @@ export default function IvyAdvice() {
       </View>
 
       {step === 0 ? (
-        <Question title={t('ivy.ai.q1')} hint={t('ivy.ai.q1Hint')}>
+        <Question title={t('clinic.ai.q1')} hint={t('clinic.ai.q1Hint')}>
           {CONCERNS.map((c) => {
             const on = concerns.includes(c.id);
             return (
               <Option
                 key={c.id}
-                label={t(`ivy.concern.${c.id}`)}
+                label={t(`clinic.concern.${c.id}`)}
                 selected={on}
                 multi
                 leading={<Photo photo={c.photo} style={{ width: 48, height: 56, borderRadius: theme.r.small }} />}
@@ -106,22 +106,22 @@ export default function IvyAdvice() {
       ) : null}
 
       {step === 1 ? (
-        <Question title={t('ivy.ai.q2')}>
+        <Question title={t('clinic.ai.q2')}>
           {SKINS.map((s) => (
-            <Option key={s} label={t(`ivy.ai.skin.${s}`)} selected={skin === s} onPress={() => setSkin(s)} />
+            <Option key={s} label={t(`clinic.ai.skin.${s}`)} selected={skin === s} onPress={() => setSkin(s)} />
           ))}
         </Question>
       ) : null}
 
       {step === 2 ? (
-        <Question title={t('ivy.ai.q3')}>
-          <Option label={t('ivy.ai.yes')} selected={treatedBefore === true} onPress={() => setTreatedBefore(true)} />
-          <Option label={t('ivy.ai.no')} selected={treatedBefore === false} onPress={() => setTreatedBefore(false)} />
+        <Question title={t('clinic.ai.q3')}>
+          <Option label={t('clinic.ai.yes')} selected={treatedBefore === true} onPress={() => setTreatedBefore(true)} />
+          <Option label={t('clinic.ai.no')} selected={treatedBefore === false} onPress={() => setTreatedBefore(false)} />
         </Question>
       ) : null}
 
       {step === 3 ? (
-        <Question title={t('ivy.ai.q4')} hint={t('ivy.ai.q4Body')}>
+        <Question title={t('clinic.ai.q4')} hint={t('clinic.ai.q4Body')}>
           <SelfieFrame />
         </Question>
       ) : null}
@@ -246,25 +246,25 @@ function Advice({ concerns, skin, treatedBefore }: { concerns: ConcernId[]; skin
   return (
     <View style={{ gap: 18 }}>
       <View style={{ gap: 6 }}>
-        <Txt variant="display">{t('ivy.ai.resultTitle')}</Txt>
+        <Txt variant="display">{t('clinic.ai.resultTitle')}</Txt>
         <Txt variant="body" color={theme.c.muted}>
-          {t('ivy.ai.resultBody')}
+          {t('clinic.ai.resultBody')}
         </Txt>
       </View>
 
-      {treatedBefore === false ? <Recommendation treatment={consult} note={text(consult.description)} badge={t('ivy.book.startHere')} /> : null}
+      {treatedBefore === false ? <Recommendation treatment={consult} note={text(consult.description)} badge={t('clinic.book.startHere')} /> : null}
       {picks.slice(0, 3).map(({ treatment, concern }) => (
         <Recommendation
           key={treatment.id}
           treatment={treatment}
-          note={`${t('ivy.ai.match', { concern: inSentence(t(`ivy.concern.${concern}`), locale) })} · ${t('ivy.price.from', { price: euro(treatment.priceFrom) })}`}
+          note={`${t('clinic.ai.match', { concern: inSentence(t(`clinic.concern.${concern}`), locale) })} · ${t('clinic.price.from', { price: euro(treatment.priceFrom) })}`}
         />
       ))}
 
       <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderRadius: theme.r.control, backgroundColor: theme.c.sand }}>
         <Icon name="leaf" size={18} color={theme.c.primary} />
         <Txt variant="small" color={CLINIC_COLORS.body} style={{ flex: 1 }}>
-          {t('ivy.ai.disclaimer')}
+          {t('clinic.ai.disclaimer')}
         </Txt>
       </View>
     </View>

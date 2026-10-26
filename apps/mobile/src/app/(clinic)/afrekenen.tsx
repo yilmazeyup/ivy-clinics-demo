@@ -1,4 +1,4 @@
-import { DELIVERY_DAYS, IVY_MEMBER, LOCATIONS, SHIPPING_FEE, type LocationId } from '@pure-ivy/shared';
+import { DELIVERY_DAYS, MEMBER, LOCATIONS, SHIPPING_FEE, type LocationId } from '@pure-clinics/shared';
 import * as Haptics from 'expo-haptics';
 import { Redirect, router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
@@ -10,7 +10,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Footer, Rail, Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
-import { cityName } from '@/ivy';
+import { cityName } from '@/clinic';
 import { cartTotals, type CartLine, type Delivery } from '@/shop';
 import { useDemo } from '@/state/demo';
 import { useTheme } from '@/theme';
@@ -23,7 +23,7 @@ export default function Checkout() {
   const { t, tp, euro } = useI18n();
   const { cart, placeOrder } = useDemo();
   const [delivery, setDelivery] = useState<Delivery>('ship');
-  const [locationId, setLocationId] = useState<LocationId>(IVY_MEMBER.locationId);
+  const [locationId, setLocationId] = useState<LocationId>(MEMBER.locationId);
   // Paying empties the cart, so the screen keeps showing what was paid for while the confirmation slides in.
   const [paid, setPaid] = useState<CartLine[] | null>(null);
   const lines = paid ?? cart;
@@ -75,7 +75,7 @@ export default function Checkout() {
               <Txt variant="caption" color={theme.c.muted}>
                 {t('shop.address')}
               </Txt>
-              <Txt variant="bodyStrong">{`${IVY_MEMBER.firstName} ${IVY_MEMBER.lastName}`}</Txt>
+              <Txt variant="bodyStrong">{`${MEMBER.firstName} ${MEMBER.lastName}`}</Txt>
               <Txt variant="small">{ADDRESS}</Txt>
             </View>
           )}
@@ -109,7 +109,7 @@ export default function Checkout() {
 
       <View style={{ padding: 16, borderRadius: theme.r.card, backgroundColor: theme.c.surface, gap: 10 }}>
         <Row label={`${t('shop.subtotal')} · ${tp('shop.items', totals.count)}`} value={euro(totals.subtotal)} />
-        {totals.physical ? <Row label={t('shop.shipping')} value={totals.shipping ? euro(totals.shipping) : t('ivy.price.free')} /> : null}
+        {totals.physical ? <Row label={t('shop.shipping')} value={totals.shipping ? euro(totals.shipping) : t('clinic.price.free')} /> : null}
         <View style={{ height: 1, backgroundColor: theme.c.line }} />
         <Row label={t('shop.total')} value={euro(totals.total)} strong />
       </View>

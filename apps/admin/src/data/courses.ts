@@ -1,4 +1,4 @@
-import { addDays, dateKey, SPECIALISTS, treatmentById, type LocationId, type Specialist, type Treatment, type TreatmentId } from '@pure-ivy/shared';
+import { addDays, dateKey, SPECIALISTS, treatmentById, type LocationId, type Specialist, type Treatment, type TreatmentId } from '@pure-clinics/shared';
 
 import { between, personName, pick, rng } from './random';
 

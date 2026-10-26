@@ -1,4 +1,4 @@
-import { LOCATIONS } from '@pure-ivy/shared';
+import { LOCATIONS } from '@pure-clinics/shared';
 import type { CSSProperties } from 'react';
 
 import { byUrgency, courseState, type Course } from '../data/courses';

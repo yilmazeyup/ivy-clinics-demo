@@ -1,4 +1,4 @@
-import { LOCALE_NAMES } from '@pure-ivy/shared';
+import { LOCALE_NAMES } from '@pure-clinics/shared';
 import { router, usePathname } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
@@ -31,10 +31,10 @@ export function SiteHeader() {
   const active = sectionOf(usePathname());
   const inCart = cart.reduce((n, line) => n + line.qty, 0);
   const items = [
-    { key: 'home', href: '/', label: t('ivy.tab.home') },
-    { key: 'book', href: '/boeken', label: t('ivy.tab.book') },
-    { key: 'shop', href: '/shop', label: t('ivy.tab.shop'), badge: inCart },
-    { key: 'mine', href: '/mijn', label: t('ivy.tab.mine') },
+    { key: 'home', href: '/', label: t('clinic.tab.home') },
+    { key: 'book', href: '/boeken', label: t('clinic.tab.book') },
+    { key: 'shop', href: '/shop', label: t('clinic.tab.shop'), badge: inCart },
+    { key: 'mine', href: '/mijn', label: t('clinic.tab.mine') },
   ] as const;
 
   return (
