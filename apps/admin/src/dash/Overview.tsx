@@ -77,7 +77,7 @@ function firstFeed(appts: Appt[], classes: PilatesClass[], orders: Order[], now:
       source: 'pilates',
       icon: 'calendar',
       title: { key: 'ev.classBooked.title', args: { member: personName(r), class: evening.name } },
-      detail: { key: 'ev.classBooked.detail', args: { time: evening.start, n: 3 } },
+      detail: { key: 'ev.classBooked.detail', args: { time: evening.start, spot: { spot: 3, mat: onMats(evening) } } },
     }),
   );
   if (lastOrder) {
