@@ -8,7 +8,6 @@ and no real payments. Treatments, prices, deals, locations and opening hours fol
 
 - Live demo: https://yilmazeyup.github.io/pure-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
 - Help page with a Dutch explainer video (subtitles in Dutch and English) and common questions: https://yilmazeyup.github.io/pure-clinics-demo/hulp/
-- Design canvas: https://claude.ai/artifact/UrYoLqDJGxQNyCYbxrqw34 (private, share it from the canvas' Share menu)
 
 ## Structure
 
@@ -39,7 +38,6 @@ It opens on http://localhost:5180. "Speel de dag af" runs today from 07:00 to 22
 
 `npm --prefix apps/admin run artifact -- <file.html>` builds the panel as one page for a claude.ai
 Artifact: the app's code and CSS inline, React 18 from cdnjs and Three.js from jsDelivr.
-The shared demo link is https://claude.ai/artifact/BV2dcK2GQYRmrSjhoSbvam (private until shared).
 
 ## Testing the member app
 
