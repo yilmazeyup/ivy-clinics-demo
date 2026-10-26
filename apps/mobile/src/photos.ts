@@ -1,0 +1,26 @@
+import type { PhotoKey } from '@pure-ivy/shared';
+
+// Metro needs static require() calls, so every photo is listed here once; each resolves to an asset id.
+export const PHOTOS: Record<PhotoKey, number> = {
+  'ivy-hero': require('../assets/photos/ivy-hero.jpg'),
+  'ivy-facial': require('../assets/photos/ivy-facial.jpg'),
+  'ivy-hands': require('../assets/photos/ivy-hands.jpg'),
+  'ivy-lashes': require('../assets/photos/ivy-lashes.jpg'),
+  'ivy-brows': require('../assets/photos/ivy-brows.jpg'),
+  'ivy-microneedling': require('../assets/photos/ivy-microneedling.jpg'),
+  'ivy-peel': require('../assets/photos/ivy-peel.jpg'),
+  'ivy-cream': require('../assets/photos/ivy-cream.jpg'),
+  'ivy-serum': require('../assets/photos/ivy-serum.jpg'),
+  'ivy-room': require('../assets/photos/ivy-room.jpg'),
+  'ivy-neck': require('../assets/photos/ivy-neck.jpg'),
+  'ivy-white': require('../assets/photos/ivy-white.jpg'),
+  'ivy-glow': require('../assets/photos/ivy-glow.jpg'),
+  'pure-hero': require('../assets/photos/pure-hero.jpg'),
+  'pure-studio': require('../assets/photos/pure-studio.jpg'),
+  'pure-flow': require('../assets/photos/pure-flow.jpg'),
+  'pure-burn': require('../assets/photos/pure-burn.jpg'),
+  'pure-stretch': require('../assets/photos/pure-stretch.jpg'),
+  'pure-detail': require('../assets/photos/pure-detail.jpg'),
+  'pure-arches': require('../assets/photos/pure-arches.jpg'),
+  'pure-core': require('../assets/photos/pure-core.jpg'),
+};

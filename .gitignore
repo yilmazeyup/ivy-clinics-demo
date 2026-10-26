@@ -1,0 +1,18 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+.DS_Store
+.env*.local
+.env
+ios/
+android/
+dist-artifact/
+
+# Local tool settings and generated files
+.claude/
+cikti.html
+
+# Internal planning notes stay out of the public repository
+pure-ivy-platform-kapsam-mimari.md

@@ -1,0 +1,15 @@
+{
+  "name": "pure-ivy",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "npm --workspace mobile run start",
+    "ios": "npm --workspace mobile run ios",
+    "web": "npm --workspace mobile run web",
+    "typecheck": "npm --workspace mobile run typecheck",
+    "admin": "npm --prefix apps/admin run dev"
+  }
+}
