@@ -29,6 +29,7 @@ import { DayStrip } from '@/components/DayStrip';
 import { Icon } from '@/components/Icon';
 import { Photo } from '@/components/Photo';
 import { Footer, Rail, Screen } from '@/components/Screen';
+import { Segmented } from '@/components/Segmented';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, roleKey, useClinic } from '@/clinic';
@@ -244,11 +245,12 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
       ) : null}
 
       <Group label={t('clinic.book.location')}>
-        <Rail gap={8}>
-          {LOCATIONS.map((l) => (
-            <Chip key={l.id} label={cityName(l)} icon={l.id === locationId ? 'pin' : undefined} selected={l.id === locationId} onPress={() => chooseLocation(l.id)} />
-          ))}
-        </Rail>
+        <Segmented
+          label={t('clinic.book.location')}
+          value={locationId}
+          onChange={chooseLocation}
+          options={LOCATIONS.map((l) => ({ value: l.id, label: cityName(l), icon: 'pin' as const }))}
+        />
       </Group>
 
       <Group label={t('clinic.book.specialist')}>

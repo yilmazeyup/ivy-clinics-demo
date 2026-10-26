@@ -1,9 +1,10 @@
-import * as Haptics from 'expo-haptics';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useTheme } from '@/theme';
 
+import { Glass } from './Glass';
 import { Icon, type IconName } from './Icon';
+import { PressableScale } from './Motion';
 import { Txt } from './Txt';
 
 type Kind = 'primary' | 'secondary' | 'accent' | 'light' | 'quiet';
@@ -20,6 +21,7 @@ type Props = {
   accessibilityLabel?: string;
 };
 
+/** A button that gives way under the finger and springs back, with a light tick on a phone. */
 export function Button({ label, onPress, kind = 'primary', size = 'md', icon, iconAfter, disabled, style, accessibilityLabel }: Props) {
   const theme = useTheme();
   const colors: Record<Kind, { bg: string; fg: string; border?: string }> = {
@@ -33,16 +35,13 @@ export function Button({ label, onPress, kind = 'primary', size = 'md', icon, ic
   const height = size === 'md' ? 52 : 40;
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <PressableScale
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ disabled }}
       disabled={disabled}
-      onPress={() => {
-        Haptics.selectionAsync();
-        onPress?.();
-      }}
-      style={({ pressed }) => [
+      haptic={!disabled}
+      onPress={onPress}
+      style={[
         {
           height,
           paddingHorizontal: size === 'md' ? 22 : 14,
@@ -50,12 +49,14 @@ export function Button({ label, onPress, kind = 'primary', size = 'md', icon, ic
           backgroundColor: bg,
           borderWidth: border ? 1 : 0,
           borderColor: border,
-          opacity: disabled ? 0.45 : pressed ? 0.82 : 1,
+          opacity: disabled ? 0.45 : 1,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
           gap: 8,
         },
+        kind === 'primary' || kind === 'accent' ? { boxShadow: '0px 6px 18px rgba(30, 30, 28, 0.18)' } : null,
+        kind === 'light' ? { boxShadow: theme.shadow.card } : null,
         style,
       ]}
     >
@@ -68,36 +69,28 @@ export function Button({ label, onPress, kind = 'primary', size = 'md', icon, ic
           <Icon name={iconAfter} size={16} color={fg} />
         </View>
       ) : null}
-    </Pressable>
+    </PressableScale>
   );
 }
 
 type IconButtonProps = { icon: IconName; label: string; onPress?: () => void; tone?: 'plain' | 'surface' | 'ink'; size?: number };
 
-/** A 44pt square target with just an icon; never a circle. */
+/** A 44pt square target with just an icon; on a page or a photo the surface tone is a pane of glass. Never a circle. */
 export function IconButton({ icon, label, onPress, tone = 'plain', size = 44 }: IconButtonProps) {
   const theme = useTheme();
-  const bg = tone === 'surface' ? theme.c.surface : tone === 'ink' ? theme.c.ink : 'transparent';
   const fg = tone === 'ink' ? theme.c.onPrimary : theme.c.ink;
+  const frame: ViewStyle = { width: size, height: size, borderRadius: 14, alignItems: 'center', justifyContent: 'center' };
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={() => {
-        Haptics.selectionAsync();
-        onPress?.();
-      }}
-      style={({ pressed }) => ({
-        width: size,
-        height: size,
-        borderRadius: 8,
-        backgroundColor: bg,
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: pressed ? 0.7 : 1,
-      })}
-    >
-      <Icon name={icon} color={fg} />
-    </Pressable>
+    <PressableScale accessibilityLabel={label} onPress={onPress} scaleTo={0.9} style={{ borderRadius: 14 }}>
+      {tone === 'surface' ? (
+        <Glass style={frame} interactive>
+          <Icon name={icon} color={fg} />
+        </Glass>
+      ) : (
+        <View style={[frame, { backgroundColor: tone === 'ink' ? theme.c.ink : 'transparent' }]}>
+          <Icon name={icon} color={fg} />
+        </View>
+      )}
+    </PressableScale>
   );
 }
