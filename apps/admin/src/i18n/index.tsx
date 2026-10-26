@@ -41,6 +41,9 @@ function makeI18n(locale: Locale) {
   const weekday = new Intl.DateTimeFormat(intl, { weekday: 'long' });
   const shortDate = new Intl.DateTimeFormat(intl, { weekday: 'short', day: 'numeric', month: 'short' });
   const dateShort = (date: Date) => shortDate.format(date).replace(/\./g, '');
+  const monthAndYear = new Intl.DateTimeFormat(intl, { month: 'long', year: 'numeric' });
+  const dayAndMonth = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'short' });
+  const dayMonthAndYear = new Intl.DateTimeFormat(intl, { day: 'numeric', month: 'short', year: 'numeric' });
   const clock = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 
   const resolve = (arg: Arg): string => {
@@ -72,6 +75,11 @@ function makeI18n(locale: Locale) {
     pct: (value: number) => percent.format(value),
     dayLong: (date: Date) => longDay.format(date),
     dateShort,
+    /** "maart 2024": since when someone is a client. */
+    monthYear: (date: Date) => monthAndYear.format(date),
+    /** "23 sep", with the year when it is not the year of `now`: "12 nov 2025". */
+    dayMonth: (date: Date, now: Date) =>
+      (date.getFullYear() === now.getFullYear() ? dayAndMonth : dayMonthAndYear).format(date).replace(/\./g, ''),
     weekdayShort: (date: Date) => shortDay.format(date).replace('.', ''),
     /** "maandag", "Monday", "الاثنين": the sentences that use it are written to fit every weekday. */
     weekdayLong: (date: Date) => weekday.format(date),

@@ -69,10 +69,12 @@ export function AgendaView({ appts, day, now }: { appts: Appt[]; day: Date; now:
                         .map((a) => {
                           const tip = appointmentTip(a, i18n);
                           const phase = isToday ? phaseOf(a, now) : 'later';
+                          // Booked online in the last twenty minutes: the new block stands out for a while.
+                          const fresh = a.bookedAt !== undefined && now.getTime() - a.bookedAt.getTime() < 20 * 60000;
                           return (
                             <span
                               key={a.id}
-                              className={`agenda-block ${phase} ${DARK.includes(a.treatment.category) ? 'dark' : ''}`}
+                              className={`agenda-block ${phase} ${DARK.includes(a.treatment.category) ? 'dark' : ''}${fresh ? ' fresh' : ''}`}
                               style={{
                                 insetInlineStart: at(hourOf(a.start)),
                                 width: `${(a.treatment.minutes / 60 / span) * 100}%`,

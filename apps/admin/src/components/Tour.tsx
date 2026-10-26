@@ -5,7 +5,7 @@ import { Icon } from './Icon';
 
 type Step = { target: string; title: MessageKey; body: MessageKey };
 
-/** The walk-through, in reading order: numbers, clinics, diary, feed, treatment series, shop, then the play button. */
+/** The walk-through, in reading order: numbers, clinics, diary, feed, treatment series, shop, the week, then the play button. */
 const STEPS: Step[] = [
   { target: '.kpi', title: 'tour.kpis.title', body: 'tour.kpis.body' },
   { target: '#klinieken', title: 'tour.clinics.title', body: 'tour.clinics.body' },
@@ -13,6 +13,7 @@ const STEPS: Step[] = [
   { target: '#live', title: 'tour.feed.title', body: 'tour.feed.body' },
   { target: '#trajecten', title: 'tour.courses.title', body: 'tour.courses.body' },
   { target: '#webshop', title: 'tour.webshop.title', body: 'tour.webshop.body' },
+  { target: '#omzet', title: 'tour.sales.title', body: 'tour.sales.body' },
   { target: '.play', title: 'tour.play.title', body: 'tour.play.body' },
 ];
 

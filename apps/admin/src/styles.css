@@ -721,31 +721,60 @@ li {
   font-weight: 500;
 }
 
-/* Clinics: a label over every treatment chair, and the clinic's name on its floor. */
+/* Clinics: a sign for every treatment room, and the clinic's name on its floor. */
+/* Signs get a little smaller when the camera is far out (--label-scale, set by the scene); sizing the type rather than
+   transforming the sign keeps it anchored exactly to its room. */
 .scene-room {
+  --s: var(--label-scale, 1);
   display: grid;
-  gap: 2px;
-  padding: 5px 8px;
+  gap: calc(2px * var(--s));
+  padding: calc(5px * var(--s)) calc(8px * var(--s));
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid var(--line-strong);
   box-shadow: 0 3px 10px rgba(30, 30, 28, 0.08);
-  font: 400 10.5px/1.2 var(--body);
+  font: 400 calc(10.5px * var(--s)) / 1.2 var(--body);
   color: var(--muted);
   text-align: center;
   white-space: nowrap;
 }
 
 .scene-room strong {
-  font-size: 11px;
+  font-size: calc(11px * var(--s));
   font-weight: 500;
   color: var(--ink);
 }
 
-.scene-room span {
-  max-width: 132px;
+.scene-room-who {
+  font-weight: 400;
+  opacity: 0.86;
+}
+
+.scene-room-who:empty {
+  display: none;
+}
+
+/* Wide rooms: "Fien · met Emma B." on one line. Narrow rooms: the client gets a line of her own. */
+.scene-room--wide .scene-room-who::before {
+  content: ' · ';
+}
+
+.scene-room--narrow .scene-room-who {
+  display: block;
+}
+
+.scene-room-status {
+  max-width: calc(190px * var(--s));
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.scene-room--narrow .scene-room-status {
+  max-width: calc(104px * var(--s));
+}
+
+.scene-room-until:empty {
+  display: none;
 }
 
 .scene-room--busy {
@@ -756,6 +785,288 @@ li {
 
 .scene-room--busy strong {
   color: #ffffff;
+}
+
+/* A room with a client in it opens her card: the sign is a button. */
+.scene-labels .scene-room--client {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.scene-room--client:hover {
+  box-shadow: 0 8px 18px rgba(30, 30, 28, 0.2);
+}
+
+.scene-room--client:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.scene-tip em {
+  margin-top: 3px;
+  font-style: normal;
+  font-weight: 500;
+  color: var(--now);
+}
+
+/* While a client card is open, the other signs and the legend step back. */
+.scene-room,
+.scene-clinic,
+.scene-tip,
+.scene-legend,
+.scene-hint {
+  transition: opacity 0.3s;
+}
+
+.scene-host.has-card .scene-room,
+.scene-host.has-card .scene-clinic,
+.scene-host.has-card .scene-tip,
+.scene-host.has-card .scene-legend,
+.scene-host.has-card .scene-hint {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- Client card, inside the clinics model ---------- */
+
+.scene-labels .client-card-anchor,
+.scene-labels .client-card-anchor * {
+  pointer-events: auto;
+}
+
+.client-card-anchor {
+  user-select: text;
+}
+
+/* The card takes focus when it opens; the close button inside shows the keyboard ring. */
+.client-card:focus,
+.client-card:focus-visible {
+  outline: none;
+}
+
+.client-card {
+  width: var(--card-w, 372px);
+  max-height: var(--card-max, 446px);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 15px 16px 13px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 26px 50px -22px rgba(30, 30, 28, 0.42), 0 4px 14px rgba(30, 30, 28, 0.08);
+  font: 400 12.5px/1.45 var(--body);
+  color: var(--ink);
+  text-align: start;
+  white-space: normal;
+  /* Shows up once the camera is nearly in the room. */
+  animation: card-in 0.5s 0.75s cubic-bezier(0.2, 0.75, 0.2, 1) backwards;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.client-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.client-name {
+  margin: 4px 0 2px;
+  font: 500 26px/1.05 var(--display);
+  letter-spacing: -0.005em;
+}
+
+.client-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.client-close {
+  flex: none;
+  margin-block-start: -6px;
+  margin-inline-end: -8px;
+}
+
+.client-now {
+  display: grid;
+  gap: 1px;
+  padding: 8px 11px 9px;
+  border-radius: 10px;
+  background: var(--soft);
+  border-inline-start: 3px solid var(--line-strong);
+}
+
+.client-now strong {
+  font-weight: 500;
+  font-size: 13.5px;
+}
+
+.client-now span {
+  color: var(--muted);
+}
+
+.client-now .client-when {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Green only for what is going on now. */
+.client-now.is-live {
+  background: color-mix(in srgb, var(--now) 9%, var(--surface));
+  border-inline-start-color: var(--now);
+}
+
+.client-now.is-live .client-when {
+  color: var(--now);
+}
+
+.client-series {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 5px;
+}
+
+.client-steps {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.client-steps i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--line-strong);
+}
+
+.client-steps i.on {
+  background: var(--brand);
+}
+
+.client-steps i.now {
+  background: var(--now);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--now) 22%, transparent);
+}
+
+.client-now small {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.client-single {
+  margin-top: 3px;
+}
+
+.client-next {
+  display: grid;
+  gap: 1px;
+}
+
+.client-next span {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.client-next b {
+  font-weight: 500;
+}
+
+.client-history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding-top: 11px;
+  border-top: 1px solid var(--line);
+}
+
+.client-visits {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline-end: 2px;
+}
+
+/* When the visits do not all fit, the last one fades out to show the list scrolls. */
+.client-visits--more {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+}
+
+/* Date, treatment and amount on one line, the therapist's note under it; small squares mark the visits. */
+.client-visits li {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  padding-inline-start: 13px;
+}
+
+.client-visits li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  background: var(--line-strong);
+}
+
+.client-visits li:first-child::before {
+  background: var(--brand);
+}
+
+.client-visit {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.client-visit time {
+  color: var(--muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.client-visit strong {
+  font-weight: 500;
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.client-visit b {
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.client-note {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.32;
+  text-wrap: pretty;
+}
+
+.client-empty {
+  color: var(--muted);
 }
 
 .scene-room--done,
@@ -844,10 +1155,27 @@ li {
   display: grid;
 }
 
+/* The session tiles are a 3D layer over the list; the squares underneath only keep the room. */
+.courses-wrap {
+  position: relative;
+}
+
+.course-tiles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.course-tiles-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 /* Name, progress, status and the reminder button on one line; the status column takes what is left. */
 .course {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 150px minmax(0, 1fr) 92px;
+  grid-template-columns: minmax(0, 1.2fr) 172px minmax(0, 1fr) 92px;
   align-items: center;
   gap: 14px;
   min-height: 54px;
@@ -885,14 +1213,18 @@ li {
 
 .course-steps {
   display: flex;
-  gap: 3px;
+  gap: var(--tile-gap, 3px);
 }
 
 .course-steps i {
-  width: 8px;
-  height: 8px;
+  width: var(--tile, 8px);
+  height: var(--tile, 8px);
   border-radius: 2px;
   background: var(--line);
+}
+
+.courses-wrap.is-3d .course-steps i {
+  visibility: hidden;
 }
 
 .course-steps i.on {
@@ -962,18 +1294,10 @@ li {
   gap: 10px;
 }
 
-.shop-top,
 .shop-rows {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 9px;
-}
-
-.shop-top li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px 34px;
-  align-items: center;
-  gap: 12px;
 }
 
 .shop-name {
@@ -986,30 +1310,6 @@ li {
 
 .shop-name b {
   font-weight: 500;
-}
-
-.shop-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--soft);
-  overflow: hidden;
-}
-
-.shop-bar i {
-  display: block;
-  height: 100%;
-  border-radius: 3px;
-  background: var(--brand);
-  transform-origin: left;
-  animation: grow-x 0.9s 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.shop-units {
-  text-align: end;
-  font-size: 12.5px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
 }
 
 .shop-rows li {
@@ -1038,24 +1338,6 @@ li {
   font-variant-numeric: tabular-nums;
 }
 
-.stock-pill {
-  flex: none;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 500;
-}
-
-.stock-pill.out {
-  background: var(--bad-bg);
-  color: var(--bad);
-}
-
-.stock-pill.low {
-  background: #f7eedb;
-  color: #8a6420;
-}
-
 .shop-empty,
 .shop-note {
   font-size: 12.5px;
@@ -1072,6 +1354,148 @@ li {
 .shop-note b {
   color: var(--brand);
   font-weight: 500;
+}
+
+/* ---------- 3D shop ---------- */
+
+.scene-host--shop {
+  height: 272px;
+  flex: none;
+}
+
+/* The stock on the shelf edge, like a price strip. */
+.shop-tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  font: 500 10px/1.4 var(--body);
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-tag--low {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.shop-tag--out {
+  background: var(--bad-bg);
+  border-color: transparent;
+  color: var(--bad);
+}
+
+.shop-row-new {
+  animation: feed-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+/* ---------- 3D week ---------- */
+
+/* The week fills its card, which the row may stretch next to the insights. */
+.scene-host--sales {
+  height: auto;
+  min-height: 330px;
+  flex: 1 1 auto;
+}
+
+.sales-day {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  font: 400 10.5px/1.2 var(--body);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sales-day strong {
+  font: 500 15px/1.1 var(--display);
+  color: var(--ink);
+}
+
+.sales-clinic {
+  font: 500 10px/1.2 var(--body);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Today's live total floats over today's columns. */
+.sales-today {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--now);
+  color: #ffffff;
+  font: 500 11.5px/1.2 var(--body);
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(47, 74, 60, 0.25);
+  font-variant-numeric: tabular-nums;
+}
+
+.sales-today i {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #9fd4b3;
+  animation: blink 1.8s ease-in-out infinite;
+}
+
+.legend-outline {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed var(--muted) !important;
+}
+
+/* ---------- Floating notes in the 3D views ---------- */
+
+/* "+ € 195" rising from the desk or the parcel, then gone. */
+.scene-pay,
+.scene-flash {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font: 500 12px/1.3 var(--body);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  animation: float-up var(--life, 2s) cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+.scene-pay {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 8px 18px rgba(30, 30, 28, 0.14);
+}
+
+.scene-flash {
+  background: var(--ink);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(30, 30, 28, 0.22);
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    margin-top: 10px;
+  }
+  15% {
+    opacity: 1;
+    margin-top: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    margin-top: -26px;
+  }
+}
+
+.scene-host.has-card .scene-pay,
+.scene-host.has-card .scene-flash {
+  opacity: 0;
 }
 
 /* ---------- Agenda ---------- */
@@ -1230,6 +1654,20 @@ li {
   box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--live);
 }
 
+/* Just booked online: the new block is outlined in ink for a while and pulses once as it appears. */
+.agenda-block.fresh {
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink);
+  animation: booked 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@keyframes booked {
+  from {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
 /* One line through every room for the current time; its label sits on the hour axis. */
 .agenda-now {
   position: absolute;
@@ -1355,7 +1793,9 @@ li {
 /* ---------- Week chart ---------- */
 
 .week-card {
-  grid-column: span 5;
+  grid-column: span 7;
+  display: flex;
+  flex-direction: column;
 }
 
 .week-legend {
@@ -1366,76 +1806,10 @@ li {
   color: var(--muted);
 }
 
-.week {
-  height: 220px;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.week-col {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 8px;
-  text-align: center;
-  min-width: 0;
-}
-
-.week-value {
-  font-size: 11px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.week-track {
-  display: flex;
-  align-items: flex-end;
-}
-
-.week-stack {
-  width: 100%;
-  display: flex;
-  flex-direction: column-reverse;
-  border-radius: 7px 7px 3px 3px;
-  overflow: hidden;
-  opacity: 0.85;
-  transform-origin: bottom;
-  animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-}
-
-.week-stack span {
-  display: block;
-  min-height: 2px;
-}
-
-.week-col.today .week-stack {
-  opacity: 1;
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--accent);
-}
-
-.week-col.today .week-value,
-.week-col.today .week-day {
-  color: var(--ink);
-  font-weight: 500;
-}
-
-.week-col.future .week-stack {
-  opacity: 0.32;
-}
-
-.week-day {
-  font-size: 12px;
-  color: var(--muted);
-  text-transform: capitalize;
-}
-
 /* ---------- Insights ---------- */
 
 .insights-card {
-  grid-column: span 7;
+  grid-column: span 5;
 }
 
 .insight {
@@ -1702,10 +2076,6 @@ li {
   transform: scaleX(-1);
 }
 
-[dir='rtl'] .shop-bar i {
-  transform-origin: right;
-}
-
 /* The 3D labels are placed from the left edge of the scene, so their layer stays left to right;
    the text inside each label keeps the Arabic direction. */
 [dir='rtl'] .scene-labels {
@@ -1826,6 +2196,11 @@ li {
     height: 360px;
   }
 
+  /* The client card needs more room than the model does on a small screen. */
+  .scene-host.has-card {
+    height: 560px;
+  }
+
   .clinic-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1839,15 +2214,6 @@ li {
   .course {
     grid-template-columns: minmax(0, 1fr) auto;
     row-gap: 4px;
-  }
-
-  .shop-top li {
-    grid-template-columns: minmax(0, 1fr) 70px 30px;
-  }
-
-  /* Seven amounts do not fit side by side on a phone; the week total stays in the header. */
-  .week-value {
-    display: none;
   }
 
   .scene-hint {

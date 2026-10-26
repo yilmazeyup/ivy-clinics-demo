@@ -3,10 +3,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
-type Vec = [number, number, number];
+export type Vec = [number, number, number];
 
-/** What a hover tooltip in a scene shows: a bold first line and a detail line that may contain <br>. */
-export type Tip = { title: string; detail: string };
+/** What a hover tooltip in a scene shows: a bold first line, a detail line that may contain <br>, and an optional hint. */
+export type Tip = { title: string; detail: string; hint?: string };
 
 export type StageOptions = {
   camera: Vec;
@@ -16,13 +16,30 @@ export type StageOptions = {
   fov?: number;
   minDistance?: number;
   maxDistance?: number;
+  /** How far the camera may tilt, in radians from straight above. */
+  minPolarAngle?: number;
+  maxPolarAngle?: number;
+  /** How far the camera may turn around the scene, in radians; unlimited when left out. */
+  minAzimuthAngle?: number;
+  maxAzimuthAngle?: number;
   /** Narrowest width-to-height ratio at which everything still fits; narrower views zoom out. */
   fitAspect?: number;
+  /** How far the idle camera sways from side to side, in radians. */
+  sway?: number;
 };
 
 export type Frame = (time: number, delta: number) => void;
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/** A click, not a drag: the pointer moved less than this many pixels between press and release. */
+const CLICK_SLOP = 6;
+
+/** Whether an object and everything above it is shown; hidden figures are not hit by the pointer. */
+function shown(object: THREE.Object3D | null): boolean {
+  for (let o = object; o; o = o.parent) if (!o.visible) return false;
+  return true;
+}
 
 /**
  * One WebGL view: renderer, camera, soft studio light, HTML labels and a slow camera sway.
@@ -48,18 +65,24 @@ export class Stage {
 
   // Camera choreography: a fly-in, then a gentle sway until someone grabs the view.
   private flight: { from: THREE.Vector3; to: THREE.Vector3; fromTarget: THREE.Vector3; toTarget: THREE.Vector3; start: number; duration: number } | null;
-  private readonly sway = { base: new THREE.Spherical(), since: 0, paused: true, resumeAt: 0 };
+  private readonly sway = { base: new THREE.Spherical(), since: 0, paused: true, resumeAt: 0, amount: 0.2 };
+  /** While true the camera stays where it is, e.g. while a card in the scene is being read. */
+  private still = false;
 
   private hoverTargets: THREE.Object3D[] = [];
   private hoverHandler: ((object: THREE.Object3D | null) => void) | null = null;
+  private selectHandler: ((object: THREE.Object3D | null) => void) | null = null;
+  private clickable: ((object: THREE.Object3D) => boolean) | null = null;
   private hovered: THREE.Object3D | null = null;
   private pointerDirty = false;
   private pointerInside = false;
+  private press: { x: number; y: number; at: number } | null = null;
 
   private readonly fitAspect: number;
 
-  constructor(private readonly host: HTMLElement, options: StageOptions) {
+  constructor(readonly host: HTMLElement, options: StageOptions) {
     this.fitAspect = options.fitAspect ?? 0;
+    this.sway.amount = options.sway ?? 0.2;
     this.camera = new THREE.PerspectiveCamera(options.fov ?? 30, 1, 0.1, 200);
     this.camera.position.set(...options.intro);
 
@@ -86,8 +109,10 @@ export class Stage {
     this.controls.enablePan = false;
     this.controls.minDistance = options.minDistance ?? 7;
     this.controls.maxDistance = options.maxDistance ?? 26;
-    this.controls.minPolarAngle = 0.3;
-    this.controls.maxPolarAngle = 1.22;
+    this.controls.minPolarAngle = options.minPolarAngle ?? 0.3;
+    this.controls.maxPolarAngle = options.maxPolarAngle ?? 1.22;
+    if (options.minAzimuthAngle !== undefined) this.controls.minAzimuthAngle = options.minAzimuthAngle;
+    if (options.maxAzimuthAngle !== undefined) this.controls.maxAzimuthAngle = options.maxAzimuthAngle;
     this.controls.enabled = false;
     this.controls.addEventListener('start', () => {
       this.sway.paused = true;
@@ -110,6 +135,8 @@ export class Stage {
     const canvas = this.renderer.domElement;
     canvas.addEventListener('pointermove', this.onPointerMove);
     canvas.addEventListener('pointerleave', this.onPointerLeave);
+    canvas.addEventListener('pointerdown', this.onPointerDown);
+    canvas.addEventListener('pointerup', this.onPointerUp);
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(host);
@@ -137,6 +164,16 @@ export class Stage {
   setHoverTargets(targets: THREE.Object3D[], handler: (object: THREE.Object3D | null) => void) {
     this.hoverTargets = targets;
     this.hoverHandler = handler;
+    this.pointerDirty = true;
+  }
+
+  /**
+   * Calls back on a click or tap that is not a drag: the hover target under the pointer when `clickable` says it
+   * can be clicked, otherwise null (empty space). Only clickable targets get the hand cursor.
+   */
+  onSelect(handler: (object: THREE.Object3D | null) => void, clickable: (object: THREE.Object3D) => boolean) {
+    this.selectHandler = handler;
+    this.clickable = clickable;
   }
 
   /** Moves the camera and its focus point smoothly, e.g. to zoom in on one clinic. */
@@ -152,6 +189,24 @@ export class Stage {
     };
   }
 
+  /** Where the camera is going (or is, when it is not moving) and what it looks at. */
+  pose(): { position: Vec; target: Vec } {
+    const position = this.flight ? this.flight.to : this.camera.position;
+    const target = this.flight ? this.flight.toTarget : this.controls.target;
+    return { position: position.toArray() as Vec, target: target.toArray() as Vec };
+  }
+
+  /** Keeps the camera still (no idle sway) while something in the scene is being read; false lets it sway again. */
+  hold(still: boolean) {
+    this.still = still;
+    if (still) {
+      this.sway.paused = true;
+      this.sway.resumeAt = 0;
+    } else if (!this.flight && !this.reducedMotion) {
+      this.sway.resumeAt = performance.now() + 4000;
+    }
+  }
+
   dispose() {
     cancelAnimationFrame(this.raf);
     this.resizeObserver.disconnect();
@@ -159,13 +214,15 @@ export class Stage {
     const canvas = this.renderer.domElement;
     canvas.removeEventListener('pointermove', this.onPointerMove);
     canvas.removeEventListener('pointerleave', this.onPointerLeave);
+    canvas.removeEventListener('pointerdown', this.onPointerDown);
+    canvas.removeEventListener('pointerup', this.onPointerUp);
     this.controls.dispose();
     this.scene.traverse((object) => {
-      if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments) {
+      if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments || object instanceof THREE.Sprite) {
         object.geometry.dispose();
         const materials: THREE.Material[] = Array.isArray(object.material) ? object.material : [object.material];
         materials.forEach((m) => {
-          if (m instanceof THREE.MeshStandardMaterial) m.map?.dispose();
+          if (m instanceof THREE.MeshStandardMaterial || m instanceof THREE.MeshBasicMaterial || m instanceof THREE.SpriteMaterial) m.map?.dispose();
           m.dispose();
         });
       }
@@ -185,10 +242,11 @@ export class Stage {
   private captureSway() {
     this.sway.base.setFromVector3(this.camera.position.clone().sub(this.controls.target));
     this.sway.since = performance.now();
-    this.sway.paused = this.reducedMotion;
+    this.sway.paused = this.reducedMotion || this.still;
   }
 
-  private resize() {
+  /** Matches the canvas and camera to the host's size; runs on its own when the host resizes. */
+  resize() {
     const width = Math.max(1, this.host.clientWidth);
     const height = Math.max(1, this.host.clientHeight);
     this.renderer.setSize(width, height, false);
@@ -198,9 +256,13 @@ export class Stage {
     this.camera.updateProjectionMatrix();
   }
 
-  private onPointerMove = (event: PointerEvent) => {
+  private toPointer(event: PointerEvent) {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.pointer.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
+  }
+
+  private onPointerMove = (event: PointerEvent) => {
+    this.toPointer(event);
     this.pointerDirty = true;
     this.pointerInside = true;
   };
@@ -210,23 +272,45 @@ export class Stage {
     this.pointerDirty = true;
   };
 
-  private pick() {
-    if (!this.pointerDirty || !this.hoverHandler) return;
-    this.pointerDirty = false;
-    let found: THREE.Object3D | null = null;
-    if (this.pointerInside) {
-      this.raycaster.setFromCamera(this.pointer, this.camera);
-      const hit = this.raycaster.intersectObjects(this.hoverTargets, true)[0];
-      // Walk up to the object that was registered as a target.
-      let object: THREE.Object3D | null = hit?.object ?? null;
+  private onPointerDown = (event: PointerEvent) => {
+    this.press = { x: event.clientX, y: event.clientY, at: performance.now() };
+  };
+
+  private onPointerUp = (event: PointerEvent) => {
+    const press = this.press;
+    this.press = null;
+    if (!press || !this.selectHandler) return;
+    if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > CLICK_SLOP || performance.now() - press.at > 700) return;
+    this.toPointer(event);
+    const object = this.hit();
+    this.selectHandler(object && (!this.clickable || this.clickable(object)) ? object : null);
+  };
+
+  /** The registered target under the pointer, if any; walks up from the mesh that was hit. */
+  private hit(): THREE.Object3D | null {
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    for (const hit of this.raycaster.intersectObjects(this.hoverTargets, true)) {
+      if (!shown(hit.object)) continue;
+      let object: THREE.Object3D | null = hit.object;
       while (object && !this.hoverTargets.includes(object)) object = object.parent;
-      found = object;
+      if (object) return object;
     }
-    if (found !== this.hovered) {
-      this.hovered = found;
-      this.renderer.domElement.style.cursor = found ? 'pointer' : '';
-      this.hoverHandler(found);
+    return null;
+  }
+
+  private pick() {
+    if (this.pointerDirty && this.hoverHandler) {
+      this.pointerDirty = false;
+      const found = this.pointerInside ? this.hit() : null;
+      if (found !== this.hovered) {
+        this.hovered = found;
+        this.hoverHandler(found);
+      }
     }
+    // What can be clicked changes with time (a client arrives), so the cursor is checked every frame.
+    const cursor = this.hovered && (!this.clickable || this.clickable(this.hovered)) ? 'pointer' : '';
+    const style = this.renderer.domElement.style;
+    if (style.cursor !== cursor) style.cursor = cursor;
   }
 
   private loop = (now: number) => {
@@ -247,14 +331,14 @@ export class Stage {
       this.camera.lookAt(this.controls.target);
       if (t >= 1) this.finishFlight();
     } else {
-      if (this.sway.paused && !this.reducedMotion && this.sway.resumeAt && now > this.sway.resumeAt) {
+      if (this.sway.paused && !this.reducedMotion && !this.still && this.sway.resumeAt && now > this.sway.resumeAt) {
         this.sway.resumeAt = 0;
         this.captureSway();
       }
       if (!this.sway.paused) {
         const s = (now - this.sway.since) / 1000;
         const spherical = this.sway.base.clone();
-        spherical.theta += Math.sin(s * 0.11) * 0.2;
+        spherical.theta += Math.sin(s * 0.11) * this.sway.amount;
         spherical.phi += Math.sin(s * 0.07) * 0.035;
         this.camera.position.setFromSpherical(spherical).add(this.controls.target);
       }
@@ -271,6 +355,8 @@ export class Stage {
 /** Smoothly moves `current` toward `target`; frame-rate independent. */
 export const damp = (current: number, target: number, lambda: number, delta: number) =>
   THREE.MathUtils.damp(current, target, lambda, delta);
+
+export const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export function el(className: string, html = ''): HTMLDivElement {
   const div = document.createElement('div');

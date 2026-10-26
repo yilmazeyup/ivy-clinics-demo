@@ -1,4 +1,4 @@
-import { dateKey, PRODUCTS, SHIPPING_FEE, startOfDay, treatmentById, type Product, type ProductId } from '@pure-clinics/shared';
+import { dateKey, PRODUCTS, SHIPPING_FEE, startOfDay, treatmentById, type LocationId, type Product, type ProductId } from '@pure-clinics/shared';
 
 import { between, personName, pick, rng } from './random';
 
@@ -67,6 +67,21 @@ export function shopDay(day: Date): Order[] {
 }
 
 export const ordersUntil = (orders: Order[], now: Date) => orders.filter((o) => o.at.getTime() <= now.getTime());
+
+/** Webshop sales count toward the clinic nearest to the customer. */
+const NEAREST: Record<string, LocationId> = {
+  Nijmegen: 'nijmegen',
+  Wijchen: 'nijmegen',
+  Beuningen: 'nijmegen',
+  Arnhem: 'nijmegen',
+  Malden: 'nijmegen',
+  Uden: 'uden',
+  Oss: 'uden',
+  Veghel: 'uden',
+  Cuijk: 'uden',
+  "'s-Hertogenbosch": 'uden',
+};
+export const clinicOfOrder = (order: Order): LocationId => NEAREST[order.city] ?? 'nijmegen';
 
 export const orderTotal = (orders: Order[]) => orders.reduce((sum, o) => sum + o.total, 0);
 

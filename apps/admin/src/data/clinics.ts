@@ -27,6 +27,8 @@ export type Appt = {
   end: Date;
   price: number;
   firstVisit: boolean;
+  /** When the client booked it online, if that happened today; until then the slot is free in the diary. */
+  bookedAt?: Date;
 };
 
 export type ApptPhase = 'done' | 'now' | 'later';
@@ -97,38 +99,21 @@ export function clinicDay(day: Date): Appt[] {
       }
     });
   }
-  return out.sort((a, b) => a.start.getTime() - b.start.getTime());
+  out.sort((a, b) => a.start.getTime() - b.start.getTime());
+  // Names are drawn per room, so two rooms can pick the same one; nobody is in two chairs on one day.
+  const names = rng(`names-${dateKey(day)}`);
+  const seen = new Set<string>();
+  for (const appt of out) {
+    while (seen.has(appt.client)) appt.client = personName(names);
+    seen.add(appt.client);
+  }
+  return out;
 }
 
 export function phaseOf(a: Appt, now: Date): ApptPhase {
   if (now.getTime() >= a.end.getTime()) return 'done';
   if (now.getTime() >= a.start.getTime()) return 'now';
   return 'later';
-}
-
-/** Finds room for a new booking later today, for the live feed. A free intake goes to someone who gives them. */
-export function bookInGap(appts: Appt[], now: Date, seed: string, consult = false): Appt | null {
-  const r = rng(seed);
-  const location = pick(r, LOCATIONS);
-  const hours = openingHours(now, location.id);
-  if (!hours) return null;
-  const rooms = ROOMS[location.id]
-    .map((specialist, room) => ({ specialist, room }))
-    .filter(({ specialist }) => works(specialist, now) && (!consult || specialist.categories.includes('consult')));
-  if (!rooms.length) return null;
-  const { specialist, room } = pick(r, rooms);
-  const treatment = treatmentById(consult ? 'consult' : pick(r, menu(specialist)));
-  const taken = appts.filter((a) => a.clinic === location.id && a.room === room).sort((a, b) => a.start.getTime() - b.start.getTime());
-  const base = startOfDay(now).getTime();
-  const close = base + hours.close * 3600000;
-  // Start on the next quarter hour at least 45 minutes from now.
-  let start = Math.max(Math.ceil((now.getTime() + 45 * 60000) / 900000) * 900000, base + hours.open * 3600000);
-  for (const a of taken) {
-    if (start + treatment.minutes * 60000 <= a.start.getTime()) break;
-    start = Math.max(start, a.end.getTime());
-  }
-  if (start + treatment.minutes * 60000 > close) return null;
-  return makeAppt(location.id, room, treatment, new Date(start), r);
 }
 
 export const revenueOf = (appts: Appt[]) => appts.reduce((sum, a) => sum + a.price, 0);

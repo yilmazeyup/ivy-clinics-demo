@@ -1,26 +1,20 @@
-import { addDays, LOCATIONS, productById, sameDay, startOfDay } from '@pure-clinics/shared';
-import { useEffect, useRef, useState } from 'react';
+import { addDays, dateKey, LOCATIONS, productById, sameDay } from '@pure-clinics/shared';
+import { useEffect, useMemo, useState } from 'react';
 
 import { AgendaView } from '../components/AgendaView';
 import { ClinicsView } from '../components/ClinicsView';
 import { CoursesCard } from '../components/CoursesCard';
-import { Insights, LiveFeed, WeekChart, type Insight, type Series, type WeekDay } from '../components/panels';
-import { ShopCard } from '../components/ShopCard';
+import { Insights, LiveFeed, type Insight } from '../components/panels';
+import { SalesView } from '../components/SalesView';
+import { ShopView } from '../components/ShopView';
 import { KpiTile, MiniBars, Sparkline, Squares, useToast, type FeedItem } from '../components/ui';
-import { bookInGap, clinicDay, clinicViewDay, isOpen, occupancy, phaseOf, revenueOf, ROOMS, works, type Appt } from '../data/clinics';
-import { courseState, coursesOn, type Course } from '../data/courses';
-import { between, personName, pick, rng } from '../data/random';
-import { makeOrder, orderTotal, ordersUntil, shopDay, shopRevenue, stockOf, type Order } from '../data/shop';
+import { clinicDay, clinicViewDay, isOpen, occupancy, phaseOf, revenueOf, ROOMS, works, type Appt } from '../data/clinics';
+import { courseState, type Course } from '../data/courses';
+import { diaryAt, happenedBy, liveDay, paidBy, revenueAt, weekFrame, weekSales, type LiveEvent } from '../data/live';
+import { orderTotal, ordersUntil, shopDay, stockOf, type Order } from '../data/shop';
 import { useI18n, type Line } from '../i18n';
 
-const SERIES: Series[] = [
-  { label: 'week.treatments', color: '#6B5B48' },
-  { label: 'week.beauty', color: '#B39C80' },
-  { label: 'week.webshop', color: '#DCC9B3' },
-];
-
 let feedId = 0;
-const item = (fields: Omit<FeedItem, 'id'> & { id?: string }): FeedItem => ({ id: `f-${Date.now().toString(36)}-${++feedId}`, ...fields });
 const cityOf = (clinic: Appt['clinic']) => LOCATIONS.find((l) => l.id === clinic)?.city ?? '';
 /** Brows, lashes and nails are Blanche Beauty Studio's; everything else is the clinic's. */
 const sourceOf = (a: Appt | Course): FeedItem['source'] => (a.treatment.category === 'beauty' ? 'blanche' : 'clinic');
@@ -34,256 +28,162 @@ function courseDetail(c: Course): Line {
   return { key: 'ev.course.detail', args: { client: c.client, treatment: { treatment: c.treatment.id }, n: c.done + 1, total: c.total } };
 }
 
-/** A day's revenue in three parts: treatments, Blanche Beauty Studio and the webshop. */
-function dayParts(day: Date): number[] {
-  const appts = clinicDay(day);
-  const beauty = revenueOf(appts.filter((a) => a.treatment.category === 'beauty'));
-  return [revenueOf(appts) - beauty, beauty, shopRevenue(day)];
-}
-
-/** A believable start for the feed: the last half hour across both clinics and the shop. */
-function firstFeed(appts: Appt[], courses: Course[], orders: Order[], now: Date): FeedItem[] {
-  const r = rng(`feed-${now.toDateString()}`);
-  const minutes = (m: number) => new Date(now.getTime() - m * 60000);
-  const laser = appts.find((a) => a.treatment.id === 'laser');
-  const planned = courses.find((c) => c.planned);
-  const lastOrder = ordersUntil(orders, now).at(-1);
-  const items: FeedItem[] = [];
-  if (laser) {
-    items.push(
-      item({
-        at: minutes(3),
-        source: 'clinic',
+/** How each moment of the day reads in the live feed. */
+function feedItem(e: LiveEvent): FeedItem {
+  const base = { id: e.id, at: e.at };
+  switch (e.kind) {
+    case 'booking': {
+      const a = e.appt;
+      if (a.treatment.id === 'consult') {
+        return {
+          ...base,
+          source: 'clinic',
+          icon: 'plus',
+          title: { key: 'ev.consult.title' },
+          detail: { key: 'ev.consult.detail', args: { client: a.client, city: cityOf(a.clinic), time: a.start } },
+          accent: true,
+        };
+      }
+      return {
+        ...base,
+        source: sourceOf(a),
         icon: 'calendar',
-        title: { key: 'ev.booking.title', args: { client: laser.client, treatment: { treatment: 'laser' } } },
-        detail: { key: 'ev.booking.detail', args: { city: cityOf(laser.clinic), time: laser.start, specialist: laser.specialist.name } },
-        amount: laser.price,
+        title: { key: 'ev.booking.title', args: { client: a.client, treatment: { treatment: a.treatment.id } } },
+        detail: { key: 'ev.online.detail', args: { city: cityOf(a.clinic), time: a.start, specialist: a.specialist.name } },
+        amount: a.price || undefined,
         accent: true,
-      }),
-    );
-  }
-  if (planned) {
-    items.push(item({ at: minutes(7), source: sourceOf(planned), icon: 'repeat', title: { key: 'ev.course.title' }, detail: courseDetail(planned) }));
-  }
-  if (lastOrder) {
-    items.push(
-      item({
-        at: lastOrder.at,
+      };
+    }
+    case 'payment': {
+      const a = e.appt;
+      return {
+        ...base,
+        source: sourceOf(a),
+        icon: 'card',
+        title: { key: 'ev.paid.title' },
+        detail: { key: 'ev.paid.detail', args: { client: a.client, treatment: { treatment: a.treatment.id }, city: cityOf(a.clinic) } },
+        amount: a.price,
+      };
+    }
+    case 'intake': {
+      const a = e.appt;
+      return {
+        ...base,
+        source: sourceOf(a),
+        icon: 'clipboard',
+        title: { key: 'ev.intake.title' },
+        detail: { key: 'ev.intake.detail', args: { client: a.client, treatment: { treatment: a.treatment.id }, time: a.start } },
+      };
+    }
+    case 'reminder': {
+      const a = e.appt;
+      return {
+        ...base,
+        source: sourceOf(a),
+        icon: 'mail',
+        title: { key: 'ev.reminder.title' },
+        detail: { key: 'ev.reminder.detail', args: { client: a.client, treatment: { treatment: a.treatment.id }, time: a.start, city: cityOf(a.clinic) } },
+      };
+    }
+    case 'order':
+      return {
+        ...base,
         source: 'webshop',
         icon: 'bag',
-        title: { key: 'ev.order.title', args: { number: lastOrder.number } },
-        detail: orderDetail(lastOrder),
-        amount: lastOrder.total,
-      }),
-    );
+        title: { key: 'ev.order.title', args: { number: e.order.number } },
+        detail: orderDetail(e.order),
+        amount: e.order.total,
+        accent: Boolean(e.order.afterTreatment),
+      };
+    case 'course':
+      return { ...base, source: sourceOf(e.course), icon: 'repeat', title: { key: 'ev.course.title' }, detail: courseDetail(e.course), accent: true };
+    case 'member':
+      return { ...base, source: 'clinic', icon: 'star', title: { key: 'ev.member.title' }, detail: { key: 'ev.member.detail', args: { client: e.client } } };
   }
-  items.push(
-    item({
-      at: minutes(16),
-      source: 'clinic',
-      icon: 'clipboard',
-      title: { key: 'ev.intake.title' },
-      detail: { key: 'ev.intakeTomorrow.detail', args: { client: personName(r), treatment: { treatment: 'acne' }, time: '10:00' } },
-    }),
-  );
-  items.push(
-    item({ at: minutes(23), source: 'clinic', icon: 'star', title: { key: 'ev.member.title' }, detail: { key: 'ev.member.detail', args: { client: personName(r) } } }),
-  );
-  items.push(
-    item({
-      at: minutes(31),
-      source: 'clinic',
-      icon: 'plus',
-      title: { key: 'ev.consult.title' },
-      detail: { key: 'ev.consultTomorrow.detail', args: { client: personName(r), city: 'Uden', time: '16:00' } },
-    }),
-  );
-  return items.sort((a, b) => b.at.getTime() - a.at.getTime());
 }
 
-/** The one overview of Pure Clinics: both clinics, the treatment series and the webshop, live. */
+/** The one overview of Pure Clinics: both clinics, the treatment series, the webshop and the week, all following the clock. */
 export function Overview({ now, playing }: { now: Date; playing: boolean }) {
   const { t, eur, num, pct, locale, weekdayLong } = useI18n();
   const toast = useToast();
-  const [clinicsDay] = useState(() => clinicViewDay(now));
-  const [appts, setAppts] = useState(() => clinicDay(clinicsDay));
-  const [courses, setCourses] = useState(() => coursesOn(now));
-  const [orders, setOrders] = useState(() => shopDay(now));
-  const [feed, setFeed] = useState(() => firstFeed(appts, courses, orders, now));
+  const dayKey = dateKey(now);
+  // The day's stream is fixed; the clock decides how much of it has happened.
+  const live = useMemo(() => liveDay(clinicViewDay(now), now), [dayKey]);
+  const [reminded, setReminded] = useState<Record<string, Date>>({});
+  const [actions, setActions] = useState<FeedItem[]>([]);
   const [focus, setFocus] = useState<number | null>(null);
-  const live = useRef({ appts, courses, orders, now });
-  live.current = { appts, courses, orders, now };
 
   // A new language rebuilds the clinic models, which open on both clinics again.
   useEffect(() => setFocus(null), [locale]);
 
-  const push = (...items: FeedItem[]) => setFeed((current) => [...items, ...current].slice(0, 40));
+  const clinicsDay = live.day;
+  const isClinicDay = sameDay(clinicsDay, now);
+  const happened = useMemo(() => happenedBy(live.events, now), [live, now]);
+  const appts = useMemo(() => (isClinicDay ? diaryAt(live.appts, now) : live.appts), [live, now, isClinicDay]);
+  const todaysOrders = useMemo(() => ordersUntil(live.orders, now), [live, now]);
+
+  const courses = useMemo(() => {
+    const planned = new Map<string, Date>();
+    for (const e of happened) if (e.kind === 'course') planned.set(e.course.id, e.planned);
+    return live.courses.map((c) => ({ ...c, planned: c.planned ?? planned.get(c.id) ?? null, reminded: reminded[c.id] ?? null }));
+  }, [live, happened, reminded]);
+
+  const feed = useMemo(
+    () =>
+      [...happened.map(feedItem), ...actions.filter((a) => a.at.getTime() <= now.getTime())]
+        .sort((a, b) => b.at.getTime() - a.at.getTime())
+        .slice(0, 60),
+    [happened, actions, now],
+  );
 
   /** Reminders for clients who are due for their next session; in the demo nothing is really sent. */
   const remind = (ids: string[]) => {
-    const { courses: list, now: at } = live.current;
-    const picked = list.filter((c) => ids.includes(c.id) && !c.reminded);
+    const picked = courses.filter((c) => ids.includes(c.id) && !c.reminded);
     if (!picked.length) return;
-    setCourses((cs) => cs.map((c) => (ids.includes(c.id) && !c.reminded ? { ...c, reminded: at } : c)));
-    push(
+    setReminded((current) => ({ ...current, ...Object.fromEntries(picked.map((c) => [c.id, now])) }));
+    const item: FeedItem =
       picked.length === 1
-        ? item({ at, source: sourceOf(picked[0]), icon: 'mail', title: { key: 'ev.courseReminder.title' }, detail: courseDetail(picked[0]) })
-        : item({ at, source: 'clinic', icon: 'mail', title: { key: 'ev.reminders.title', args: { n: picked.length } }, detail: { key: 'ev.reminders.detail' } }),
-    );
+        ? { id: `action-${++feedId}`, at: now, source: sourceOf(picked[0]), icon: 'mail', title: { key: 'ev.courseReminder.title' }, detail: courseDetail(picked[0]) }
+        : {
+            id: `action-${++feedId}`,
+            at: now,
+            source: 'clinic',
+            icon: 'mail',
+            title: { key: 'ev.reminders.title', args: { n: picked.length } },
+            detail: { key: 'ev.reminders.detail' },
+          };
+    setActions((current) => [item, ...current]);
     toast(t('courses.toast', { n: picked.length }));
   };
 
-  // Every few seconds something happens somewhere: a booking, a next session, a new member, an order.
-  useEffect(() => {
-    let timer = 0;
-    const fire = () => {
-      const { appts: diary, courses: list, orders: shop, now: at } = live.current;
-      const seed = `${at.getTime()}-${Math.random()}`;
-      const r = rng(seed);
-      const roll = r();
-      const sub = r();
+  // Revenue so far: treatments paid at the desk and webshop orders, against the same weekday at this time of day.
+  const paid = isClinicDay ? revenueOf(paidBy(appts, now)) : 0;
+  const shopToday = orderTotal(todaysOrders);
+  const revenue = paid + shopToday;
+  const past = useMemo(
+    () =>
+      [7, 14, 21, 28].map((days) => {
+        const then = addDays(now, -days);
+        return { appts: clinicDay(then), orders: shopDay(then) };
+      }),
+    [dayKey],
+  );
+  const usual = past.reduce((total, p) => total + revenueAt(p.appts, p.orders, now), 0) / past.length;
+  const history = useMemo(
+    () =>
+      Array.from({ length: 14 }, (_, i) => {
+        const day = addDays(now, i - 13);
+        return revenueOf(clinicDay(day)) + orderTotal(shopDay(day));
+      }),
+    [dayKey],
+  );
+  const frame = useMemo(() => weekFrame(now), [dayKey]);
+  const week = useMemo(() => weekSales(frame, live, now), [frame, live, now]);
 
-      if (roll < 0.5) {
-        if (sub < 0.6) {
-          const consult = sub < 0.18;
-          const booking = bookInGap(diary, at, seed, consult);
-          if (booking) {
-            setAppts((current) => [...current, booking]);
-            push(
-              consult
-                ? item({
-                    at,
-                    source: 'clinic',
-                    icon: 'plus',
-                    title: { key: 'ev.consult.title' },
-                    detail: { key: 'ev.consult.detail', args: { client: booking.client, city: cityOf(booking.clinic), time: booking.start } },
-                    accent: true,
-                  })
-                : item({
-                    at,
-                    source: sourceOf(booking),
-                    icon: 'calendar',
-                    title: { key: 'ev.booking.title', args: { client: booking.client, treatment: { treatment: booking.treatment.id } } },
-                    detail: {
-                      key: 'ev.booking.detail',
-                      args: { city: cityOf(booking.clinic), time: booking.start, specialist: booking.specialist.name },
-                    },
-                    amount: booking.price || undefined,
-                    accent: true,
-                  }),
-            );
-            return;
-          }
-        }
-        const later = diary.filter((a) => phaseOf(a, at) === 'later' && a.treatment.id !== 'consult');
-        if (!later.length) return;
-        const a = pick(r, later);
-        const args = { client: a.client, treatment: { treatment: a.treatment.id }, time: a.start, city: cityOf(a.clinic) };
-        push(
-          sub < 0.85
-            ? item({ at, source: sourceOf(a), icon: 'clipboard', title: { key: 'ev.intake.title' }, detail: { key: 'ev.intake.detail', args } })
-            : item({ at, source: sourceOf(a), icon: 'mail', title: { key: 'ev.reminder.title' }, detail: { key: 'ev.reminder.detail', args } }),
-        );
-        return;
-      }
-
-      if (roll < 0.72) {
-        // A client in a series books the next session, often after a reminder; or someone becomes a member.
-        const open = list.filter((c) => {
-          const state = courseState(c, at);
-          return state === 'due' || state === 'late';
-        });
-        if (sub < 0.7 && open.length) {
-          const c = pick(r, [...open.filter((x) => x.reminded), ...open]);
-          const when = addDays(startOfDay(at), between(r, 1, 12));
-          when.setHours(pick(r, [9, 10, 11, 13, 14, 15, 16]), pick(r, [0, 15, 30, 45]));
-          setCourses((cs) => cs.map((x) => (x.id === c.id ? { ...x, planned: when } : x)));
-          push(item({ at, source: sourceOf(c), icon: 'repeat', title: { key: 'ev.course.title' }, detail: courseDetail(c), accent: true }));
-          return;
-        }
-        push(item({ at, source: 'clinic', icon: 'star', title: { key: 'ev.member.title' }, detail: { key: 'ev.member.detail', args: { client: personName(r) } } }));
-        return;
-      }
-
-      // A webshop order placed right now; the order effect below announces it.
-      const number = Math.max(0, ...shop.map((o) => o.number)) + 1;
-      setOrders((current) => [...current, makeOrder(seed, at, number)]);
-    };
-    const schedule = () => {
-      timer = window.setTimeout(
-        () => {
-          fire();
-          schedule();
-        },
-        playing ? 1800 + Math.random() * 1400 : 4200 + Math.random() * 3800,
-      );
-    };
-    schedule();
-    return () => window.clearTimeout(timer);
-  }, [playing]);
-
-  // Orders appear in the feed when their time comes, also while the day is being played.
-  const seenOrders = useRef<Set<string> | null>(null);
-  useEffect(() => {
-    const visible = ordersUntil(orders, now);
-    const before = seenOrders.current;
-    seenOrders.current = new Set(visible.map((o) => o.id));
-    if (!before) return;
-    const fresh = visible.filter((o) => !before.has(o.id));
-    if (!fresh.length) return;
-    if (fresh.length > 2) {
-      push(
-        item({
-          at: now,
-          source: 'webshop',
-          icon: 'bag',
-          title: { key: 'ev.orders.title', args: { n: fresh.length } },
-          detail: { key: 'ev.orders.detail', args: { numbers: fresh.map((o) => `#${o.number}`).join(' · ') } },
-          amount: orderTotal(fresh),
-        }),
-      );
-      return;
-    }
-    push(
-      ...fresh.map((o) =>
-        item({
-          at: o.at,
-          source: 'webshop',
-          icon: 'bag',
-          title: { key: 'ev.order.title', args: { number: o.number } },
-          detail: orderDetail(o),
-          amount: o.total,
-          accent: Boolean(o.afterTreatment),
-        }),
-      ),
-    );
-  }, [orders, now]);
-
-  const isClinicDay = sameDay(clinicsDay, now);
   const running = isClinicDay ? appts.filter((a) => phaseOf(a, now) === 'now').length : 0;
   const staffed = LOCATIONS.reduce((n, l) => n + (isOpen(l.id, clinicsDay) ? ROOMS[l.id].filter((s) => works(s, clinicsDay)).length : 0), 0);
   const intakes = appts.filter((a) => a.treatment.id === 'consult').length;
   const newClients = appts.filter((a) => a.firstVisit).length;
-  const todaysOrders = ordersUntil(orders, now);
-  const shopToday = orderTotal(todaysOrders);
-  const revenue = (isClinicDay ? revenueOf(appts) : 0) + shopToday;
-  // Like for like: the same weekday over the last four weeks, with the webshop counted up to this time of day.
-  const [usual] = useState(() => {
-    const totals = [7, 14, 21, 28].map((days) => {
-      const then = addDays(now, -days);
-      return revenueOf(clinicDay(then)) + orderTotal(ordersUntil(shopDay(then), then));
-    });
-    return totals.reduce((a, b) => a + b, 0) / totals.length;
-  });
-  const [history] = useState(() => Array.from({ length: 14 }, (_, i) => dayParts(addDays(now, i - 13)).reduce((a, b) => a + b, 0)));
-  const [week] = useState<WeekDay[]>(() => {
-    const monday = addDays(startOfDay(now), -((now.getDay() + 6) % 7));
-    return Array.from({ length: 7 }, (_, i) => {
-      const date = addDays(monday, i);
-      return { date, parts: dayParts(date) };
-    });
-  });
-
   const apptsPerHour = Array.from({ length: 13 }, (_, i) => appts.filter((a) => a.start.getHours() === 9 + i).length);
   const ordersPerHour = Array.from({ length: 17 }, (_, i) => todaysOrders.filter((o) => o.at.getHours() === 7 + i).length);
 
@@ -324,7 +224,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         label={t('kpi.revenue')}
         value={revenue}
         format={eur}
-        delta={revenue / usual - 1}
+        delta={usual > 0 ? revenue / usual - 1 : undefined}
         sub={t('kpi.revenueSub', { weekday: weekdayLong(now) })}
         chart={<Sparkline values={[...history.slice(0, -1), revenue]} />}
       />
@@ -353,13 +253,13 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         chart={<MiniBars values={ordersPerHour} current={now.getHours() - 7} />}
       />
 
-      {/* The 3D view draws its labels once, so a new language rebuilds it. */}
-      <ClinicsView key={`clinics-${locale}`} appts={appts} day={clinicsDay} now={now} focus={focus} onFocus={setFocus} />
+      {/* The 3D views draw their labels once, so a new language rebuilds them. */}
+      <ClinicsView key={`clinics-${locale}`} appts={appts} day={clinicsDay} now={now} focus={focus} onFocus={setFocus} events={happened} fast={playing} />
       <LiveFeed items={feed} now={now} />
       <AgendaView appts={appts} day={clinicsDay} now={now} />
       <CoursesCard courses={courses} now={now} onRemind={remind} />
-      <ShopCard orders={orders} now={now} />
-      <WeekChart days={week} series={SERIES} today={now} />
+      <ShopView key={`shop-${locale}`} orders={live.orders} now={now} fast={playing} />
+      <SalesView key={`sales-${locale}`} week={week} now={now} events={happened} fast={playing} />
       <Insights items={insights} />
     </div>
   );

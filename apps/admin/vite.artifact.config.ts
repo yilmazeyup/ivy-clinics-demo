@@ -4,10 +4,12 @@ import { defineConfig, type Plugin } from 'vite';
 // Build for a claude.ai Artifact page: React comes from cdnjs as UMD globals and Three.js from
 // jsDelivr through an import map, so the page itself only carries the app's own code.
 const SHIMS: Record<string, string> = {
-  react: 'const R = window.React; export default R; export const { createContext, useContext, useEffect, useMemo, useRef, useState, Fragment } = R;',
+  react:
+    'const R = window.React; export default R; export const { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, Fragment } = R;',
   'react/jsx-runtime':
     'const R = window.React; const jsx = (type, props, key) => R.createElement(type, key === undefined ? props : { ...props, key }); export { jsx, jsx as jsxs }; export const Fragment = R.Fragment;',
   'react-dom/client': 'export const { createRoot } = window.ReactDOM;',
+  'react-dom': 'export const { createPortal } = window.ReactDOM;',
 };
 
 function reactFromGlobals(): Plugin {

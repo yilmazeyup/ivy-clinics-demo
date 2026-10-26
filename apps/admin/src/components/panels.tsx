@@ -43,50 +43,6 @@ export function LiveFeed({ items, now }: { items: FeedItem[]; now: Date }) {
   );
 }
 
-export type Series = { label: MessageKey; color: string };
-export type WeekDay = { date: Date; parts: number[] };
-
-/** This week's revenue per day, stacked by business line; days still to come are faded. */
-export function WeekChart({ days, series, today }: { days: WeekDay[]; series: Series[]; today: Date }) {
-  const { t, eur, weekdayShort } = useI18n();
-  const totals = days.map((d) => d.parts.reduce((a, b) => a + b, 0));
-  const max = Math.max(...totals, 1);
-  const todayKey = today.toDateString();
-  return (
-    <section className="card week-card rise" style={{ '--d': '520ms' } as CSSProperties}>
-      <CardHead eyebrow={t('week.eyebrow')} title={eur(totals.reduce((a, b) => a + b, 0))}>
-        <span className="week-legend">
-          {series.map((s) => (
-            <span key={s.label}>
-              <i style={{ background: s.color }} /> {t(s.label)}
-            </span>
-          ))}
-        </span>
-      </CardHead>
-      <p className="help">{t('week.help')}</p>
-      <div className="week">
-        {days.map((day, index) => {
-          const isToday = day.date.toDateString() === todayKey;
-          const future = day.date.getTime() > today.getTime() && !isToday;
-          return (
-            <div key={day.date.toDateString()} className={`week-col ${isToday ? 'today' : ''} ${future ? 'future' : ''}`}>
-              <span className="week-value">{totals[index] > 0 ? eur(totals[index]) : t('week.closed')}</span>
-              <span className="week-track">
-                <span className="week-stack" style={{ height: `${(totals[index] / max) * 100}%`, animationDelay: `${560 + index * 60}ms` }}>
-                  {day.parts.map((part, i) =>
-                    part > 0 ? <span key={series[i].label} style={{ flexGrow: part, background: series[i].color }} /> : null,
-                  )}
-                </span>
-              </span>
-              <span className="week-day">{weekdayShort(day.date)}</span>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 /** `run` does the action for real in the demo, where it can; otherwise the button only confirms. */
 export type Insight = { id: string; icon: IconName; title: string; body: string; action: string; run?: () => void };
 
