@@ -53,7 +53,7 @@ export default function IvyBook() {
   );
   const showConsult = !concern && (category === 'all' || category === 'consult');
   // A treatment opens on its own page first: what it is, how it goes and what it costs.
-  const open = (treatment: Treatment) => router.push({ pathname: '/ivy/behandeling/[id]', params: { id: treatment.id, location } });
+  const open = (treatment: Treatment) => router.push({ pathname: '/behandeling/[id]', params: { id: treatment.id, location } });
 
   return (
     <Screen gap={22} width="page">

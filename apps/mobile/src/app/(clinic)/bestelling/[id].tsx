@@ -14,7 +14,7 @@ import { useDemo } from '@/state/demo';
 import { useTheme } from '@/theme';
 
 // Close the checkout screens underneath, then show a tab.
-function leaveTo(href: '/ivy/shop' | '/ivy') {
+function leaveTo(href: '/shop' | '/') {
   if (router.canDismiss()) router.dismissAll();
   router.navigate(href);
 }
@@ -25,7 +25,7 @@ export default function OrderConfirmation() {
   const { t, euro } = useI18n();
   const { orders } = useDemo();
   const order = orders.find((o) => o.id === id);
-  if (!order) return <Redirect href="/ivy/shop" />;
+  if (!order) return <Redirect href="/shop" />;
 
   const physical = order.lines.some((l) => shopItem(l.id));
   const location = locationById(order.locationId);
@@ -37,7 +37,7 @@ export default function OrderConfirmation() {
   return (
     <Screen gap={24}>
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <IconButton icon="close" label={t('common.close')} tone="surface" onPress={() => leaveTo('/ivy/shop')} />
+        <IconButton icon="close" label={t('common.close')} tone="surface" onPress={() => leaveTo('/shop')} />
       </View>
 
       <View style={{ gap: 10 }}>
@@ -82,8 +82,8 @@ export default function OrderConfirmation() {
       </View>
 
       <View style={{ gap: 10 }}>
-        <Button label={t('shop.continue')} onPress={() => leaveTo('/ivy/shop')} />
-        <Button kind="secondary" label={t('ivy.confirm.home')} onPress={() => leaveTo('/ivy')} />
+        <Button label={t('shop.continue')} onPress={() => leaveTo('/shop')} />
+        <Button kind="secondary" label={t('ivy.confirm.home')} onPress={() => leaveTo('/')} />
       </View>
     </Screen>
   );

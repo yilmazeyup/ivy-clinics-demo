@@ -6,10 +6,8 @@ aftercare webshop. This is a demo with test data only: fictional clients, schedu
 and no real payments. Treatments, prices, deals, locations and opening hours follow pureclinics.nl
 (October 2026).
 
-The repository and the demo URL still carry the earlier working name (ivy-clinics-demo).
-
-- Live demo: https://yilmazeyup.github.io/ivy-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
-- Help page with a Dutch explainer video (subtitles in Dutch and English) and common questions: https://yilmazeyup.github.io/ivy-clinics-demo/hulp/
+- Live demo: https://yilmazeyup.github.io/pure-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
+- Help page with a Dutch explainer video (subtitles in Dutch and English) and common questions: https://yilmazeyup.github.io/pure-clinics-demo/hulp/
 - Design canvas: https://claude.ai/artifact/UrYoLqDJGxQNyCYbxrqw34 (private, share it from the canvas' Share menu)
 
 ## Structure
@@ -55,7 +53,7 @@ Dutch is the source language. English, Arabic (right to left), French, German an
 `packages/shared/src/i18n/messages/`; every file must provide the same keys as `nl.ts`.
 
 In the app, switch language under Instellingen (the person icon). A link can also open a screen in a
-language, e.g. `exp://<your-ip>:8081/--/ivy?lang=ar` in Expo Go.
+language, e.g. `exp://<your-ip>:8081/--/?lang=ar` in Expo Go.
 
 ## Photos
 

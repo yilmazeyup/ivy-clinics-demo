@@ -18,7 +18,7 @@ export function CartButton() {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={t('shop.cart')}
-      onPress={() => router.push('/ivy/winkelmand')}
+      onPress={() => router.push('/winkelmand')}
       style={({ pressed }) => ({
         height: 44,
         minWidth: 44,

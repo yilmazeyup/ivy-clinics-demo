@@ -26,7 +26,7 @@ export default function Cart() {
           </Txt>
           <Txt variant="bodyStrong">{euro(totals.subtotal)}</Txt>
         </View>
-        <Button label={t('shop.checkout')} iconAfter="arrow" onPress={() => router.push('/ivy/afrekenen')} />
+        <Button label={t('shop.checkout')} iconAfter="arrow" onPress={() => router.push('/afrekenen')} />
       </Footer>
     ) : undefined;
 
@@ -59,7 +59,7 @@ export default function Cart() {
           ))}
         </View>
       ) : (
-        <Button kind="secondary" label={t('shop.continue')} onPress={() => router.navigate('/ivy/shop')} />
+        <Button kind="secondary" label={t('shop.continue')} onPress={() => router.navigate('/shop')} />
       )}
     </Screen>
   );

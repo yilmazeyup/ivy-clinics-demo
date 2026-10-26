@@ -115,7 +115,7 @@ export default function PureAssistant() {
     const deal = DEALS.find((d) => d.id === PRICE_DEAL);
     return [
       { kind: 'text', from: 'bot', text: t('ivy.assistant.reply.price', { total: euro(total), package: euro(packagePrice(total)), deal: euro(deal?.price ?? total) }) },
-      { kind: 'link', label: t('ivy.assistant.link.deal'), href: { pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: PRICE_DEAL } } },
+      { kind: 'link', label: t('ivy.assistant.link.deal'), href: { pathname: '/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: PRICE_DEAL } } },
     ];
   };
 
@@ -155,7 +155,7 @@ export default function PureAssistant() {
       return;
     }
     router.replace({
-      pathname: '/ivy/afspraak/[treatmentId]',
+      pathname: '/afspraak/[treatmentId]',
       params: {
         treatmentId: choice.treatmentId,
         location: choice.locationId,
@@ -396,7 +396,7 @@ function Booked({ appointmentId }: { appointmentId: string }) {
         size="sm"
         label={t('common.view')}
         iconAfter="arrow"
-        onPress={() => router.replace({ pathname: '/ivy/bevestiging/[id]', params: { id: appointment.id } })}
+        onPress={() => router.replace({ pathname: '/bevestiging/[id]', params: { id: appointment.id } })}
         style={{ alignSelf: 'flex-start' }}
       />
     </View>

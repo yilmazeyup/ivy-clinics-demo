@@ -5,7 +5,7 @@ import { Icon, type IconName } from './Icon';
 import { useToast } from './ui';
 
 /** The help page with the explainer video and common questions, on the demo site. */
-const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
+const HELP_URL = 'https://yilmazeyup.github.io/pure-clinics-demo/hulp/';
 
 /** Agenda, Trajecten and Webshop jump to their part of the overview; Hulp opens the help page; the rest follow later. */
 const NAV: { icon: IconName; label: MessageKey; section?: string; help?: boolean }[] = [

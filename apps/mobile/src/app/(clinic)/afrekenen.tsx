@@ -29,13 +29,13 @@ export default function Checkout() {
   const lines = paid ?? cart;
   const totals = cartTotals(lines, delivery);
 
-  if (lines.length === 0) return <Redirect href="/ivy/shop" />;
+  if (lines.length === 0) return <Redirect href="/shop" />;
 
   const pay = () => {
     setPaid(cart);
     const id = placeOrder(delivery, locationId);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace(`/ivy/bestelling/${id}`);
+    router.replace(`/bestelling/${id}`);
   };
 
   const footer = (

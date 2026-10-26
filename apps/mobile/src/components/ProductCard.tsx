@@ -21,7 +21,7 @@ export function ProductCard({ product, width }: { product: Product; width: numbe
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.push(`/ivy/product/${product.id}`)}
+      onPress={() => router.push(`/product/${product.id}`)}
       style={({ pressed }) => ({ width, gap: 8, opacity: pressed ? 0.9 : 1 })}
     >
       <TexturePhoto texture={product.texture} style={{ height: Math.round(width * 1.15), borderRadius: theme.r.photo }}>

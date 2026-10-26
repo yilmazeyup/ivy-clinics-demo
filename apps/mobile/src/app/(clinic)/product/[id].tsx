@@ -19,7 +19,7 @@ import { useTheme } from '@/theme';
 export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const product = productById(id);
-  if (!product) return <Redirect href="/ivy/shop" />;
+  if (!product) return <Redirect href="/shop" />;
   return <ProductDetail product={product} />;
 }
 

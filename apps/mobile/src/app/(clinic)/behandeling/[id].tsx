@@ -28,7 +28,7 @@ import { useTheme } from '@/theme';
 export default function TreatmentScreen() {
   const { id, location } = useLocalSearchParams<{ id: string; location?: string }>();
   const treatment = TREATMENTS.find((tr) => tr.id === id);
-  if (!treatment) return <Redirect href="/ivy/boeken" />;
+  if (!treatment) return <Redirect href="/boeken" />;
   return <TreatmentDetail treatment={treatment} location={location} />;
 }
 
@@ -49,7 +49,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
       <Button
         label={t('ivy.info.book')}
         iconAfter="arrow"
-        onPress={() => router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: treatment.id, ...(location ? { location } : {}) } })}
+        onPress={() => router.push({ pathname: '/afspraak/[treatmentId]', params: { treatmentId: treatment.id, ...(location ? { location } : {}) } })}
       />
     </Footer>
   );
@@ -81,7 +81,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
         {intakeFirst ? (
           <Pressable
             accessibilityRole="button"
-            onPress={() => router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: 'consult', ...(location ? { location } : {}) } })}
+            onPress={() => router.push({ pathname: '/afspraak/[treatmentId]', params: { treatmentId: 'consult', ...(location ? { location } : {}) } })}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
@@ -110,7 +110,7 @@ function TreatmentDetail({ treatment, location }: { treatment: Treatment; locati
                 <Pressable
                   key={c.id}
                   accessibilityRole="link"
-                  onPress={() => router.navigate({ pathname: '/ivy/boeken', params: { concern: c.id, at: String(Date.now()) } })}
+                  onPress={() => router.navigate({ pathname: '/boeken', params: { concern: c.id, at: String(Date.now()) } })}
                   style={({ pressed }) => ({
                     height: 34,
                     paddingHorizontal: 12,

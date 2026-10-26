@@ -95,7 +95,7 @@ function NextAppointment({ appointment, fill }: { appointment: AppointmentView; 
   const theme = useTheme();
   const { t, relativeDay, time, text } = useI18n();
   return (
-    <Pressable accessibilityRole="button" onPress={() => router.navigate('/ivy/mijn')} style={fill ? { flex: 1 } : undefined}>
+    <Pressable accessibilityRole="button" onPress={() => router.navigate('/mijn')} style={fill ? { flex: 1 } : undefined}>
       <Photo photo={appointment.treatment.photo} scrim style={fill ? { flex: 1, minHeight: 360, borderRadius: theme.r.card } : { height: 236, borderRadius: theme.r.card }}>
         <View style={{ position: 'absolute', start: 18, end: 18, bottom: 16, gap: 4 }}>
           <Txt variant="eyebrow" color={theme.c.onPhotoMuted}>
@@ -120,7 +120,7 @@ function AskIvy() {
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.push('/ivy/assistent')}
+      onPress={() => router.push('/assistent')}
       style={({ pressed }) => ({
         minHeight: 56,
         borderRadius: theme.r.card,
@@ -175,7 +175,7 @@ function FollowUp() {
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() =>
             router.push({
-              pathname: '/ivy/afspraak/[treatmentId]',
+              pathname: '/afspraak/[treatmentId]',
               params: {
                 treatmentId: followUp.treatment.id,
                 specialist: specialist.id,
@@ -206,7 +206,7 @@ function Deals() {
           <Pressable
             key={deal.id}
             accessibilityRole="button"
-            onPress={() => router.push({ pathname: '/ivy/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: deal.id } })}
+            onPress={() => router.push({ pathname: '/afspraak/[treatmentId]', params: { treatmentId: 'laser', deal: deal.id } })}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
@@ -238,7 +238,7 @@ function Deals() {
       <Txt variant="caption" color={theme.c.muted}>
         {t('ivy.deals.note')}
       </Txt>
-      <Button size="sm" label={t('ivy.deals.cta')} onPress={() => router.push('/ivy/afspraak/laser')} style={{ alignSelf: 'flex-start', marginTop: 2 }} />
+      <Button size="sm" label={t('ivy.deals.cta')} onPress={() => router.push('/afspraak/laser')} style={{ alignSelf: 'flex-start', marginTop: 2 }} />
     </View>
   );
 }
@@ -251,7 +251,7 @@ function Concerns() {
     <Pressable
       key={concern.id}
       accessibilityRole="button"
-      onPress={() => router.navigate({ pathname: '/ivy/boeken', params: { concern: concern.id, at: String(Date.now()) } })}
+      onPress={() => router.navigate({ pathname: '/boeken', params: { concern: concern.id, at: String(Date.now()) } })}
       style={({ pressed }) => ({ width: wide ? undefined : 136, flexBasis: wide ? '22%' : undefined, flexGrow: wide ? 1 : undefined, gap: wide ? 12 : 8, opacity: pressed ? 0.85 : 1 })}
     >
       <Photo photo={concern.photo} style={{ height: wide ? 230 : 172, borderRadius: theme.r.photo }} />
@@ -283,7 +283,7 @@ function Consult({ compact }: { compact?: boolean }) {
         <Txt variant="body" color={CLINIC_COLORS.body}>
           {t('ivy.home.consultBody')}
         </Txt>
-        <Button label={t('ivy.home.consultCta')} onPress={() => router.push('/ivy/afspraak/consult')} style={{ marginTop: 8 }} />
+        <Button label={t('ivy.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ marginTop: 8 }} />
       </View>
     </View>
   );
@@ -293,7 +293,7 @@ function SkinAdvice({ fill }: { fill?: boolean }) {
   const theme = useTheme();
   const { t } = useI18n();
   return (
-    <Pressable accessibilityRole="button" onPress={() => router.push('/ivy/advies')} style={fill ? { flex: 1 } : undefined}>
+    <Pressable accessibilityRole="button" onPress={() => router.push('/advies')} style={fill ? { flex: 1 } : undefined}>
       <Photo photo="pc-prx" scrim position="top" style={fill ? { flex: 1, minHeight: 212, borderRadius: theme.r.card } : { height: 212, borderRadius: theme.r.card }}>
         <View
           style={{

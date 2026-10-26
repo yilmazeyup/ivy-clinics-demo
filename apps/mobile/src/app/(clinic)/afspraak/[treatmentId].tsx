@@ -40,7 +40,7 @@ type Params = { treatmentId: string; location?: string; specialist?: string; slo
 export default function IvyBooking() {
   const params = useLocalSearchParams<Params>();
   const treatment = TREATMENTS.find((tr) => tr.id === params.treatmentId);
-  if (!treatment) return <Redirect href="/ivy/boeken" />;
+  if (!treatment) return <Redirect href="/boeken" />;
   return <Booking treatment={treatment} params={params} />;
 }
 
@@ -106,7 +106,7 @@ function Booking({ treatment, params }: { treatment: Treatment; params: Params }
     const id = ivy.bookAppointment({ treatmentId: treatment.id, specialistId: slot.specialistId, locationId, start: slot.start });
     if (replacing) ivy.cancelAppointment(replacing.id);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    router.replace({ pathname: '/ivy/bevestiging/[id]', params: replacing ? { id, moved: '1' } : { id } });
+    router.replace({ pathname: '/bevestiging/[id]', params: replacing ? { id, moved: '1' } : { id } });
   };
 
   const footer = (

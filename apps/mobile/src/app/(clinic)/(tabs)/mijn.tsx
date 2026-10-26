@@ -17,7 +17,7 @@ import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
 /** The help page with the explainer video and common questions, on the demo site. */
-const HELP_URL = 'https://yilmazeyup.github.io/ivy-clinics-demo/hulp/';
+const HELP_URL = 'https://yilmazeyup.github.io/pure-clinics-demo/hulp/';
 
 /** Everything the member has planned or bought, the membership, and how to reach both clinics. */
 export default function MyIvy() {
@@ -40,7 +40,7 @@ export default function MyIvy() {
             <Txt variant="body" color={theme.c.muted}>
               {t('ivy.appts.empty')}
             </Txt>
-            <Button size="sm" label={t('ivy.home.consultCta')} onPress={() => router.push('/ivy/afspraak/consult')} style={{ alignSelf: 'flex-start' }} />
+            <Button size="sm" label={t('ivy.home.consultCta')} onPress={() => router.push('/afspraak/consult')} style={{ alignSelf: 'flex-start' }} />
           </View>
         ) : (
           upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} />)
@@ -73,7 +73,7 @@ export default function MyIvy() {
 
       <Section title={t('ivy.mine.more')}>
         <List>
-          <LinkRow icon="camera" label={t('ivy.journal.title')} onPress={() => router.push('/ivy/journaal')} first />
+          <LinkRow icon="camera" label={t('ivy.journal.title')} onPress={() => router.push('/journaal')} first />
           <LinkRow icon="globe" label={t('settings.language')} onPress={() => router.push('/settings')} />
           <LinkRow icon="video" label={t('ivy.mine.help')} onPress={() => Linking.openURL(`${HELP_URL}?lang=${locale}`)} />
         </List>
@@ -127,7 +127,7 @@ function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
             style={{ flex: 1 }}
             onPress={() =>
               router.push({
-                pathname: '/ivy/afspraak/[treatmentId]',
+                pathname: '/afspraak/[treatmentId]',
                 params: { treatmentId: treatment.id, location: location.id, specialist: specialist.id, replace: appointment.id },
               })
             }
@@ -264,7 +264,7 @@ function OrderRow({ order, first }: { order: Order; first: boolean }) {
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.push(`/ivy/bestelling/${order.id}`)}
+      onPress={() => router.push(`/bestelling/${order.id}`)}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',
@@ -312,7 +312,7 @@ function PastRow({ appointment, first }: { appointment: AppointmentView; first: 
         hitSlop={8}
         onPress={() =>
           router.push({
-            pathname: '/ivy/afspraak/[treatmentId]',
+            pathname: '/afspraak/[treatmentId]',
             params: { treatmentId: treatment.id, location: location.id, specialist: specialist.id },
           })
         }

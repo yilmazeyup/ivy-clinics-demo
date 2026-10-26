@@ -57,7 +57,7 @@ export default function IvyAdvice() {
       </Footer>
     ) : (
       <Footer>
-        <Button label={t('ivy.home.consultCta')} onPress={() => router.replace('/ivy/afspraak/consult')} />
+        <Button label={t('ivy.home.consultCta')} onPress={() => router.replace('/afspraak/consult')} />
       </Footer>
     );
 
@@ -277,7 +277,7 @@ function Recommendation({ treatment, note, badge }: { treatment: Treatment; note
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.replace({ pathname: '/ivy/behandeling/[id]', params: { id: treatment.id } })}
+      onPress={() => router.replace({ pathname: '/behandeling/[id]', params: { id: treatment.id } })}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',

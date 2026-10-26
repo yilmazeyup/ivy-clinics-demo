@@ -63,7 +63,7 @@ function Shell() {
   const { wide } = useLayout();
   // The opening animation plays once, each time the app starts.
   const [intro, setIntro] = useState(true);
-  // A link such as pureivy://ivy?lang=ar opens the demo straight in that language. Read from the incoming
+  // A link such as pureclinics://?lang=ar opens the demo straight in that language. Read from the incoming
   // link itself, not from route params, which stay on a screen and would switch the language back later.
   const url = Linking.useURL();
   useEffect(() => {
@@ -77,8 +77,7 @@ function Shell() {
           <StatusBar style="dark" />
           {wide ? <SiteHeader /> : null}
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="ivy" />
+            <Stack.Screen name="(clinic)" />
             <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
           </Stack>
         </ToastProvider>

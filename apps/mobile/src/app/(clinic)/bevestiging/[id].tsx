@@ -15,7 +15,7 @@ import { useTheme } from '@/theme';
 // Back to the tabs underneath, then to the Home tab.
 function home() {
   if (router.canDismiss()) router.dismissAll();
-  router.navigate('/ivy');
+  router.navigate('/');
 }
 
 export default function IvyConfirmation() {
@@ -25,7 +25,7 @@ export default function IvyConfirmation() {
   const ivy = useIvy();
   const toast = useToast();
   const appointment = ivy.byId(id);
-  if (!appointment) return <Redirect href="/ivy" />;
+  if (!appointment) return <Redirect href="/" />;
   const { treatment, specialist, location } = appointment;
   const end = new Date(appointment.start.getTime() + treatment.minutes * 60000);
   const status = moved

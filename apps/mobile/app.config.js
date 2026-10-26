@@ -1,5 +1,5 @@
 // app.json holds the configuration. This file only adds the web base path when the app is exported
-// for a sub-folder, such as the demo site on GitHub Pages (EXPO_BASE_URL=/ivy-clinics-demo/app).
+// for a sub-folder, such as the demo site on GitHub Pages (EXPO_BASE_URL=/pure-clinics-demo/app).
 module.exports = ({ config }) => ({
   ...config,
   experiments: {

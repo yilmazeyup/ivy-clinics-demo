@@ -1,18 +1,18 @@
 {
   "expo": {
     "name": "Pure Clinics",
-    "slug": "pure-ivy-demo",
-    "scheme": "pureivy",
+    "slug": "pure-clinics-demo",
+    "scheme": "pureclinics",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "nl.pureivy.demo"
+      "bundleIdentifier": "nl.pureclinics.demo"
     },
     "android": {
-      "package": "nl.pureivy.demo",
+      "package": "nl.pureclinics.demo",
       "adaptiveIcon": {
         "backgroundColor": "#F6F1EA",
         "foregroundImage": "./assets/android-icon-foreground.png",
