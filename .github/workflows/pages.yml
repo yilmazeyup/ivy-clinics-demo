@@ -61,6 +61,8 @@ jobs:
           touch _site/.nojekyll
           # The demo uses fictional data, so keep the app out of search results too.
           sed -i 's#<head>#<head><meta name="robots" content="noindex, nofollow" />#' _site/app/index.html
+          # Sand from the very first moment, so the opening animation starts without a white flash.
+          sed -i 's|</head>|<style>html,body{background:#F6F1EA}</style></head>|' _site/app/index.html
           # GitHub Pages answers unknown paths with 404.html; the app then opens on the right screen.
           cp _site/app/index.html _site/404.html
 

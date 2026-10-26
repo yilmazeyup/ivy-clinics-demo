@@ -13,13 +13,16 @@ import * as Linking from 'expo-linking';
 import { LocaleProvider, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { Intro } from '@/components/Intro';
+import { SiteHeader } from '@/components/SiteHeader';
 import { ToastProvider } from '@/components/Toast';
+import { useLayout } from '@/layout';
 import { DemoProvider, useDemo } from '@/state/demo';
-import { useTheme } from '@/theme';
+import { BrandContext, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -63,6 +66,9 @@ function Shell() {
   const theme = useTheme();
   const direction = theme.rtl ? 'rtl' : 'ltr';
   const { setLocale } = useDemo();
+  const { wide } = useLayout();
+  // The opening animation plays once, each time the app starts.
+  const [intro, setIntro] = useState(true);
   // A link such as pureivy://ivy?lang=ar opens the demo straight in that language. Read from the incoming
   // link itself, not from route params, which stay on a screen and would switch the language back later.
   const url = Linking.useURL();
@@ -75,12 +81,22 @@ function Shell() {
       <View style={{ flex: 1, direction, backgroundColor: theme.c.bg }}>
         <ToastProvider>
           <StatusBar style="dark" />
+          {wide ? (
+            <BrandContext.Provider value="ivy">
+              <SiteHeader />
+            </BrandContext.Provider>
+          ) : null}
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="ivy" />
             <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
           </Stack>
         </ToastProvider>
+        {intro ? (
+          <BrandContext.Provider value="ivy">
+            <Intro onDone={() => setIntro(false)} />
+          </BrandContext.Provider>
+        ) : null}
       </View>
     </LocaleProvider>
   );
