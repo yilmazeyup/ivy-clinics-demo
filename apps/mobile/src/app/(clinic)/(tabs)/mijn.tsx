@@ -1,4 +1,4 @@
-import { LOCATIONS, PURE_CLINICS, openingHours } from '@pure-clinics/shared';
+import { LASER_SERIES, LOCATIONS, MEMBER, PURE_CLINICS, openingHours } from '@pure-clinics/shared';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
@@ -6,13 +6,17 @@ import { Pressable, View } from 'react-native';
 
 import { Badge } from '@/components/Badge';
 import { Button, IconButton } from '@/components/Button';
+import { Glass } from '@/components/Glass';
 import { Icon, type IconName } from '@/components/Icon';
 import { Photo } from '@/components/Photo';
+import { PureLogo } from '@/components/PureLogo';
+import { SessionRing } from '@/components/SessionRing';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Toast';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { cityName, roleKey, useClinic, type AppointmentView } from '@/clinic';
+import { startEdge } from '@/layout';
 import { useDemo, type Order } from '@/state/demo';
 import { useTheme } from '@/theme';
 
@@ -28,7 +32,7 @@ export default function MyPure() {
   const upcoming = clinic.upcoming;
 
   return (
-    <Screen gap={26}>
+    <Screen gap={26} tabs>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Txt variant="display">{t('clinic.mine.title')}</Txt>
         <IconButton icon="globe" label={t('common.settings')} tone="surface" onPress={() => router.push('/settings')} />
@@ -46,6 +50,8 @@ export default function MyPure() {
           upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} />)
         )}
       </Section>
+
+      <Series />
 
       <Membership />
 
@@ -83,12 +89,9 @@ export default function MyPure() {
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
-  const theme = useTheme();
   return (
-    <View style={{ gap: 12 }}>
-      <Txt variant="eyebrow" color={theme.c.muted}>
-        {title}
-      </Txt>
+    <View style={{ gap: 14 }}>
+      <Txt variant="title">{title}</Txt>
       {children}
     </View>
   );
@@ -96,7 +99,31 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 function List({ children }: { children: ReactNode }) {
   const theme = useTheme();
-  return <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, paddingHorizontal: 14 }}>{children}</View>;
+  return <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, paddingHorizontal: 16, boxShadow: theme.shadow.card }}>{children}</View>;
+}
+
+/** The laser series so far, as the ring of sessions: done ones in ink, the next one in gold. */
+function Series() {
+  const theme = useTheme();
+  const { t, text } = useI18n();
+  const clinic = useClinic();
+  const done = clinic.past.filter((a) => a.treatmentId === 'laser');
+  if (!done.length) return null;
+  const treatment = done[0].treatment;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, padding: 18, borderRadius: theme.r.card, backgroundColor: theme.c.surface, boxShadow: theme.shadow.card }}>
+      <SessionRing done={done.length} total={LASER_SERIES} size={96} show="done" caption={t('clinic.journey.of', { total: LASER_SERIES })} />
+      <View style={{ flex: 1, gap: 6 }}>
+        <Txt variant="eyebrow" color={theme.c.muted}>
+          {t('clinic.journey.eyebrow', { treatment: text(treatment.name) })}
+        </Txt>
+        <Txt variant="heading">{t('clinic.journey.done', { done: done.length, total: LASER_SERIES })}</Txt>
+        <Txt variant="small" color={theme.c.muted}>
+          {t('clinic.journey.with', { name: done[0].specialist.name })}
+        </Txt>
+      </View>
+    </View>
+  );
 }
 
 function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
@@ -107,11 +134,19 @@ function AppointmentCard({ appointment }: { appointment: AppointmentView }) {
   const { treatment, specialist, location } = appointment;
 
   return (
-    <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, overflow: 'hidden' }}>
-      <Photo photo={treatment.photo} style={{ height: 150 }} />
+    <View style={{ backgroundColor: theme.c.surface, borderRadius: theme.r.card, overflow: 'hidden', boxShadow: theme.shadow.card }}>
+      <Photo photo={treatment.photo} style={{ height: 180 }}>
+        <Glass style={{ position: 'absolute', top: 14, ...startEdge(theme.rtl, 14), borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 }}>
+          <Txt variant="eyebrow" style={{ fontSize: 10 }}>
+            {relativeDay(appointment.start)}
+          </Txt>
+          <Txt variant="title" style={{ fontSize: 22, lineHeight: 26 }}>
+            {time(appointment.start)}
+          </Txt>
+        </Glass>
+      </Photo>
       <View style={{ padding: 16, gap: 12 }}>
         <View style={{ gap: 3 }}>
-          <Txt variant="smallStrong" color={theme.c.muted}>{`${relativeDay(appointment.start)} · ${time(appointment.start)}`}</Txt>
           <Txt variant="title">{text(treatment.name)}</Txt>
           <Txt variant="small" color={theme.c.muted}>{`${t('clinic.home.with', { name: specialist.name })} · ${t(roleKey(specialist.role))}`}</Txt>
         </View>
@@ -156,21 +191,33 @@ function Membership() {
   const toast = useToast();
   const perks = [t('clinic.member.perk1'), t('clinic.member.perk2'), t('clinic.member.perk3'), t('clinic.member.perk4')];
   return (
-    <View style={{ backgroundColor: theme.c.sand, borderRadius: theme.r.card, padding: 18, gap: 12 }}>
-      <Txt variant="eyebrow" color={theme.c.muted}>
-        {t('clinic.member.eyebrow')}
-      </Txt>
-      <Txt variant="title">{member ? t('clinic.member.joined') : t('clinic.member.title')}</Txt>
+    <View style={{ backgroundColor: theme.c.ink, borderRadius: theme.r.card, padding: 20, gap: 14, boxShadow: theme.shadow.lift, overflow: 'hidden' }}>
+      {/* A member card: the wordmark, a gold line and the member's name, like the card in a wallet. */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <PureLogo width={128} color="#FFFFFF" />
+        <Txt variant="eyebrow" color={theme.c.gold}>
+          {t('clinic.member.eyebrow')}
+        </Txt>
+      </View>
+      <View style={{ height: 1, backgroundColor: theme.c.gold, opacity: 0.6 }} />
+      <View style={{ gap: 4 }}>
+        <Txt variant="caption" color="rgba(255, 255, 255, 0.6)">
+          {`${MEMBER.firstName} ${MEMBER.lastName}`}
+        </Txt>
+        <Txt variant="title" color="#FFFFFF" accentColor="#FFFFFF">
+          {member ? t('clinic.member.joined') : t('clinic.member.title')}
+        </Txt>
+      </View>
       {member ? null : (
-        <Txt variant="body" color={theme.c.muted}>
+        <Txt variant="body" color="rgba(255, 255, 255, 0.72)">
           {t('clinic.member.body')}
         </Txt>
       )}
       <View style={{ gap: 8 }}>
         {perks.map((perk) => (
           <View key={perk} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Icon name="check" size={16} strokeWidth={2.2} />
-            <Txt variant="body" style={{ flex: 1 }}>
+            <Icon name="check" size={16} strokeWidth={2.2} color={theme.c.gold} />
+            <Txt variant="body" color="#FFFFFF" style={{ flex: 1 }}>
               {perk}
             </Txt>
           </View>
@@ -179,6 +226,7 @@ function Membership() {
       {member ? null : (
         <Button
           size="sm"
+          kind="light"
           label={t('clinic.member.join')}
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() => {

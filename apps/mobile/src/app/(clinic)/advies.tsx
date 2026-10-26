@@ -10,13 +10,15 @@ import {
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 
 import { Badge } from '@/components/Badge';
 import { Button, IconButton } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { Photo } from '@/components/Photo';
+import { FadeIn } from '@/components/Motion';
 import { Footer, Screen, useModalTop } from '@/components/Screen';
+import { ScanResult, SkinScan } from '@/components/SkinScan';
 import { Txt } from '@/components/Txt';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -35,7 +37,11 @@ export default function AdviceScreen() {
   const [concerns, setConcerns] = useState<ConcernId[]>([]);
   const [skin, setSkin] = useState<Skin | null>(null);
   const [treatedBefore, setTreatedBefore] = useState<boolean | null>(null);
+  // The selfie step runs a demo scan on a sample photo: waiting, scanning, then the outcome.
+  const [scan, setScan] = useState<'idle' | 'scanning' | 'done'>('idle');
   const top = useModalTop();
+  const { width } = useWindowDimensions();
+  const scanWidth = Math.min(width - 40, 420);
 
   const answered = [concerns.length > 0, skin !== null, treatedBefore !== null, true][step] ?? true;
   const next = () => setStep((s) => s + 1);
@@ -47,14 +53,16 @@ export default function AdviceScreen() {
         <Button label={t('clinic.ai.next')} disabled={!answered} iconAfter="arrow" onPress={next} />
       </Footer>
     ) : step === 3 ? (
-      <Footer>
-        <Button
-          icon="camera"
-          label={t('clinic.ai.selfie')}
-          onPress={next}
-        />
-        <Button kind="quiet" label={t('clinic.ai.skip')} onPress={next} />
-      </Footer>
+      scan === 'scanning' ? null : scan === 'done' ? (
+        <Footer>
+          <Button label={t('clinic.scan.continue')} iconAfter="arrow" onPress={next} />
+        </Footer>
+      ) : (
+        <Footer>
+          <Button icon="sparkle" label={t('clinic.scan.start')} onPress={() => setScan('scanning')} />
+          <Button kind="quiet" label={t('clinic.ai.skip')} onPress={next} />
+        </Footer>
+      )
     ) : (
       <Footer>
         <Button label={t('clinic.home.consultCta')} onPress={() => router.replace('/afspraak/consult')} />
@@ -120,13 +128,34 @@ export default function AdviceScreen() {
         </Question>
       ) : null}
 
-      {step === 3 ? (
+      {step === 3 && scan === 'idle' ? (
         <Question title={t('clinic.ai.q4')} hint={t('clinic.ai.q4Body')}>
           <SelfieFrame />
         </Question>
       ) : null}
 
-      {result ? <Advice concerns={concerns} skin={skin} treatedBefore={treatedBefore} /> : null}
+      {step === 3 && scan !== 'idle' ? (
+        <View style={{ gap: 18 }}>
+          <View style={{ gap: 6 }}>
+            <Txt variant="display">{scan === 'done' ? t('clinic.scan.result') : t('clinic.scan.scanning')}</Txt>
+            <Txt variant="body" color={theme.c.muted}>
+              {scan === 'done' ? t('clinic.scan.resultBody') : t('clinic.scan.sample')}
+            </Txt>
+          </View>
+          <View style={{ alignSelf: 'center' }}>
+            <SkinScan width={scanWidth} height={Math.round(scanWidth * 1.18)} onDone={() => setScan('done')} />
+          </View>
+          {scan === 'done' ? (
+            <FadeIn>
+              <ScanResult />
+            </FadeIn>
+          ) : null}
+        </View>
+      ) : null}
+
+      {result ? (
+        <Advice concerns={scan === 'done' && !concerns.includes('pigment') ? [...concerns, 'pigment'] : concerns} skin={skin} treatedBefore={treatedBefore} />
+      ) : null}
     </Screen>
   );
 }

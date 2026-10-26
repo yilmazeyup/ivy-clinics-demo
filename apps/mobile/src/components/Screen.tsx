@@ -1,10 +1,22 @@
 import { useNavigation, useRoute } from 'expo-router';
-import { useEffect, useRef, type PropsWithChildren, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type PropsWithChildren, type ReactNode } from 'react';
 import { Animated, Platform, ScrollView, View, type ScrollViewInstance, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DETAIL_WIDTH, PAGE_WIDTH, useLayout } from '@/layout';
 import { useTheme } from '@/theme';
+
+import { Glass } from './Glass';
+import { Stagger } from './Motion';
+import { useTabBarSpace } from './TabBar';
+
+const ScrollYContext = createContext<Animated.Value | null>(null);
+
+/** How far the page around a component has scrolled, for headers that move at their own pace. */
+export function useScrollY(): Animated.Value {
+  const fallback = useRef(new Animated.Value(0)).current;
+  return useContext(ScrollYContext) ?? fallback;
+}
 
 type Props = PropsWithChildren<{
   /** Fixed area pinned to the bottom, e.g. a booking bar. */
@@ -19,14 +31,40 @@ type Props = PropsWithChildren<{
   sheet?: boolean;
   /** On a computer screen: main pages use the full column, detail pages a narrower one. */
   width?: 'page' | 'detail';
+  /** A page under the floating tab bar, which needs room at the bottom. */
+  tabs?: boolean;
+  /** Let the blocks of the page arrive one after another when it opens. */
+  enter?: boolean;
+  /** A page that opens on a photo: the bar behind the clock only appears once the photo has scrolled away. */
+  photoTop?: number;
+  /** Fixed on top of the page, e.g. a back button and a bar that appears while scrolling. */
+  overlay?: ReactNode;
 }>;
 
-export function Screen({ children, footer, bottomSpace = 32, gap = 20, padded = true, contentStyle, background, sheet, width = 'detail' }: Props) {
+export function Screen({
+  children,
+  footer,
+  bottomSpace: space = 32,
+  gap = 20,
+  padded = true,
+  contentStyle,
+  background,
+  sheet,
+  width = 'detail',
+  tabs,
+  enter = true,
+  photoTop,
+  overlay,
+}: Props) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { wide, gutter } = useLayout();
   const scrollY = useRef(new Animated.Value(0)).current;
   const bg = background ?? theme.c.bg;
+  const tabSpace = useTabBarSpace();
+  // The footer floats over the end of the page, so the page gets its height as extra room.
+  const [footerHeight, setFooterHeight] = useState(0);
+  const bottomSpace = (tabs ? tabSpace : space) + (footer ? footerHeight : 0);
   return (
     <View style={{ flex: 1, backgroundColor: bg }}>
       <Animated.ScrollView
@@ -37,7 +75,7 @@ export function Screen({ children, footer, bottomSpace = 32, gap = 20, padded = 
           {
             paddingTop: insets.top + 8,
             paddingHorizontal: padded ? 20 : 0,
-            paddingBottom: bottomSpace + (footer ? 0 : insets.bottom),
+            paddingBottom: bottomSpace + (footer || tabs ? 0 : insets.bottom),
             gap,
           },
           contentStyle,
@@ -52,7 +90,7 @@ export function Screen({ children, footer, bottomSpace = 32, gap = 20, padded = 
           },
         ]}
       >
-        {children}
+        <ScrollYContext.Provider value={scrollY}>{enter ? <Stagger>{children}</Stagger> : children}</ScrollYContext.Provider>
       </Animated.ScrollView>
       {/* Once content scrolls, a backdrop keeps it from running behind the clock and the notch. */}
       {sheet ? null : (
@@ -65,11 +103,20 @@ export function Screen({ children, footer, bottomSpace = 32, gap = 20, padded = 
             right: 0,
             height: insets.top,
             backgroundColor: bg,
-            opacity: scrollY.interpolate({ inputRange: [0, 24], outputRange: [0, 1], extrapolate: 'clamp' }),
+            opacity: scrollY.interpolate({
+              inputRange: photoTop ? [photoTop - insets.top - 40, photoTop - insets.top] : [0, 24],
+              outputRange: [0, 1],
+              extrapolate: 'clamp',
+            }),
           }}
         />
       )}
-      {footer}
+      {overlay ? <ScrollYContext.Provider value={scrollY}>{overlay}</ScrollYContext.Provider> : null}
+      {footer ? (
+        <View style={{ position: 'absolute', start: 0, end: 0, bottom: 0 }} onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}>
+          {footer}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -112,24 +159,22 @@ export function Rail({ children, gap = 12 }: PropsWithChildren<{ gap?: number }>
   );
 }
 
-/** Bottom action bar that sits above the home indicator. */
+/** Bottom action bar: a pane of glass above the home indicator, with the page scrolling on beneath it. */
 export function Footer({ children }: PropsWithChildren) {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { wide, gutter } = useLayout();
   return (
-    <View
-      style={{
-        paddingHorizontal: wide ? gutter : 20,
-        paddingTop: 14,
-        paddingBottom: Math.max(insets.bottom, 16),
-        backgroundColor: theme.c.surface,
-        borderTopWidth: 1,
-        borderTopColor: theme.c.line,
-      }}
-    >
-      {/* On a computer screen the bar's content lines up with the centred page above it. */}
-      <View style={{ gap: 10, width: '100%', maxWidth: wide ? DETAIL_WIDTH : undefined, alignSelf: 'center' }}>{children}</View>
-    </View>
+    <Glass style={{ borderWidth: 0, borderTopWidth: 1, borderTopColor: 'rgba(30, 30, 28, 0.06)', boxShadow: '0px -10px 30px rgba(40, 32, 24, 0.06)' }}>
+      <View
+        style={{
+          paddingHorizontal: wide ? gutter : 20,
+          paddingTop: 14,
+          paddingBottom: Math.max(insets.bottom, 16),
+        }}
+      >
+        {/* On a computer screen the bar's content lines up with the centred page above it. */}
+        <View style={{ gap: 10, width: '100%', maxWidth: wide ? DETAIL_WIDTH : undefined, alignSelf: 'center' }}>{children}</View>
+      </View>
+    </Glass>
   );
 }

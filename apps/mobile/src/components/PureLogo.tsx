@@ -1,20 +1,37 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/theme';
 
-/**
- * The "PURE CLINICS" wordmark as on pureclinics.nl: PURE in bold capitals, CLINICS light, both widely spaced.
- * It stays in Latin script and left-to-right in every language.
- */
+/** The eleven letters of the Pure Clinics wordmark, traced from the logo on pureclinics.nl: PURE bold, CLINICS light. */
+export const LOGO_LETTERS = [
+  'M29.1,1c7,0,12.7,2,17.1,6.1s6.6,9.3,6.6,15.7c0,6.5-2.2,11.8-6.7,15.8s-10.3,6-17.6,6h-14v31.5H0V1 C0,1,29.1,1,29.1,1z M25.5,33.3c3.9,0,6.9-0.9,9.1-2.7s3.3-4.4,3.3-7.9c0-6.9-4.4-10.4-13.3-10.4h-9.9v21H25.5z',
+  'M133.8,1v43.8c0,4.5,0.7,8.1,2,10.7c1.3,2.7,3.5,4.8,6.6,6.6c3,1.7,6.6,2.6,10.7,2.6c4.4,0,8.2-0.8,11.3-2.4 c3.1-1.6,5.4-3.9,6.8-6.7c1.4-2.8,2.2-6.7,2.2-11.7V1h14.5v44.7c0,10.1-3,17.9-9.1,23.3s-14.6,8.2-25.7,8.2c-7,0-13-1.2-18.1-3.7 s-9-6.1-11.7-10.7c-2.7-4.7-4-10.2-4-16.5V1C119.3,1,133.8,1,133.8,1z',
+  'M286.5,1c7.1,0,12.8,2,17.3,5.9c4.4,3.9,6.7,9,6.7,15.3c0,4.3-1.1,8-3.3,11.2c-2.2,3.2-5.5,5.7-9.8,7.5 c2.4,1.3,4.5,3.1,6.4,5.3c1.9,2.2,4.2,6,6.9,11.3c4.6,9.1,8,15.4,10.2,18.8h-16.2c-1.1-1.7-2.6-4.3-4.5-7.9 c-4.2-8-7.2-13.4-9.2-16.2c-1.9-2.8-3.8-4.8-5.6-5.9c-1.8-1.2-3.9-1.7-6.2-1.7h-5.3v31.8h-14.5V1C259.4,1,286.5,1,286.5,1z M283.2,33c3.8,0,6.8-1,9-2.9s3.3-4.5,3.3-7.8c0-3.4-1.1-6-3.2-7.7c-2.2-1.7-5.2-2.6-9.2-2.6h-9v20.9L283.2,33L283.2,33z',
+  'M434.5,1v11.3h-34.1v19.8H433v11.4h-32.6v21.4h34.8v11.4h-49.4V1C385.8,1,434.5,1,434.5,1z',
+  'M567.3,6.3v6.4c-9.1-4.8-18.1-7.3-26.8-7.3c-9.3,0-17.1,3.2-23.4,9.5c-6.3,6.4-9.4,14.3-9.4,23.8 c0,9.6,3.2,17.5,9.5,23.7c6.3,6.2,14.4,9.3,24.2,9.3c8.2,0,17.1-2.6,26.8-7.7v6c-8.9,4.7-17.8,7.1-26.6,7.1 c-11.4,0-21-3.7-28.6-11c-7.6-7.3-11.4-16.5-11.4-27.4c0-11,3.9-20.2,11.7-27.6S530.4,0,541.1,0C549.3,0,558.1,2.1,567.3,6.3z',
+  'M640.6,1v70.3h37.2v4.8h-43V1C634.8,1,640.6,1,640.6,1z',
+  'M747.6,1v75.2h-5.8V1C741.8,1,747.6,1,747.6,1z',
+  'M888,1v75.2h-4.8L826,10.5v65.7h-5.8V1h4.9l57,65.7V1C882.1,1,888,1,888,1z',
+  'M966.5,1v75.2h-5.8V1C960.7,1,966.5,1,966.5,1z',
+  'M1101.7,6.3v6.4c-9.1-4.8-18.1-7.3-26.8-7.3c-9.3,0-17.1,3.2-23.4,9.5c-6.3,6.4-9.4,14.3-9.4,23.8 c0,9.6,3.2,17.5,9.5,23.7c6.3,6.2,14.4,9.3,24.2,9.3c8.2,0,17.1-2.6,26.8-7.7v6c-8.9,4.7-17.8,7.1-26.6,7.1 c-11.4,0-21-3.7-28.6-11c-7.6-7.3-11.4-16.5-11.4-27.4c0-11,3.9-20.2,11.7-27.6S1064.8,0,1075.5,0C1083.8,0,1092.6,2.1,1101.7,6.3 z',
+  'M1204.6,4.7v6.4c-6.5-3.8-12.1-5.8-16.8-5.8c-4.5,0-8.3,1.4-11.3,4.1s-4.5,6.1-4.5,10.2 c0,2.9,0.9,5.5,2.7,7.9c1.8,2.3,5.5,4.6,11.3,6.7c5.7,2.2,9.9,3.9,12.5,5.4c2.6,1.4,4.8,3.5,6.7,6.2c1.8,2.7,2.7,6.3,2.7,10.6 c0,5.8-2.1,10.7-6.4,14.6c-4.2,4-9.4,6-15.5,6c-6.2,0-12.7-2.2-19.3-6.6v-6.8c7.3,5.3,13.6,8,18.9,8c4.4,0,8.2-1.4,11.3-4.3 c3.1-2.9,4.6-6.4,4.6-10.6c0-3.2-1-6.1-2.9-8.6c-1.9-2.6-5.8-5-11.6-7.2c-5.8-2.2-10-4-12.5-5.4s-4.6-3.3-6.4-5.8 c-1.7-2.5-2.6-5.8-2.6-9.8c0-5.5,2.1-10.2,6.4-14.1c4.2-3.9,9.3-5.8,15.3-5.8C1193,0,1198.8,1.6,1204.6,4.7z',
+];
+
+/** The letters sit in a 1206.8 × 78 box; a width gives the height. */
+export const LOGO_RATIO = 78 / 1206.8;
+export const LOGO_VIEWBOX = '0 0 1206.8 78';
+
+/** The Pure Clinics wordmark. It stays in Latin script and left-to-right in every language. */
 export function PureLogo({ width = 150, color }: { width?: number; color?: string }) {
   const theme = useTheme();
-  // Eleven spaced capitals take about eleven times the font size.
-  const size = width / 11;
-  const letter = { fontSize: size, lineHeight: size * 1.2, letterSpacing: size * 0.38, color: color ?? theme.c.ink };
   return (
-    <View accessibilityRole="image" accessibilityLabel="Pure Clinics" style={{ flexDirection: 'row', direction: 'ltr', alignItems: 'baseline' }}>
-      <Text style={[letter, { fontFamily: 'Jost_500Medium' }]}>PURE</Text>
-      <Text style={[letter, { fontFamily: 'Jost_300Light' }]}>CLINICS</Text>
+    <View accessibilityRole="image" accessibilityLabel="Pure Clinics" style={{ width, height: width * LOGO_RATIO, direction: 'ltr' }}>
+      <Svg width={width} height={width * LOGO_RATIO} viewBox={LOGO_VIEWBOX}>
+        {LOGO_LETTERS.map((d) => (
+          <Path key={d} d={d} fill={color ?? theme.c.ink} />
+        ))}
+      </Svg>
     </View>
   );
 }

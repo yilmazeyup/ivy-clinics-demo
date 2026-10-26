@@ -34,6 +34,7 @@ export const PHOTOS: Record<PhotoKey, number> = {
   'pc-nails': require('../assets/photos/pc-nails.jpg'),
   'pc-aging': require('../assets/photos/pc-aging.jpg'),
   'pc-room': require('../assets/photos/pc-room.jpg'),
+  'pc-intro': require('../assets/photos/pc-intro.jpg'),
   'ba-acne-1': require('../assets/photos/ba-acne-1.jpg'),
   'ba-acne-2': require('../assets/photos/ba-acne-2.jpg'),
   'ba-acne-3': require('../assets/photos/ba-acne-3.jpg'),

@@ -10,7 +10,8 @@ export default function ClinicLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="behandeling/[id]" />
+      {/* The treatment page fades in while the tapped card's photo grows into its header. */}
+      <Stack.Screen name="behandeling/[id]" options={{ animation: 'fade' }} />
       <Stack.Screen name="afspraak/[treatmentId]" />
       <Stack.Screen name="bevestiging/[id]" options={{ gestureEnabled: false }} />
       <Stack.Screen name="advies" options={{ presentation: 'modal' }} />

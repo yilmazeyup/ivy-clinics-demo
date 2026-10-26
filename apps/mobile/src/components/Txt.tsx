@@ -17,20 +17,21 @@ export type Variant =
   | 'eyebrow'
   | 'button';
 
-type Spec = { font: keyof Fonts; size: number; line: number; tracking?: number; upper?: boolean };
+type Spec = { font: keyof Fonts; size: number; line: number; tracking?: number; upper?: boolean; arabicSize?: number };
 
+// Big editorial lines are set in the light serif; titles and small capitals in Pure's own Tenor Sans.
 const SPECS: Record<Variant, Spec> = {
-  hero: { font: 'display', size: 40, line: 43 },
-  display: { font: 'title', size: 33, line: 36 },
-  title: { font: 'title', size: 26, line: 30 },
-  heading: { font: 'title', size: 22, line: 26 },
+  hero: { font: 'display', size: 46, line: 48, tracking: -0.4 },
+  display: { font: 'serif', size: 36, line: 40, tracking: -0.2 },
+  title: { font: 'title', size: 21, line: 27, tracking: 0.2, arabicSize: 24 },
+  heading: { font: 'title', size: 17, line: 23, tracking: 0.2, arabicSize: 19 },
   body: { font: 'body', size: 15, line: 22 },
   bodyStrong: { font: 'medium', size: 15, line: 22 },
   small: { font: 'body', size: 13, line: 18 },
   smallStrong: { font: 'medium', size: 13, line: 18 },
   caption: { font: 'body', size: 11, line: 14 },
-  eyebrow: { font: 'medium', size: 11, line: 14, tracking: 2, upper: true },
-  button: { font: 'body', size: 16, line: 20, tracking: 0.3 },
+  eyebrow: { font: 'brand', size: 11, line: 14, tracking: 2.2, upper: true },
+  button: { font: 'medium', size: 15, line: 20, tracking: 0.3 },
 };
 
 type Props = Omit<TextProps, 'children'> & {
@@ -51,22 +52,27 @@ export function Txt({ variant = 'body', color, align, accentColor, style, childr
   const spec = SPECS[variant];
   const base: TextStyle = {
     fontFamily: theme.f[spec.font],
-    fontSize: spec.size,
+    fontSize: theme.arabic && spec.arabicSize ? spec.arabicSize : spec.size,
     lineHeight: Math.round(spec.line * (theme.arabic ? 1.3 : 1)),
     letterSpacing: theme.arabic ? 0 : (spec.tracking ?? 0),
     textTransform: spec.upper && !theme.arabic ? 'uppercase' : 'none',
     color: color ?? theme.c.ink,
     textAlign: align ?? 'auto',
     writingDirection: theme.rtl ? 'rtl' : 'ltr',
+    // Cormorant's figures are old-style by default (a 1 looks like an I); prices and counts need lining figures.
+    fontVariant: ['lining-nums'],
   };
   // Arabic script needs taller lines, also where a screen sets its own line height.
   const override = theme.arabic ? StyleSheet.flatten(style)?.lineHeight : undefined;
   const arabicLine: TextStyle | null = override ? { lineHeight: Math.round(override * 1.3) } : null;
 
   if (typeof children === 'string' && children.includes('*')) {
+    // The italic serif runs smaller than Tenor Sans, so inside a title it is set a little larger.
+    const sans = spec.font === 'title' || spec.font === 'brand';
     const accent: TextStyle = {
       fontFamily: theme.f.accent,
       color: accentColor ?? (theme.arabic ? theme.c.primary : undefined),
+      ...(sans && !theme.arabic ? { fontSize: Math.round((StyleSheet.flatten(style)?.fontSize ?? base.fontSize ?? spec.size) * 1.22) } : null),
     };
     return (
       <Text style={[base, style, arabicLine]} {...rest}>

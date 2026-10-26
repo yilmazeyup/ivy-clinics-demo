@@ -36,7 +36,7 @@ export function Photo({ photo, style, scrim, position = 'center', zoom = 1, focu
     <View style={[styles.frame, { backgroundColor: theme.c.sand }, style]}>
       <Image source={PHOTOS[photo]} style={crop} contentFit="cover" contentPosition={position} transition={200} />
       {scrim ? (
-        <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none" pointerEvents="none">
+        <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" pointerEvents="none">
           <Defs>
             <LinearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0.32" stopColor="#141414" stopOpacity={0} />

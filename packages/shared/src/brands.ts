@@ -50,6 +50,7 @@ export const PHOTO_KEYS = [
   'pc-nails',
   'pc-aging',
   'pc-room',
+  'pc-intro',
   'ba-acne-1',
   'ba-acne-2',
   'ba-acne-3',

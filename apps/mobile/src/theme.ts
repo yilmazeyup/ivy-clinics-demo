@@ -22,12 +22,18 @@ export type Palette = {
   /** A picked option, e.g. the zone or slot you are about to book, and the cart count. */
   highlight: string;
   onHighlight: string;
+  /** The fine gold line under the Pure Clinics wordmark. */
+  gold: string;
 };
 
 export type Fonts = {
   display: string;
+  /** The regular serif, for page titles. */
+  serif: string;
   title: string;
   accent: string;
+  /** Pure Clinics' own heading face (Tenor Sans on pureclinics.nl), for titles and small capitals. */
+  brand: string;
   body: string;
   light: string;
   medium: string;
@@ -40,6 +46,8 @@ export type Theme = {
   c: Palette;
   f: Fonts;
   r: { card: number; control: number; chip: number; photo: number; small: number };
+  /** Soft, layered shadows (CSS syntax, which React Native and the web both read). */
+  shadow: { card: string; float: string; lift: string };
   stroke: number;
 };
 
@@ -59,14 +67,17 @@ const PALETTE: Palette = {
   onPhotoMuted: CLINIC_COLORS.onPhoto,
   highlight: CLINIC_COLORS.taupeDark,
   onHighlight: '#FFFFFF',
+  gold: '#B99A62',
 };
 
 // Latin and Arabic need different families; the names match the keys loaded in the root layout.
 const FONTS: { latin: Fonts; arabic: Fonts } = {
   latin: {
     display: 'CormorantGaramond_300Light',
-    title: 'CormorantGaramond_400Regular',
+    serif: 'CormorantGaramond_400Regular',
+    title: 'TenorSans_400Regular',
     accent: 'CormorantGaramond_400Regular_Italic',
+    brand: 'TenorSans_400Regular',
     body: 'Jost_400Regular',
     light: 'Jost_300Light',
     medium: 'Jost_500Medium',
@@ -74,13 +85,21 @@ const FONTS: { latin: Fonts; arabic: Fonts } = {
   },
   arabic: {
     display: 'Amiri_400Regular',
+    serif: 'Amiri_400Regular',
     title: 'Amiri_400Regular',
     accent: 'Amiri_700Bold',
+    brand: 'IBMPlexSansArabic_500Medium',
     body: 'IBMPlexSansArabic_400Regular',
     light: 'IBMPlexSansArabic_400Regular',
     medium: 'IBMPlexSansArabic_500Medium',
     strong: 'IBMPlexSansArabic_500Medium',
   },
+};
+
+const SHADOW = {
+  card: '0px 1px 2px rgba(40, 32, 24, 0.05), 0px 8px 24px rgba(40, 32, 24, 0.07)',
+  float: '0px 2px 6px rgba(20, 16, 12, 0.10), 0px 18px 40px rgba(20, 16, 12, 0.22)',
+  lift: '0px 4px 10px rgba(40, 32, 24, 0.08), 0px 24px 48px rgba(40, 32, 24, 0.16)',
 };
 
 export function makeTheme(locale: Locale): Theme {
@@ -90,7 +109,8 @@ export function makeTheme(locale: Locale): Theme {
     arabic,
     c: PALETTE,
     f: arabic ? FONTS.arabic : FONTS.latin,
-    r: { card: 16, control: 8, chip: 6, photo: 12, small: 6 },
+    r: { card: 24, control: 14, chip: 12, photo: 20, small: 12 },
+    shadow: SHADOW,
     stroke: 1.3,
   };
 }

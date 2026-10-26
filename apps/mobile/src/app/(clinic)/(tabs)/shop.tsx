@@ -41,9 +41,9 @@ export default function Shop() {
   const tile = Math.floor((inner(PAGE_WIDTH) - columnGap * (columns - 1)) / columns);
 
   return (
-    <Screen gap={22} width="page">
+    <Screen gap={22} width="page" tabs>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-        <Txt variant="display" style={{ flex: 1 }}>
+        <Txt variant="hero" style={{ flex: 1 }}>
           {t('shop.title')}
         </Txt>
         <CartButton />
@@ -55,7 +55,7 @@ export default function Shop() {
       {basis && picks.length > 0 && category === 'all' ? (
         <View style={{ gap: 12 }}>
           <View style={{ gap: 2 }}>
-            <Txt variant="heading">{t('shop.forYou', { treatment: text(basis.treatment.name) })}</Txt>
+            <Txt variant="title">{t('shop.forYou', { treatment: text(basis.treatment.name) })}</Txt>
             <Txt variant="small" color={theme.c.muted}>
               {t('shop.forYouBody', { name: basis.specialist.name })}
             </Txt>

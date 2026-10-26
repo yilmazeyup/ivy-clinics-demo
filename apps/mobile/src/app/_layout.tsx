@@ -6,6 +6,7 @@ import {
 } from '@expo-google-fonts/cormorant-garamond';
 import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_600SemiBold } from '@expo-google-fonts/ibm-plex-sans-arabic';
 import { Jost_300Light, Jost_400Regular, Jost_500Medium } from '@expo-google-fonts/jost';
+import { TenorSans_400Regular } from '@expo-google-fonts/tenor-sans';
 import { useFonts } from 'expo-font';
 import { LOCALES, type Locale } from '@pure-clinics/shared';
 import * as Linking from 'expo-linking';
@@ -17,6 +18,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Intro } from '@/components/Intro';
+import { MorphProvider } from '@/components/Morph';
 import { SiteHeader } from '@/components/SiteHeader';
 import { ToastProvider } from '@/components/Toast';
 import { useLayout } from '@/layout';
@@ -33,6 +35,7 @@ export default function RootLayout() {
     Jost_300Light,
     Jost_400Regular,
     Jost_500Medium,
+    TenorSans_400Regular,
     IBMPlexSansArabic_400Regular,
     IBMPlexSansArabic_500Medium,
     IBMPlexSansArabic_600SemiBold,
@@ -73,14 +76,16 @@ function Shell() {
   return (
     <LocaleProvider direction={direction}>
       <View style={{ flex: 1, direction, backgroundColor: theme.c.bg }}>
-        <ToastProvider>
-          <StatusBar style="dark" />
-          {wide ? <SiteHeader /> : null}
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
-            <Stack.Screen name="(clinic)" />
-            <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
-          </Stack>
-        </ToastProvider>
+        <MorphProvider>
+          <ToastProvider>
+            <StatusBar style="dark" />
+            {wide ? <SiteHeader /> : null}
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.c.bg } }}>
+              <Stack.Screen name="(clinic)" />
+              <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+            </Stack>
+          </ToastProvider>
+        </MorphProvider>
         {intro ? <Intro onDone={() => setIntro(false)} /> : null}
       </View>
     </LocaleProvider>

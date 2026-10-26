@@ -22,3 +22,10 @@ export function useLayout(): Layout {
   const gutter = wide ? 40 : 20;
   return { wide, gutter, inner: (max) => (wide ? Math.min(width, max + gutter * 2) : width) - gutter * 2 };
 }
+
+/**
+ * Offsets from the start or the end edge for absolutely placed things. The web build turns `start` and `end`
+ * into left and right whatever the reading direction, so these give the physical side for the language.
+ */
+export const startEdge = (rtl: boolean, value: number) => (rtl ? { right: value } : { left: value });
+export const endEdge = (rtl: boolean, value: number) => (rtl ? { left: value } : { right: value });
