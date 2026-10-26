@@ -1,0 +1,79 @@
+# Builds the demo site on every push to main and publishes it on GitHub Pages:
+#   /            start page that explains the demo
+#   /app/        the member app, exported for the web
+#   /beheer/     the admin panel
+name: Demo site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BASE: /ivy-clinics-demo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/admin/package-lock.json
+
+      - name: Install the member app
+        run: npm ci --no-audit --no-fund
+
+      - name: Install the admin panel
+        run: npm ci --prefix apps/admin --no-audit --no-fund
+
+      - name: Typecheck
+        run: |
+          npm run typecheck --prefix apps/mobile
+          npm run typecheck --prefix apps/admin
+
+      - name: Build the member app for the web
+        working-directory: apps/mobile
+        env:
+          EXPO_BASE_URL: ${{ env.BASE }}/app
+        run: npx expo export --platform web --output-dir ../../_site/app
+
+      - name: Build the admin panel
+        working-directory: apps/admin
+        run: npx vite build --base=${{ env.BASE }}/beheer/ --outDir ../../_site/beheer --emptyOutDir
+
+      - name: Add the start page
+        run: |
+          cp -R site/. _site/
+          touch _site/.nojekyll
+          # The demo uses fictional data, so keep the app out of search results too.
+          sed -i 's#<head>#<head><meta name="robots" content="noindex, nofollow" />#' _site/app/index.html
+          # GitHub Pages answers unknown paths with 404.html; the app then opens on the right screen.
+          cp _site/app/index.html _site/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

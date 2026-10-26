@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A demo with fictional data: keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Ivy Clinics · demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #f6f1ea;
+        --surface: #ffffff;
+        --ink: #1e1e1c;
+        --muted: #6e6259;
+        --line: #e2d8cc;
+        --ivy: #2f4a3c;
+        --sage: #e1e9e3;
+        --display: 'Cormorant Garamond', Georgia, serif;
+        --body: 'Jost', system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font: 400 17px/1.55 var(--body);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px max(20px, env(safe-area-inset-right, 0px)) 56px max(20px, env(safe-area-inset-left, 0px));
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .logo {
+        height: 26px;
+      }
+      .lang {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .lang select {
+        font: 500 15px var(--body);
+        color: var(--ink);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        height: 40px;
+        padding: 0 10px;
+      }
+      h1 {
+        margin: 56px 0 0;
+        font: 300 clamp(44px, 7vw, 76px) / 1 var(--display);
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      h1 em {
+        font-style: italic;
+      }
+      .lead {
+        max-width: 640px;
+        margin: 18px 0 0;
+        font-size: 19px;
+        color: var(--muted);
+      }
+      .parts {
+        margin-top: 48px;
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        gap: 22px;
+      }
+      .part {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+      }
+      .step {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--ivy);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font: 500 16px var(--body);
+      }
+      h2 {
+        margin: 0;
+        font: 400 34px/1.1 var(--display);
+      }
+      .part p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .try {
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: var(--sage);
+        color: var(--ink) !important;
+        font-size: 15.5px;
+      }
+      .button {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        height: 50px;
+        padding: 0 20px;
+        border-radius: 10px;
+        background: var(--ivy);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .button:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--ivy);
+        outline-offset: 2px;
+      }
+      .preview {
+        margin-top: 6px;
+        display: flex;
+        justify-content: center;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #efe6da, #fbf8f3);
+        padding: 22px 12px;
+        overflow: hidden;
+      }
+      /* The member app runs live inside a phone outline (390 x 844, scaled down). */
+      .phone {
+        width: calc(390px * 0.72 + 20px);
+        height: calc(844px * 0.72 + 20px);
+        padding: 10px;
+        border-radius: 40px;
+        background: var(--ink);
+        flex: none;
+      }
+      .phone .screen {
+        width: calc(390px * 0.72);
+        height: calc(844px * 0.72);
+        border-radius: 30px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .phone iframe {
+        width: 390px;
+        height: 844px;
+        border: 0;
+        transform: scale(0.72);
+        transform-origin: top left;
+      }
+      /* The admin screen as a live, scaled-down window (1440 x 900). */
+      .window {
+        display: block;
+        width: 100%;
+        max-width: 640px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: 0 20px 40px -24px rgba(30, 30, 28, 0.35);
+        overflow: hidden;
+        text-decoration: none;
+      }
+      .window .bar {
+        height: 26px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 10px;
+        background: #f1ebe2;
+      }
+      .window .bar i {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        background: #d8ccbe;
+      }
+      .window .view {
+        display: block;
+        position: relative;
+        aspect-ratio: 1440 / 900;
+        overflow: hidden;
+      }
+      .window iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1440px;
+        height: 900px;
+        border: 0;
+        transform-origin: top left;
+        pointer-events: none;
+      }
+      .facts {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .fact {
+        padding: 20px 22px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .fact strong {
+        display: block;
+        font: 400 26px/1.1 var(--display);
+        margin-bottom: 6px;
+      }
+      .fact p {
+        margin: 0;
+        color: var(--muted);
+      }
+      footer {
+        margin-top: 40px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      [dir='rtl'] .button {
+        align-self: flex-start;
+      }
+      @media (max-width: 920px) {
+        .parts,
+        .facts {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        h1 {
+          margin-top: 36px;
+        }
+      }
+      @media (max-width: 520px) {
+        /* On a phone the app opens full screen instead of inside a drawn phone. */
+        .preview.app-preview {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <img class="logo" src="ivy-logo.svg" alt="Ivy Clinics" />
+        <label class="lang">
+          <span data-t="lang">Taal</span>
+          <select id="lang" aria-label="Taal">
+            <option value="nl">Nederlands</option>
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+          </select>
+        </label>
+      </header>
+
+      <h1 data-t="title">Ivy Clinics · <em>demo</em></h1>
+      <p class="lead" data-t="lead"></p>
+
+      <div class="parts">
+        <section class="part">
+          <span class="step">1</span>
+          <h2 data-t="appTitle"></h2>
+          <p data-t="appBody"></p>
+          <p class="try" data-t="appTry"></p>
+          <a class="button" id="open-app" href="app/" target="_blank" rel="noopener" data-t="appOpen"></a>
+          <div class="preview app-preview">
+            <div class="phone">
+              <div class="screen">
+                <iframe id="app-frame" title="Ivy Clinics app" src="app/"></iframe>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="part">
+          <span class="step">2</span>
+          <h2 data-t="adminTitle"></h2>
+          <p data-t="adminBody"></p>
+          <p class="try" data-t="adminTry"></p>
+          <a class="button" id="open-admin" href="beheer/" target="_blank" rel="noopener" data-t="adminOpen"></a>
+          <div class="preview">
+            <a class="window" id="admin-window" href="beheer/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+              <span class="bar"><i></i><i></i><i></i></span>
+              <span class="view"><iframe id="admin-frame" title="" src="beheer/" tabindex="-1"></iframe></span>
+            </a>
+          </div>
+        </section>
+      </div>
+
+      <div class="facts">
+        <div class="fact">
+          <strong data-t="realTitle"></strong>
+          <p data-t="real"></p>
+        </div>
+        <div class="fact">
+          <strong data-t="fakeTitle"></strong>
+          <p data-t="fake"></p>
+        </div>
+      </div>
+
+      <footer data-t="footer"></footer>
+    </div>
+
+    <script>
+      const TEXT = {
+        nl: {
+          lang: 'Taal',
+          title: 'Ivy Clinics · <em>demo</em>',
+          lead: 'Dit is een voorbeeld van de nieuwe Ivy Clinics-app en het beheerscherm. Alles is nep: namen, afspraken en betalingen. Klik gerust rond, je kunt niets kapotmaken.',
+          appTitle: 'De app voor cliënten',
+          appBody: 'Zo ziet de app eruit op een telefoon. Cliënten boeken hier een behandeling, een pilatesles of iets uit de webshop.',
+          appTry: 'Probeer dit: tik op Boeken, kies HydraFacial en kies een tijd.',
+          appOpen: 'Open de app',
+          adminTitle: 'Het beheerscherm voor het team',
+          adminBody: 'Hier ziet het team wat er vandaag gebeurt: in de vier klinieken, in de pilatesstudio en in de webshop.',
+          adminTry: 'Probeer dit: druk op Speel de dag af. Dan zie je een hele dag in 45 seconden.',
+          adminOpen: 'Open het beheerscherm',
+          realTitle: 'Wat is echt?',
+          real: 'De behandelingen, vanaf-prijzen, adressen, openingstijden en webshopproducten komen van ivyclinics.nl.',
+          fakeTitle: 'Wat is nep?',
+          fake: 'Alle namen van cliënten en medewerkers, de afspraken, de omzet en de betalingen. Er wordt niets echt geboekt of betaald.',
+          footer: 'Demo · niet bedoeld voor echte boekingen',
+        },
+        en: {
+          lang: 'Language',
+          title: 'Ivy Clinics · <em>demo</em>',
+          lead: "This is a preview of the new Ivy Clinics app and admin screen. Everything is fake: names, appointments and payments. Click around freely, you can't break anything.",
+          appTitle: 'The app for clients',
+          appBody: 'This is how the app looks on a phone. Clients book a treatment, a pilates class or something from the webshop here.',
+          appTry: 'Try this: tap Book, choose HydraFacial and pick a time.',
+          appOpen: 'Open the app',
+          adminTitle: 'The admin screen for the team',
+          adminBody: 'Here the team sees what is happening today: in the four clinics, in the pilates studio and in the webshop.',
+          adminTry: "Try this: press Play the day. You'll see a whole day in 45 seconds.",
+          adminOpen: 'Open the admin screen',
+          realTitle: 'What is real?',
+          real: 'The treatments, starting prices, addresses, opening hours and webshop products come from ivyclinics.nl.',
+          fakeTitle: 'What is fake?',
+          fake: 'All names of clients and staff, the appointments, the revenue and the payments. Nothing is really booked or paid.',
+          footer: 'Demo · not for real bookings',
+        },
+        ar: {
+          lang: 'اللغة',
+          title: 'Ivy Clinics · <em>نسخة تجريبية</em>',
+          lead: 'هذه معاينة لتطبيق Ivy Clinics الجديد ولوحة الإدارة. كل البيانات وهمية: الأسماء والمواعيد والمدفوعات. تجوّل بحرية، فلن تُفسد شيئًا.',
+          appTitle: 'التطبيق للعملاء',
+          appBody: 'هكذا يبدو التطبيق على الهاتف. يحجز فيه العملاء علاجًا أو حصة بيلاتس أو منتجًا من المتجر الإلكتروني.',
+          appTry: 'جرّب: اضغط على «الحجز»، واختر هايدرافيشل، ثم اختر وقتًا.',
+          appOpen: 'افتح التطبيق',
+          adminTitle: 'لوحة الإدارة للفريق',
+          adminBody: 'هنا يرى الفريق ما يحدث اليوم: في العيادات الأربع وفي استوديو البيلاتس وفي المتجر الإلكتروني.',
+          adminTry: 'جرّب: اضغط على «شغّل اليوم» لترى يومًا كاملًا في 45 ثانية.',
+          adminOpen: 'افتح لوحة الإدارة',
+          realTitle: 'ما الحقيقي؟',
+          real: 'العلاجات وأسعارها الابتدائية والعناوين وساعات العمل ومنتجات المتجر مأخوذة من موقع ivyclinics.nl.',
+          fakeTitle: 'ما الوهمي؟',
+          fake: 'كل أسماء العملاء والموظفين، والمواعيد، والإيرادات، والمدفوعات. لا يُحجز أو يُدفع أي شيء فعليًا.',
+          footer: 'نسخة تجريبية · ليست للحجوزات الحقيقية',
+        },
+        fr: {
+          lang: 'Langue',
+          title: 'Ivy Clinics · <em>démo</em>',
+          lead: 'Voici un aperçu de la nouvelle app Ivy Clinics et de l’écran de gestion. Tout est fictif : noms, rendez-vous et paiements. Explore librement, tu ne peux rien casser.',
+          appTitle: 'L’app pour les clients',
+          appBody: 'Voici l’app sur un téléphone. Les clients y réservent un soin, un cours de pilates ou un produit de la boutique.',
+          appTry: 'Essaie : touche Réserver, choisis HydraFacial puis un horaire.',
+          appOpen: 'Ouvrir l’app',
+          adminTitle: 'L’écran de gestion pour l’équipe',
+          adminBody: 'Ici, l’équipe voit ce qui se passe aujourd’hui : dans les quatre cliniques, au studio de pilates et dans la boutique en ligne.',
+          adminTry: 'Essaie : appuie sur Jouer la journée. Tu verras une journée entière en 45 secondes.',
+          adminOpen: 'Ouvrir l’écran de gestion',
+          realTitle: 'Qu’est-ce qui est réel ?',
+          real: 'Les soins, les prix de départ, les adresses, les horaires et les produits de la boutique viennent d’ivyclinics.nl.',
+          fakeTitle: 'Qu’est-ce qui est fictif ?',
+          fake: 'Tous les noms des clients et du personnel, les rendez-vous, le chiffre d’affaires et les paiements. Rien n’est vraiment réservé ni payé.',
+          footer: 'Démo · pas pour de vraies réservations',
+        },
+        de: {
+          lang: 'Sprache',
+          title: 'Ivy Clinics · <em>Demo</em>',
+          lead: 'Das ist eine Vorschau der neuen Ivy-Clinics-App und der Verwaltung. Alles ist erfunden: Namen, Termine und Zahlungen. Klick dich ruhig durch, du kannst nichts kaputt machen.',
+          appTitle: 'Die App für Kunden',
+          appBody: 'So sieht die App auf dem Handy aus. Hier buchen Kunden eine Behandlung, einen Pilateskurs oder etwas aus dem Shop.',
+          appTry: 'Probier es aus: Tippe auf Buchen, wähle HydraFacial und dann eine Uhrzeit.',
+          appOpen: 'App öffnen',
+          adminTitle: 'Die Verwaltung für das Team',
+          adminBody: 'Hier sieht das Team, was heute passiert: in den vier Kliniken, im Pilatesstudio und im Webshop.',
+          adminTry: 'Probier es aus: Drück auf Tag abspielen. Dann siehst du einen ganzen Tag in 45 Sekunden.',
+          adminOpen: 'Verwaltung öffnen',
+          realTitle: 'Was ist echt?',
+          real: 'Die Behandlungen, Ab-Preise, Adressen, Öffnungszeiten und Shop-Produkte stammen von ivyclinics.nl.',
+          fakeTitle: 'Was ist erfunden?',
+          fake: 'Alle Namen von Kunden und Mitarbeitenden, die Termine, der Umsatz und die Zahlungen. Nichts wird wirklich gebucht oder bezahlt.',
+          footer: 'Demo · nicht für echte Buchungen',
+        },
+        it: {
+          lang: 'Lingua',
+          title: 'Ivy Clinics · <em>demo</em>',
+          lead: 'Questa è un’anteprima della nuova app di Ivy Clinics e della schermata di gestione. È tutto finto: nomi, appuntamenti e pagamenti. Esplora pure, non puoi rompere nulla.',
+          appTitle: 'L’app per i clienti',
+          appBody: 'Ecco l’app su un telefono. Qui i clienti prenotano un trattamento, una lezione di pilates o un prodotto dello shop.',
+          appTry: 'Prova: tocca Prenota, scegli HydraFacial e poi un orario.',
+          appOpen: 'Apri l’app',
+          adminTitle: 'La schermata di gestione per il team',
+          adminBody: 'Qui il team vede cosa succede oggi: nelle quattro cliniche, nello studio di pilates e nello shop online.',
+          adminTry: 'Prova: premi Riproduci la giornata. Vedrai un’intera giornata in 45 secondi.',
+          adminOpen: 'Apri la schermata di gestione',
+          realTitle: 'Cosa è vero?',
+          real: 'I trattamenti, i prezzi di partenza, gli indirizzi, gli orari e i prodotti dello shop vengono da ivyclinics.nl.',
+          fakeTitle: 'Cosa è finto?',
+          fake: 'Tutti i nomi di clienti e personale, gli appuntamenti, il fatturato e i pagamenti. Niente viene davvero prenotato o pagato.',
+          footer: 'Demo · non per prenotazioni reali',
+        },
+      };
+
+      const select = document.getElementById('lang');
+
+      function stored() {
+        try {
+          return localStorage.getItem('demo-lang');
+        } catch {
+          return null;
+        }
+      }
+
+      function apply(lang) {
+        const t = TEXT[lang] || TEXT.nl;
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-t]').forEach((el) => {
+          el.innerHTML = t[el.dataset.t];
+        });
+        select.value = lang;
+        select.setAttribute('aria-label', t.lang);
+        // Open the app and the admin screen in the same language.
+        const app = `app/?lang=${lang}`;
+        const admin = `beheer/?lang=${lang}`;
+        document.getElementById('open-app').href = app;
+        document.getElementById('open-admin').href = admin;
+        document.getElementById('admin-window').href = admin;
+        const appFrame = document.getElementById('app-frame');
+        const adminFrame = document.getElementById('admin-frame');
+        if (!appFrame.src.endsWith(app)) appFrame.src = app;
+        if (!adminFrame.src.endsWith(admin)) adminFrame.src = admin;
+        try {
+          localStorage.setItem('demo-lang', lang);
+        } catch {
+          // Private windows may refuse storage; the page still works.
+        }
+      }
+
+      // Scale the admin preview to the width of its window.
+      const view = document.querySelector('.window .view');
+      const adminFrame = document.getElementById('admin-frame');
+      new ResizeObserver(() => {
+        adminFrame.style.transform = `scale(${view.clientWidth / 1440})`;
+      }).observe(view);
+
+      select.addEventListener('change', () => apply(select.value));
+      const fromLink = new URLSearchParams(location.search).get('lang');
+      apply(TEXT[fromLink] ? fromLink : TEXT[stored()] ? stored() : 'nl');
+    </script>
+  </body>
+</html>
