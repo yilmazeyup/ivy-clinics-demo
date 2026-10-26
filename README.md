@@ -6,13 +6,14 @@ This is a demo with test data only: fictional clients, schedules and specialists
 Treatments, starting prices, locations, opening hours and the webshop products and prices follow
 ivyclinics.nl (October 2026).
 
+- Live demo: https://yilmazeyup.github.io/ivy-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
 - Design canvas: https://claude.ai/artifact/UrYoLqDJGxQNyCYbxrqw34 (private, share it from the canvas' Share menu)
 
 ## Structure
 
 ```
 apps/mobile/       Expo (SDK 58) member app, Expo Router
-apps/admin/        Admin panel (Vite, React, Three.js): the four clinics and the pilates studio live in 3D, plus the webshop
+apps/admin/        Admin panel (Vite, React, Three.js): the four clinics and the pilates studio live in 3D, the day's agenda, the webshop and a guided tour
 packages/shared/   languages (nl, en, ar, fr, de, it), formatting, brand data and demo data (treatments,
                    pilates classes, webshop products)
 ```

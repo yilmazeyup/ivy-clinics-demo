@@ -24,7 +24,7 @@ if (/<\/style/i.test(css)) throw new Error('The CSS contains "</style" and canno
 const THREE = 'https://cdn.jsdelivr.net/npm/three@0.186.1';
 const importMap = { imports: { three: `${THREE}/build/three.module.js`, 'three/addons/': `${THREE}/examples/jsm/` } };
 const fonts =
-  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap';
+  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500&display=swap';
 
 const page = `<title>Ivy Clinics Beheer</title>
 <meta name="claude:viewport-fit-sides" content="cover">

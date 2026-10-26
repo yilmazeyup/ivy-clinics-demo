@@ -31,8 +31,6 @@ const POOL = PRODUCTS.filter((p) => !p.soldOut).flatMap((p) => Array<Product>(WE
 /** Orders come in all day, busiest around lunch and in the evening. */
 const HOURS = [7, 8, 9, 10, 11, 12, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20, 20, 21, 21, 22, 22, 23];
 
-export const productName = (p: Product) => (p.brand ? `${p.brand} ${p.name.nl}` : p.name.nl);
-
 export function makeOrder(seed: string, at: Date, number: number): Order {
   const r = rng(seed);
   const lines: OrderLine[] = [];

@@ -1,8 +1,9 @@
 import { PURE_CAPACITY, WINDOW_REFORMERS } from '@pure-ivy/shared';
 import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 
-import { clock, hourOf } from '../data/format';
+import { hourOf } from '../data/format';
 import { checkedIn, freeReformers, phaseOf, type ClassPhase, type PilatesClass } from '../data/pilates';
+import { useI18n, type I18n } from '../i18n';
 import { Stage } from '../three/stage';
 import { SEAT_COLORS, StudioScene, type SeatView, type Tip } from '../three/studio';
 import { Icon } from './Icon';
@@ -17,17 +18,19 @@ type Props = {
   onFollow: () => void;
 };
 
-function phaseText(c: PilatesClass, phase: ClassPhase, now: Date): string {
-  if (phase === 'done') return `${c.seats.filter((s) => checkedIn(s, c, now)).length} van ${c.seats.length} kwamen`;
-  if (phase === 'live') return 'Nu bezig';
-  if (phase === 'soon') return `Over ${Math.max(1, Math.round((c.start.getTime() - now.getTime()) / 60000))} min`;
+function phaseText(c: PilatesClass, phase: ClassPhase, now: Date, { t, tn }: I18n): string {
+  if (phase === 'done') return t('phase.done', { n: c.seats.filter((s) => checkedIn(s, c, now)).length, total: c.seats.length });
+  if (phase === 'live') return t('phase.live');
+  if (phase === 'soon') return t('phase.soon', { n: Math.max(1, Math.round((c.start.getTime() - now.getTime()) / 60000)) });
   const free = freeReformers(c).length;
-  if (free === 0) return c.waitlist > 0 ? `Vol · ${c.waitlist} wachtend` : 'Vol';
-  return `${free} ${free === 1 ? 'plek' : 'plekken'} vrij`;
+  if (free === 0) return c.waitlist > 0 ? t('phase.fullWaiting', { n: c.waitlist }) : t('phase.full');
+  return tn('phase.free', free);
 }
 
 /** The pilates studio in 3D for the chosen class, with today's classes underneath to switch between. */
 export function StudioView({ classes, selected, now, follow, onSelect, onFollow }: Props) {
+  const i18n = useI18n();
+  const { t, clock } = i18n;
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<StudioScene | null>(null);
   const describe = useRef<(reformer: number) => Tip | null>(() => null);
@@ -45,12 +48,12 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
 
   describe.current = (reformer) => {
     const seat = selected.seats.find((s) => s.reformer === reformer);
-    const place = WINDOW_REFORMERS.includes(reformer) ? 'bij het raam' : reformer <= 4 ? 'voorste rij' : 'achterste rij';
-    if (!seat) return { title: `Reformer ${reformer}`, detail: `Vrij · ${place}` };
-    const visits = seat.visits === 1 ? 'eerste les' : `${seat.visits}e les`;
-    const credits = seat.credits === 'unlimited' ? 'onbeperkt' : `${seat.credits} credits over`;
-    const state = checkedIn(seat, selected, now) ? 'ingecheckt' : phase === 'done' ? 'niet gekomen' : 'nog niet binnen';
-    return { title: `${seat.member} · reformer ${reformer}`, detail: `${visits} · ${credits} · ${state}` };
+    const place = t(WINDOW_REFORMERS.includes(reformer) ? 'seat.window' : reformer <= 4 ? 'seat.front' : 'seat.back');
+    if (!seat) return { title: t('seat.reformer', { n: reformer }), detail: t('seat.freeAt', { place }) };
+    const visits = seat.visits === 1 ? t('seat.firstClass') : t('seat.nthClass', { n: seat.visits });
+    const credits = seat.credits === 'unlimited' ? t('seat.unlimited') : t('seat.credits', { n: seat.credits });
+    const state = t(checkedIn(seat, selected, now) ? 'seat.in' : phase === 'done' ? 'seat.noShow' : 'seat.waiting');
+    return { title: t('seat.title', { member: seat.member, n: reformer }), detail: `${visits} · ${credits} · ${state}` };
   };
 
   useEffect(() => {
@@ -62,13 +65,18 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
       maxDistance: 24,
       fitAspect: 1.45,
     });
-    const studio = new StudioScene(stage, (n) => describe.current(n));
+    const studio = new StudioScene(stage, (n) => describe.current(n), {
+      instructor: t('pilates.instructor'),
+      checkin: t('pilates.checkin'),
+      noShow: t('pilates.noShow'),
+    });
     scene.current = studio;
     return () => {
       studio.dispose();
       stage.dispose();
       scene.current = null;
     };
+    // Built once per mount; the parent remounts this view when the language changes.
   }, []);
 
   useEffect(() => {
@@ -84,7 +92,7 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
   return (
     <section id="pilates" className="card scene-card studio-card rise" style={{ '--d': '380ms' } as CSSProperties}>
       <CardHead
-        eyebrow="Pilates live"
+        eyebrow={t('pilates.eyebrow')}
         title={
           <>
             {selected.name} <span className="title-time">{clock(selected.start)}</span>
@@ -92,51 +100,42 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
         }
       >
         <div className="head-actions">
-          <span className={`phase phase--${phase}`}>{phaseText(selected, phase, now)}</span>
+          <span className={`phase phase--${phase}`}>{phaseText(selected, phase, now, i18n)}</span>
           {follow ? (
             <span className="follow on">
-              <i className="live-dot" /> Volgt de klok
+              <i className="live-dot" /> {t('pilates.follow')}
             </span>
           ) : (
             <button className="follow" onClick={onFollow}>
-              <Icon name="arrow" size={15} /> Terug naar nu
+              <Icon name="arrow" size={15} /> {t('pilates.back')}
             </button>
           )}
         </div>
       </CardHead>
+      <p className="help">{t('pilates.help')}</p>
 
-      <div className="scene-host" ref={host} role="img" aria-label={`3D-weergave van de pilatesstudio tijdens ${selected.name} om ${clock(selected.start)}`}>
+      <div className="scene-host" ref={host} role="img" aria-label={t('pilates.aria', { class: selected.name, time: selected.start })}>
         <div className="scene-overlay">
-          <span>
-            <b>{seats.length}</b> geboekt
-          </span>
-          <span>
-            <b>{inside}</b> binnen
-          </span>
-          <span>
-            <b>{PURE_CAPACITY - seats.length}</b> vrij
-          </span>
-          {selected.waitlist > 0 ? (
-            <span>
-              <b>{selected.waitlist}</b> wachtlijst
-            </span>
-          ) : null}
+          <span>{t('pilates.booked', { n: seats.length })}</span>
+          <span>{t('pilates.inside', { n: inside })}</span>
+          <span>{t('pilates.free', { n: PURE_CAPACITY - seats.length })}</span>
+          {selected.waitlist > 0 ? <span>{t('pilates.waitlist', { n: selected.waitlist })}</span> : null}
         </div>
         <div className="scene-legend">
           <span>
-            <i style={{ background: SEAT_COLORS.free }} /> Vrij
+            <i style={{ background: SEAT_COLORS.free }} /> {t('pilates.legendFree')}
           </span>
           <span>
-            <i style={{ background: SEAT_COLORS.booked }} /> Geboekt
+            <i style={{ background: SEAT_COLORS.booked }} /> {t('pilates.legendBooked')}
           </span>
           <span>
-            <i style={{ background: SEAT_COLORS.in }} /> Binnen
+            <i style={{ background: SEAT_COLORS.in }} /> {t('pilates.legendIn')}
           </span>
           <span>
-            <i style={{ background: SEAT_COLORS.noshow }} /> Niet gekomen
+            <i style={{ background: SEAT_COLORS.noshow }} /> {t('pilates.legendNoShow')}
           </span>
         </div>
-        <span className="scene-hint">Sleep om te draaien · scroll om te zoomen</span>
+        <span className="scene-hint">{t('pilates.hint')}</span>
       </div>
 
       <div className="class-strip" role="list">
@@ -150,7 +149,7 @@ export function StudioView({ classes, selected, now, follow, onSelect, onFollow 
               </span>
               <span className="cs-name">{c.name}</span>
               <Squares total={PURE_CAPACITY} filled={c.seats.length} size={8} />
-              <span className="cs-status">{phaseText(c, p, now)}</span>
+              <span className="cs-status">{phaseText(c, p, now, i18n)}</span>
             </button>
           );
         })}

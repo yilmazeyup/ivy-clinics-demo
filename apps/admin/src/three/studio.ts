@@ -66,6 +66,7 @@ export class StudioScene {
   constructor(
     private readonly stage: Stage,
     private readonly describe: (reformer: number) => Tip | null,
+    private readonly words: { instructor: string; checkin: string; noShow: string },
   ) {
     stage.scene.add(this.root);
 
@@ -157,7 +158,7 @@ export class StudioScene {
       mesh.receiveShadow = true;
     }
     this.root.add(desk, scanner);
-    stage.label(el('scene-tag scene-tag--instructor', 'Check-in'), this.root, [4.6, 1.6, 3.3]);
+    stage.label(el('scene-tag scene-tag--instructor', words.checkin), this.root, [4.6, 1.6, 3.3]);
 
     // The eight reformers, sharing their geometry.
     const geo = {
@@ -293,7 +294,7 @@ export class StudioScene {
   /** Shows one class: who is booked, who is in, and whether the class is running. */
   update(seats: SeatView[], options: { live: boolean; instructor: string }) {
     this.live = options.live;
-    this.instructorEl.innerHTML = `${options.instructor} <span>instructeur</span>`;
+    this.instructorEl.innerHTML = `${options.instructor} <span>${this.words.instructor}</span>`;
     for (const reformer of this.reformers) {
       const seat = seats.find((s) => s.reformer === reformer.number);
       const state: SeatState = seat?.state ?? 'free';
@@ -305,7 +306,7 @@ export class StudioScene {
       }
       const tag = reformer.tag;
       tag.className = `scene-tag scene-tag--${state}`;
-      tag.innerHTML = seat?.name ? `${state === 'in' ? '<b>✓</b> ' : ''}${seat.name}${state === 'noshow' ? ' · no-show' : ''}` : '';
+      tag.innerHTML = seat?.name ? `${state === 'in' ? '<b>✓</b> ' : ''}${seat.name}${state === 'noshow' ? ` · ${this.words.noShow}` : ''}` : '';
     }
   }
 

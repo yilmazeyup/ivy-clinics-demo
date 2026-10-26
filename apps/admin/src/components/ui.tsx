@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 
+import type { Line } from '../i18n';
 import { Icon, type IconName } from './Icon';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -142,14 +143,15 @@ export function CardHead({ eyebrow, title, children }: { eyebrow: string; title:
   );
 }
 
+/** One line in the live feed. Its words are kept as message keys, so it follows the chosen language. */
 export type FeedItem = {
   id: string;
   at: Date;
-  source: 'Kliniek' | 'Pilates' | 'Webshop';
+  source: 'clinic' | 'pilates' | 'webshop';
   icon: IconName;
-  title: string;
-  detail: string;
-  amount?: string;
+  title: Line;
+  detail: Line;
+  amount?: number;
   accent?: boolean;
 };
 

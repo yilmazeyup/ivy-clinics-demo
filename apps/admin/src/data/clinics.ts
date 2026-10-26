@@ -10,7 +10,6 @@ import {
   type LocationId,
   type Specialist,
   type Treatment,
-  type TreatmentCategory,
   type TreatmentId,
 } from '@pure-ivy/shared';
 
@@ -37,16 +36,6 @@ export const ROOMS = Object.fromEntries(LOCATIONS.map((l) => [l.id, SPECIALISTS.
   LocationId,
   Specialist[]
 >;
-
-export const ROLE_LABEL: Record<Specialist['role'], string> = { doctor: 'arts', therapist: 'huidtherapeut', laser: 'laserspecialist' };
-
-export const CATEGORY_LABEL: Record<TreatmentCategory, string> = {
-  consult: 'Adviesgesprek',
-  injectables: 'Injectables',
-  skin: 'Huidverbetering',
-  laser: 'Laser',
-  facials: 'Facials',
-};
 
 /** How often each treatment is booked relative to the others. */
 const WEIGHT: Partial<Record<TreatmentId, number>> = { botox: 4, hydrafacial: 3, consult: 2, sparkpro: 2 };
@@ -79,7 +68,7 @@ function makeAppt(clinic: LocationId, room: number, treatment: Treatment, start:
   };
 }
 
-const works = (s: Specialist, day: Date) => s.days.includes(day.getDay());
+export const works = (s: Specialist, day: Date) => s.days.includes(day.getDay());
 
 /** A full day for all four clinics, the same on every load. Specialists only work on their own days. */
 export function clinicDay(day: Date): Appt[] {

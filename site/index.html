@@ -294,7 +294,7 @@
           <div class="preview app-preview">
             <div class="phone">
               <div class="screen">
-                <iframe id="app-frame" title="Ivy Clinics app" src="app/"></iframe>
+                <iframe id="app-frame" title="Ivy Clinics app" src="app/?lang=nl"></iframe>
               </div>
             </div>
           </div>
@@ -309,7 +309,7 @@
           <div class="preview">
             <a class="window" id="admin-window" href="beheer/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
               <span class="bar"><i></i><i></i><i></i></span>
-              <span class="view"><iframe id="admin-frame" title="" src="beheer/" tabindex="-1"></iframe></span>
+              <span class="view"><iframe id="admin-frame" title="" src="beheer/?lang=nl&amp;embed=1" tabindex="-1"></iframe></span>
             </a>
           </div>
         </section>
@@ -463,13 +463,15 @@
         // Open the app and the admin screen in the same language.
         const app = `app/?lang=${lang}`;
         const admin = `beheer/?lang=${lang}`;
+        // The small preview is only a picture of the panel, so it skips the welcome card.
+        const preview = `${admin}&embed=1`;
         document.getElementById('open-app').href = app;
         document.getElementById('open-admin').href = admin;
         document.getElementById('admin-window').href = admin;
         const appFrame = document.getElementById('app-frame');
         const adminFrame = document.getElementById('admin-frame');
         if (!appFrame.src.endsWith(app)) appFrame.src = app;
-        if (!adminFrame.src.endsWith(admin)) adminFrame.src = admin;
+        if (!adminFrame.src.endsWith(preview)) adminFrame.src = preview;
         try {
           localStorage.setItem('demo-lang', lang);
         } catch {

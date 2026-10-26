@@ -1,13 +1,13 @@
 import { addDays, LOCATIONS, productById, PURE_CAPACITY, sameDay, startOfDay } from '@pure-ivy/shared';
 import { useEffect, useRef, useState } from 'react';
 
+import { AgendaView } from '../components/AgendaView';
+import { ClinicsView } from '../components/ClinicsView';
 import { Insights, LiveFeed, WeekChart, type Insight, type Series, type WeekDay } from '../components/panels';
 import { ShopCard } from '../components/ShopCard';
-import { SkylineView } from '../components/SkylineView';
 import { StudioView } from '../components/StudioView';
 import { KpiTile, MiniBars, Sparkline, Squares, type FeedItem } from '../components/ui';
 import { bookInGap, clinicDay, clinicRevenue, clinicViewDay, phaseOf as apptPhase, revenueOf, type Appt } from '../data/clinics';
-import { clock, eur, num, pct, weekdayLong } from '../data/format';
 import {
   bookSeat,
   cancelSeat,
@@ -22,27 +22,28 @@ import {
   type PilatesClass,
 } from '../data/pilates';
 import { personName, pick, rng } from '../data/random';
-import { makeOrder, orderTotal, ordersUntil, productName, shopDay, shopRevenue, stockOf, type Order } from '../data/shop';
+import { makeOrder, orderTotal, ordersUntil, shopDay, shopRevenue, stockOf, type Order } from '../data/shop';
+import { useI18n, type Line, type MessageKey } from '../i18n';
 
 const SERIES: Series[] = [
-  { label: 'Behandelingen', color: '#2F4A3C' },
-  { label: 'Pilates', color: '#9DB5A2' },
-  { label: 'Webshop', color: '#D9C2AC' },
+  { label: 'week.treatments', color: '#2F4A3C' },
+  { label: 'week.pilates', color: '#9DB5A2' },
+  { label: 'week.webshop', color: '#D9C2AC' },
 ];
 
-const PASSES: [string, number][] = [
-  ['10 lessen', 210],
-  ['Onbeperkt, per maand', 159],
-  ['Proefles', 15],
+const PASSES: [MessageKey, number][] = [
+  ['pass.ten', 210],
+  ['pass.unlimited', 159],
+  ['pass.trial', 15],
 ];
 
 let feedId = 0;
 const item = (fields: Omit<FeedItem, 'id'> & { id?: string }): FeedItem => ({ id: `f-${Date.now().toString(36)}-${++feedId}`, ...fields });
 const cityOf = (a: Appt) => LOCATIONS.find((l) => l.id === a.clinic)?.city ?? '';
 
-function orderLine(order: Order): string {
+function orderDetail(order: Order): Line {
   const extra = order.lines.reduce((n, l) => n + l.qty, 0) - 1;
-  return `${order.customer} · ${productName(order.lines[0].product)}${extra > 0 ? ` +${extra}` : ''}`;
+  return { key: 'ev.order.detail', args: { customer: order.customer, product: { product: order.lines[0].product.id, extra } } };
 }
 
 const dayTotal = (day: Date) => clinicRevenue(day) + pilatesRevenue(day) + shopRevenue(day);
@@ -57,20 +58,73 @@ function firstFeed(appts: Appt[], classes: PilatesClass[], orders: Order[], now:
   const lastOrder = ordersUntil(orders, now).at(-1);
   const items: FeedItem[] = [];
   if (botox) {
-    items.push(item({ at: minutes(3), source: 'Kliniek', icon: 'calendar', title: `${botox.client} · Botox`, detail: `${cityOf(botox)} · ${clock(botox.start)} · aanbetaling betaald`, amount: eur(25), accent: true }));
+    items.push(
+      item({
+        at: minutes(3),
+        source: 'clinic',
+        icon: 'calendar',
+        title: { key: 'ev.booking.title', args: { client: botox.client, treatment: { treatment: 'botox' } } },
+        detail: { key: 'ev.deposit.detail', args: { city: cityOf(botox), time: botox.start } },
+        amount: botox.treatment.deposit,
+        accent: true,
+      }),
+    );
   }
-  items.push(item({ at: minutes(6), source: 'Pilates', icon: 'calendar', title: `${personName(r)} boekte ${evening.name}`, detail: `${clock(evening.start)} · reformer 3 · via de app` }));
+  items.push(
+    item({
+      at: minutes(6),
+      source: 'pilates',
+      icon: 'calendar',
+      title: { key: 'ev.classBooked.title', args: { member: personName(r), class: evening.name } },
+      detail: { key: 'ev.classBooked.detail', args: { time: evening.start, n: 3 } },
+    }),
+  );
   if (lastOrder) {
-    items.push(item({ at: lastOrder.at, source: 'Webshop', icon: 'bag', title: `Bestelling #${lastOrder.number}`, detail: orderLine(lastOrder), amount: eur(lastOrder.total) }));
+    items.push(
+      item({
+        at: lastOrder.at,
+        source: 'webshop',
+        icon: 'bag',
+        title: { key: 'ev.order.title', args: { number: lastOrder.number } },
+        detail: orderDetail(lastOrder),
+        amount: lastOrder.total,
+      }),
+    );
   }
-  items.push(item({ at: minutes(17), source: 'Kliniek', icon: 'clipboard', title: 'Medische intake ingevuld', detail: `${personName(r)} · Lipfiller · morgen 10:00` }));
-  items.push(item({ at: minutes(24), source: 'Pilates', icon: 'bag', title: 'Pakket verkocht', detail: `${personName(r)} · 10 lessen · iDEAL (test)`, amount: eur(210) }));
-  items.push(item({ at: minutes(32), source: 'Kliniek', icon: 'plus', title: 'Gratis adviesgesprek gepland', detail: `${personName(r)} · 's-Hertogenbosch · morgen 16:00` }));
+  items.push(
+    item({
+      at: minutes(17),
+      source: 'clinic',
+      icon: 'clipboard',
+      title: { key: 'ev.intake.title' },
+      detail: { key: 'ev.intakeTomorrow.detail', args: { client: personName(r), treatment: { treatment: 'lipfiller' }, time: '10:00' } },
+    }),
+  );
+  items.push(
+    item({
+      at: minutes(24),
+      source: 'pilates',
+      icon: 'bag',
+      title: { key: 'ev.pass.title' },
+      detail: { key: 'ev.pass.detail', args: { member: personName(r), pass: { msg: 'pass.ten' } } },
+      amount: 210,
+    }),
+  );
+  items.push(
+    item({
+      at: minutes(32),
+      source: 'clinic',
+      icon: 'plus',
+      title: { key: 'ev.consult.title' },
+      detail: { key: 'ev.consultTomorrow.detail', args: { client: personName(r), city: "'s-Hertogenbosch", time: '16:00' } },
+    }),
+  );
   return items.sort((a, b) => b.at.getTime() - a.at.getTime());
 }
 
 /** The one overview of Ivy Clinics: the four clinics, the pilates studio and the webshop, live. */
 export function Overview({ now, playing }: { now: Date; playing: boolean }) {
+  const { t, eur, num, pct, locale, weekdayLong } = useI18n();
   const [clinicsDay] = useState(() => clinicViewDay(now));
   const [appts, setAppts] = useState(() => clinicDay(clinicsDay));
   const [classes, setClasses] = useState(() => pilatesClasses(now));
@@ -81,6 +135,9 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
   const [focus, setFocus] = useState<number | null>(null);
   const live = useRef({ appts, classes, orders, now });
   live.current = { appts, classes, orders, now };
+
+  // A new language rebuilds the clinic models, which open on all four clinics again.
+  useEffect(() => setFocus(null), [locale]);
 
   const push = (...items: FeedItem[]) => setFeed((current) => [...items, ...current].slice(0, 40));
 
@@ -102,14 +159,21 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
             setAppts((current) => [...current, booking]);
             push(
               consult
-                ? item({ at, source: 'Kliniek', icon: 'plus', title: 'Gratis adviesgesprek gepland', detail: `${booking.client} · ${cityOf(booking)} · ${clock(booking.start)}`, accent: true })
+                ? item({
+                    at,
+                    source: 'clinic',
+                    icon: 'plus',
+                    title: { key: 'ev.consult.title' },
+                    detail: { key: 'ev.consult.detail', args: { client: booking.client, city: cityOf(booking), time: booking.start } },
+                    accent: true,
+                  })
                 : item({
                     at,
-                    source: 'Kliniek',
+                    source: 'clinic',
                     icon: 'calendar',
-                    title: `${booking.client} · ${booking.treatment.name.nl}`,
-                    detail: `${cityOf(booking)} · ${clock(booking.start)} met ${booking.specialist.name}`,
-                    amount: booking.treatment.deposit ? eur(booking.treatment.deposit) : undefined,
+                    title: { key: 'ev.booking.title', args: { client: booking.client, treatment: { treatment: booking.treatment.id } } },
+                    detail: { key: 'ev.booking.detail', args: { city: cityOf(booking), time: booking.start, specialist: booking.specialist.name } },
+                    amount: booking.treatment.deposit || undefined,
                     accent: true,
                   }),
             );
@@ -119,10 +183,11 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         const later = diary.filter((a) => apptPhase(a, at) === 'later' && a.treatment.id !== 'consult');
         if (!later.length) return;
         const a = pick(r, later);
+        const args = { client: a.client, treatment: { treatment: a.treatment.id }, time: a.start, city: cityOf(a) };
         push(
           sub < 0.85
-            ? item({ at, source: 'Kliniek', icon: 'clipboard', title: 'Medische intake ingevuld', detail: `${a.client} · ${a.treatment.name.nl} om ${clock(a.start)}` })
-            : item({ at, source: 'Kliniek', icon: 'mail', title: 'Herinnering verstuurd', detail: `${a.client} · ${a.treatment.name.nl} om ${clock(a.start)} in ${cityOf(a)}` }),
+            ? item({ at, source: 'clinic', icon: 'clipboard', title: { key: 'ev.intake.title' }, detail: { key: 'ev.intake.detail', args } })
+            : item({ at, source: 'clinic', icon: 'mail', title: { key: 'ev.reminder.title' }, detail: { key: 'ev.reminder.detail', args } }),
         );
         return;
       }
@@ -137,20 +202,45 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
           const booked = bookSeat(c, seed);
           if (booked) {
             setClasses((cs) => cs.map((x) => (x.id === c.id ? booked.next : x)));
-            push(item({ at, source: 'Pilates', icon: 'calendar', title: `${booked.seat.member} boekte ${c.name}`, detail: `${clock(c.start)} · reformer ${booked.seat.reformer} · via de app` }));
+            push(
+              item({
+                at,
+                source: 'pilates',
+                icon: 'calendar',
+                title: { key: 'ev.classBooked.title', args: { member: booked.seat.member, class: c.name } },
+                detail: { key: 'ev.classBooked.detail', args: { time: c.start, n: booked.seat.reformer } },
+              }),
+            );
             return;
           }
         }
         if (sub < 0.65) {
           const [name, price] = pick(r, PASSES);
           setPasses((p) => p + price);
-          push(item({ at, source: 'Pilates', icon: 'bag', title: 'Pakket verkocht', detail: `${personName(r)} · ${name} · iDEAL (test)`, amount: eur(price) }));
+          push(
+            item({
+              at,
+              source: 'pilates',
+              icon: 'bag',
+              title: { key: 'ev.pass.title' },
+              detail: { key: 'ev.pass.detail', args: { member: personName(r), pass: { msg: name } } },
+              amount: price,
+            }),
+          );
           return;
         }
         if (sub < 0.8 && full.length) {
           const c = pick(r, full);
           setClasses((cs) => cs.map((x) => (x.id === c.id ? { ...x, waitlist: x.waitlist + 1 } : x)));
-          push(item({ at, source: 'Pilates', icon: 'queue', title: `${personName(r)} op de wachtlijst`, detail: `${c.name} ${clock(c.start)} · plek ${c.waitlist + 1} in de rij` }));
+          push(
+            item({
+              at,
+              source: 'pilates',
+              icon: 'queue',
+              title: { key: 'ev.waitlist.title', args: { member: personName(r) } },
+              detail: { key: 'ev.waitlist.detail', args: { class: c.name, time: c.start, n: c.waitlist + 1 } },
+            }),
+          );
           return;
         }
         if (cancellable.length) {
@@ -158,10 +248,25 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
           const seat = pick(r, c.seats);
           const result = cancelSeat(c, seat.reformer, seed);
           setClasses((cs) => cs.map((x) => (x.id === c.id ? result.next : x)));
-          const events = [item({ at, source: 'Pilates', icon: 'undo', title: 'Op tijd geannuleerd', detail: `${seat.member} · ${c.name} ${clock(c.start)} · credit terug` })];
+          const events = [
+            item({
+              at,
+              source: 'pilates',
+              icon: 'undo',
+              title: { key: 'ev.cancelled.title' },
+              detail: { key: 'ev.cancelled.detail', args: { member: seat.member, class: c.name, time: c.start } },
+            }),
+          ];
           if (result.promoted) {
             events.unshift(
-              item({ at, source: 'Pilates', icon: 'queue', title: 'Wachtlijst schoof door', detail: `${result.promoted.member} kreeg reformer ${seat.reformer} · push verstuurd`, accent: true }),
+              item({
+                at,
+                source: 'pilates',
+                icon: 'queue',
+                title: { key: 'ev.promoted.title' },
+                detail: { key: 'ev.promoted.detail', args: { member: result.promoted.member, n: seat.reformer } },
+                accent: true,
+              }),
             );
           }
           push(...events);
@@ -210,10 +315,13 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         item({
           id: `in-${id}-${count}`,
           at: now,
-          source: 'Pilates',
+          source: 'pilates',
           icon: 'scan',
-          title: members.length === 1 ? `${members[0]} checkte in` : `${members.length} leden checkten in`,
-          detail: `${c.name} ${clock(c.start)} · ${count} van ${c.seats.length} binnen`,
+          title:
+            members.length === 1
+              ? { key: 'ev.checkin.title.one', args: { member: members[0] } }
+              : { key: 'ev.checkin.title.other', args: { n: members.length } },
+          detail: { key: 'ev.checkin.detail', args: { class: c.name, time: c.start, count, total: c.seats.length } },
         }),
       );
     }
@@ -230,12 +338,29 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
     const fresh = visible.filter((o) => !before.has(o.id));
     if (!fresh.length) return;
     if (fresh.length > 2) {
-      push(item({ at: now, source: 'Webshop', icon: 'bag', title: `${fresh.length} nieuwe bestellingen`, detail: fresh.map((o) => `#${o.number}`).join(' · '), amount: eur(orderTotal(fresh)) }));
+      push(
+        item({
+          at: now,
+          source: 'webshop',
+          icon: 'bag',
+          title: { key: 'ev.orders.title', args: { n: fresh.length } },
+          detail: { key: 'ev.orders.detail', args: { numbers: fresh.map((o) => `#${o.number}`).join(' · ') } },
+          amount: orderTotal(fresh),
+        }),
+      );
       return;
     }
     push(
       ...fresh.map((o) =>
-        item({ at: o.at, source: 'Webshop', icon: 'bag', title: `Bestelling #${o.number}`, detail: orderLine(o), amount: eur(o.total), accent: Boolean(o.afterTreatment) }),
+        item({
+          at: o.at,
+          source: 'webshop',
+          icon: 'bag',
+          title: { key: 'ev.order.title', args: { number: o.number } },
+          detail: orderDetail(o),
+          amount: o.total,
+          accent: Boolean(o.afterTreatment),
+        }),
       ),
     );
   }, [orders, now]);
@@ -275,30 +400,23 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
     0,
     stockOf(aftercare, now) - todaysOrders.reduce((n, o) => n + o.lines.filter((l) => l.product.id === aftercare.id).reduce((q, l) => q + l.qty, 0), 0),
   );
+  const extraClass = busiest ? { class: busiest.name, time: new Date(busiest.start.getTime() - 3600000), start: busiest.start } : { class: 'Slow Burn', time: '17:00', start: '18:00' };
   const insights: Insight[] = [
+    { id: 'crossSell', icon: 'users', title: t('tip.crossSell.title'), body: t('tip.crossSell.body'), action: t('tip.crossSell.action') },
     {
-      icon: 'users',
-      title: '22 pilatesleden kwamen nog nooit in de kliniek',
-      body: 'Een gratis adviesgesprek na hun tiende les zet gemiddeld één op de vijf om in een behandeling.',
-      action: 'Stuur uitnodiging',
-    },
-    {
+      id: 'stock',
       icon: 'bag',
-      title: `${productName(aftercare)} loopt hard`,
-      body: `Na microneedling en laser koopt 41% de aanbevolen nazorg. Nog ${aftercareLeft} op voorraad.`,
-      action: 'Bestel bij',
+      title: t('tip.stock.title', { product: { product: aftercare.id } }),
+      body: t('tip.stock.body', { n: aftercareLeft }),
+      action: t('tip.stock.action'),
     },
+    { id: 'followUp', icon: 'mail', title: t('tip.followUp.title'), body: t('tip.followUp.body'), action: t('tip.followUp.action') },
     {
-      icon: 'mail',
-      title: '38 cliënten zijn toe aan een vervolgbehandeling',
-      body: 'Hun laatste injectiebehandeling was drie tot vier maanden geleden. Nodig ze uit voor een controle bij hun eigen arts.',
-      action: 'Plan controles',
-    },
-    {
+      id: 'extraClass',
       icon: 'trend',
-      title: busiest ? `Extra ${busiest.name} rond ${clock(new Date(busiest.start.getTime() - 3600000))}?` : 'Extra Slow Burn rond 17:00?',
-      body: `${busiest ? `${busiest.name} om ${clock(busiest.start)}` : 'Slow Burn om 18:00'} zat de afgelopen vier weken negen keer vol. Een extra les levert naar schatting ${eur(1150)} per maand op.`,
-      action: 'Plan extra les',
+      title: t('tip.extraClass.title', extraClass),
+      body: t('tip.extraClass.body', { ...extraClass, amount: eur(1150) }),
+      action: t('tip.extraClass.action'),
     },
   ];
 
@@ -306,41 +424,44 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
     <div className="dash">
       <KpiTile
         index={0}
-        label="Omzet vandaag"
+        label={t('kpi.revenue')}
         value={revenue}
         format={eur}
         delta={revenue / usual - 1}
-        sub={`tegen de vorige vier ${weekdayLong(now)}en`}
+        sub={t('kpi.revenueSub', { weekday: weekdayLong(now) })}
         chart={<Sparkline values={[...history.slice(0, -1), revenue]} />}
       />
       <KpiTile
         index={1}
-        label="Behandelingen"
+        label={t('kpi.treatments')}
         value={appts.length}
         format={num}
-        sub={isClinicDay ? `${running} nu in behandeling` : 'zondag gesloten, dit is maandag'}
+        sub={isClinicDay ? t('kpi.treatmentsSub', { n: running }) : t('kpi.treatmentsClosed')}
         chart={<MiniBars values={apptsPerHour} current={isClinicDay ? now.getHours() - 9 : -1} />}
       />
       <KpiTile
         index={2}
-        label="Pilates"
+        label={t('kpi.pilates')}
         value={booked / capacity}
         format={pct}
-        sub={`${booked} van ${capacity} plekken · ${fullClasses} vol`}
+        sub={t('kpi.pilatesSub', { booked, capacity, full: fullClasses })}
         chart={<Squares total={classes.length} filled={fullClasses} size={10} />}
       />
       <KpiTile
         index={3}
-        label="Webshop"
+        label={t('kpi.webshop')}
         value={todaysOrders.length}
         format={num}
-        sub={`${eur(shopToday)} · gem. ${eur(todaysOrders.length ? shopToday / todaysOrders.length : 0)}`}
+        sub={t('kpi.webshopSub', { revenue: eur(shopToday), avg: eur(todaysOrders.length ? shopToday / todaysOrders.length : 0) })}
         chart={<MiniBars values={ordersPerHour} current={now.getHours() - 7} />}
       />
 
-      <SkylineView appts={appts} day={clinicsDay} now={now} focus={focus} onFocus={setFocus} />
+      {/* The 3D views draw their labels once, so a new language rebuilds them. */}
+      <ClinicsView key={`clinics-${locale}`} appts={appts} day={clinicsDay} now={now} focus={focus} onFocus={setFocus} />
       <LiveFeed items={feed} now={now} />
+      <AgendaView appts={appts} day={clinicsDay} now={now} />
       <StudioView
+        key={`studio-${locale}`}
         classes={classes}
         selected={selected}
         now={now}
@@ -349,7 +470,7 @@ export function Overview({ now, playing }: { now: Date; playing: boolean }) {
         onFollow={() => setSelectedClass(null)}
       />
       <ShopCard orders={orders} now={now} />
-      <WeekChart days={week} series={SERIES} today={now} format={eur} />
+      <WeekChart days={week} series={SERIES} today={now} />
       <Insights items={insights} />
     </div>
   );
