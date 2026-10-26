@@ -293,7 +293,7 @@ function PastRow({ appointment, first }: { appointment: AppointmentView; first: 
         }
       >
         <Txt variant="smallStrong" color={theme.c.primary}>
-          {t('ivy.home.refillCta')}
+          {t('ivy.appts.bookAgain')}
         </Txt>
       </Pressable>
     </View>

@@ -40,7 +40,7 @@ export default function IvyHome() {
       <AskIvy />
       {ivy.next ? <NextAppointment appointment={ivy.next} /> : null}
       {pilates.next ? <NextClass session={pilates.next} /> : null}
-      <Refill />
+      <Checkup />
       <Concerns />
       <Consult />
       <SkinAdvice />
@@ -139,41 +139,41 @@ function NextClass({ session }: { session: SessionView }) {
   );
 }
 
-/** Botox wears off after about four months: offer the next session with the same doctor. */
-function Refill() {
+/** A few months after an injectable treatment: a free check-up with the same doctor. It names no product. */
+function Checkup() {
   const theme = useTheme();
-  const { t, text, time, relativeDayInline } = useI18n();
-  const { refill } = useIvy();
-  if (!refill) return null;
-  const specialist = specialistById(refill.slot.specialistId);
-  const location = locationById(refill.locationId);
+  const { t, time, relativeDayInline } = useI18n();
+  const { checkup } = useIvy();
+  if (!checkup) return null;
+  const specialist = specialistById(checkup.slot.specialistId);
+  const location = locationById(checkup.locationId);
   return (
     <View style={{ flexDirection: 'row', backgroundColor: theme.c.surface, borderRadius: theme.r.card, overflow: 'hidden' }}>
-      <Photo photo={refill.treatment.photo} style={{ width: 116 }} position="top" />
+      <Photo photo={checkup.treatment.photo} style={{ width: 116 }} position="top" />
       <View style={{ flex: 1, padding: 16, gap: 8 }}>
         <Txt variant="small" color={theme.c.muted}>
-          {t('ivy.home.refillEyebrow', { n: refill.monthsAgo })}
+          {t('ivy.home.checkupEyebrow', { n: checkup.monthsAgo })}
         </Txt>
-        <Txt variant="heading">{t('ivy.home.refillTitle', { treatment: text(refill.treatment.name) })}</Txt>
+        <Txt variant="heading">{t('ivy.home.checkupTitle')}</Txt>
         <Txt variant="small" color={IVY_COLORS.body}>
-          {t('ivy.home.refillBody', {
+          {t('ivy.home.checkupBody', {
             name: specialist.name,
-            when: `${relativeDayInline(refill.slot.start)} ${time(refill.slot.start)}`,
+            when: `${relativeDayInline(checkup.slot.start)} ${time(checkup.slot.start)}`,
             city: cityName(location),
           })}
         </Txt>
         <Button
           size="sm"
-          label={t('ivy.home.refillCta')}
+          label={t('ivy.home.checkupCta')}
           style={{ alignSelf: 'flex-start', marginTop: 4 }}
           onPress={() =>
             router.push({
               pathname: '/ivy/afspraak/[treatmentId]',
               params: {
-                treatmentId: refill.treatment.id,
+                treatmentId: checkup.treatment.id,
                 specialist: specialist.id,
                 location: location.id,
-                slot: String(refill.slot.start.getTime()),
+                slot: String(checkup.slot.start.getTime()),
               },
             })
           }

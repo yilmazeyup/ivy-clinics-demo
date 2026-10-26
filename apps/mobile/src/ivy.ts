@@ -1,6 +1,6 @@
 import {
+  checkupSuggestion,
   locationById,
-  refillSuggestion,
   specialistById,
   treatmentById,
   type ClinicLocation,
@@ -39,7 +39,7 @@ export function useIvy() {
       upcoming,
       past,
       next: upcoming[0],
-      refill: refillSuggestion(demo.now, demo.appointments),
+      checkup: checkupSuggestion(demo.now, demo.appointments),
       byId: (id: string) => all.find((a) => a.id === id),
       /** Who did this treatment last time, so the booking flow can suggest the same person. */
       lastSpecialistFor: (treatmentId: TreatmentId): SpecialistId | undefined => past.find((a) => a.treatmentId === treatmentId)?.specialistId,

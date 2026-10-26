@@ -346,17 +346,23 @@ export function initialIvyAppointments(now: Date): IvyAppointment[] {
   ];
 }
 
-/** Botox wears off after about four months, so suggest the next session with the same doctor. */
-export function refillSuggestion(
+/**
+ * Three to four months after an injectable treatment, invite the client for a free check-up with the
+ * same doctor. The reminder never names the product: in the Netherlands, prescription medicines such as
+ * botulinum toxin may not be advertised to the public.
+ */
+export function checkupSuggestion(
   now: Date,
   booked: IvyAppointment[],
 ): { treatment: Treatment; slot: FreeSlot; monthsAgo: number; locationId: LocationId } | null {
+  const injectable = (a: IvyAppointment) => treatmentById(a.treatmentId).category === 'injectables';
   const last = booked
-    .filter((a) => a.treatmentId === 'botox' && a.start.getTime() < now.getTime())
+    .filter((a) => injectable(a) && a.start.getTime() < now.getTime())
     .sort((a, b) => b.start.getTime() - a.start.getTime())[0];
   if (!last) return null;
-  if (booked.some((a) => a.treatmentId === 'botox' && a.start.getTime() > now.getTime())) return null;
-  const treatment = treatmentById('botox');
+  // Once a check-up or a new treatment is planned, the reminder has done its job.
+  if (booked.some((a) => (injectable(a) || a.treatmentId === 'consult') && a.start.getTime() > now.getTime())) return null;
+  const treatment = treatmentById('consult');
   for (let d = 1; d <= 10; d++) {
     const day = addDays(startOfDay(now), d);
     const slots = freeSlots(treatment, last.specialistId, day, now, last.locationId, booked);
