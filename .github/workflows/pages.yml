@@ -2,6 +2,8 @@
 #   /            start page that explains the demo
 #   /app/        the member app, exported for the web
 #   /beheer/     the admin panel
+#   /blanche/        Blanche Beauty's member app (nails, lashes and brows)
+#   /blanche/admin/  Blanche Beauty's admin panel
 name: Demo site
 
 on:
@@ -44,6 +46,8 @@ jobs:
         run: |
           npm run typecheck --prefix apps/mobile
           npm run typecheck --prefix apps/admin
+          npm run typecheck --prefix apps/blanche
+          npm run typecheck:blanche --prefix apps/admin
 
       - name: Build the member app for the web
         working-directory: apps/mobile
@@ -55,6 +59,16 @@ jobs:
         working-directory: apps/admin
         run: npx vite build --base=${{ env.BASE }}/beheer/ --outDir ../../_site/beheer --emptyOutDir
 
+      - name: Build the Blanche Beauty app for the web
+        working-directory: apps/blanche
+        env:
+          EXPO_BASE_URL: ${{ env.BASE }}/blanche
+        run: npx expo export --platform web --output-dir ../../_site/blanche
+
+      - name: Build the Blanche Beauty admin panel
+        working-directory: apps/admin
+        run: npx vite build --config vite.blanche.config.ts --base=${{ env.BASE }}/blanche/admin/ --outDir "$GITHUB_WORKSPACE/_site/blanche/admin" --emptyOutDir
+
       - name: Add the start page
         run: |
           cp -R site/. _site/
@@ -65,6 +79,11 @@ jobs:
           sed -i 's|</head>|<style>html,body{background:#F6F1EA}</style></head>|' _site/app/index.html
           # GitHub Pages answers unknown paths with 404.html; the app then opens on the right screen.
           cp _site/app/index.html _site/404.html
+          # Blanche Beauty: kept out of search results too, white from the first moment, and its own addresses
+          # (a link straight to a Blanche screen) go on to the Blanche app instead of the Pure Clinics one.
+          sed -i 's#<head>#<head><meta name="robots" content="noindex, nofollow" />#' _site/blanche/index.html
+          sed -i 's|</head>|<style>html,body{background:#FFFFFF}</style></head>|' _site/blanche/index.html
+          node -e "const fs=require('fs');const f='_site/404.html';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace('<head>','<head>'+fs.readFileSync('apps/blanche/web/fallback.html','utf8')))"
 
       - uses: actions/upload-pages-artifact@v3
         with:

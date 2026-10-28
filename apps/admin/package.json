@@ -8,7 +8,10 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "artifact": "vite build --config vite.artifact.config.ts && node scripts/artifact.mjs"
+    "artifact": "vite build --config vite.artifact.config.ts && node scripts/artifact.mjs",
+    "dev:blanche": "vite --config vite.blanche.config.ts",
+    "build:blanche": "tsc --noEmit -p blanche && vite build --config vite.blanche.config.ts",
+    "typecheck:blanche": "tsc --noEmit -p blanche"
   },
   "dependencies": {
     "@pure-clinics/shared": "file:../../packages/shared",

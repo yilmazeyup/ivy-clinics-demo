@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Blanche Beauty",
+    "slug": "blanche-beauty-demo",
+    "scheme": "blanchebeauty",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "nl.blanchebeauty.demo"
+    },
+    "android": {
+      "package": "nl.blanchebeauty.demo",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Blanche Beauty",
+      "shortName": "Blanche",
+      "themeColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    "plugins": [
+      ["expo-router", { "asyncRoutes": { "web": false } }],
+      "expo-font",
+      ["expo-splash-screen", { "backgroundColor": "#FFFFFF", "image": "./assets/splash-icon.png", "imageWidth": 220 }],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true
+        }
+      ],
+      "expo-image"
+    ]
+  }
+}

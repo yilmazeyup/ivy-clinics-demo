@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "apps/mobile",
+    "apps/blanche",
     "packages/*"
   ],
   "scripts": {
@@ -10,6 +11,10 @@
     "ios": "npm --workspace mobile run ios",
     "web": "npm --workspace mobile run web",
     "typecheck": "npm --workspace mobile run typecheck",
-    "admin": "npm --prefix apps/admin run dev"
+    "admin": "npm --prefix apps/admin run dev",
+    "blanche": "npm --workspace blanche run start",
+    "blanche:web": "npm --workspace blanche run web",
+    "typecheck:blanche": "npm --workspace blanche run typecheck",
+    "admin:blanche": "npm --prefix apps/admin run dev:blanche"
   }
 }
