@@ -9,23 +9,6 @@ and no real payments. Treatments, prices, deals, locations and opening hours fol
 - Live demo: https://yilmazeyup.github.io/pure-clinics-demo/ (the app and the admin panel, in Dutch, English, Arabic, French, German and Italian)
 - Help page with a Dutch explainer video (subtitles in Dutch and English) and common questions: https://yilmazeyup.github.io/pure-clinics-demo/hulp/
 
-## Blanche Beauty
-
-Blanche Beauty is the nails, lashes and brows studio inside Pure Clinics Nijmegen (Korean lash lifts also in Uden). It has
-its own member app and admin panel, built on the same shared logic as Pure Clinics but with its own look: white with the
-logo's black script, cherry for nails, lilac for lashes, honey for brows, Instrument Serif and Bricolage Grotesque.
-
-- Member app: https://yilmazeyup.github.io/pure-clinics-demo/blanche/ (menu and prices from blanchebeauty.nl, booking with a
-  stylist, refill reminders, a shade studio that paints the nails on a real hand, swipeable inspiration, Blanche Club
-  points and rewards, deals and passes, aftercare and gift cards, contact for Nijmegen and Uden)
-- Admin panel: https://yilmazeyup.github.io/pure-clinics-demo/blanche/admin/ (the studio live in 3D, client cards with past
-  sets and colours, agenda per stylist, refill reminders, the week's revenue, the shop and Instagram); `?at=2026-10-28T14:20`
-  sets the demo clock.
-
-The stylists, clients, Club, deals, passes and shop products are demo values; the treatments, prices, addresses and
-Nijmegen opening hours are Blanche's own (October 2026), and the lash-lift day in Uden is a demo value. Run the app with
-`npm run blanche` (or `npm run blanche:web`) and the panel with `npm run admin:blanche` (http://localhost:5182).
-
 ## Structure
 
 ```
@@ -33,8 +16,6 @@ apps/mobile/       Expo (SDK 58) member app, Expo Router
 apps/admin/        Admin panel (Vite, React, Three.js): both clinics live in 3D, the day's agenda, treatment series, the webshop and a guided tour
 packages/shared/   languages (nl, en, ar, fr, de, it), formatting, brand data and demo data (treatments and
                    their details, laser zones, deals, webshop products)
-apps/blanche/      Blanche Beauty's member app (Expo, Expo Router); its data and texts are in packages/shared/src/blanche/
-apps/admin/blanche/  Blanche Beauty's admin panel, a second page of the admin package (vite.blanche.config.ts)
 ```
 
 ## Run
