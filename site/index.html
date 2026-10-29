@@ -93,6 +93,52 @@
         color: var(--muted);
       }
       /* The way to the explainer video and the questions people ask. */
+      .web-link {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        align-items: center;
+        gap: 22px;
+        max-width: 760px;
+        padding: 10px 22px 10px 10px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        text-decoration: none;
+        transition: border-color 0.3s;
+      }
+      .web-link:hover {
+        border-color: var(--ink);
+      }
+      .web-link img {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+      .web-link strong {
+        display: block;
+        font: 500 26px/1.1 var(--display);
+      }
+      .web-link span span {
+        display: block;
+        margin-top: 4px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .web-link em {
+        display: inline-block;
+        margin-top: 10px;
+        font-style: normal;
+        font-size: 14px;
+        border-bottom: 1px solid currentColor;
+      }
+      @media (max-width: 560px) {
+        .web-link {
+          grid-template-columns: 1fr;
+          padding: 10px 10px 16px;
+        }
+      }
       .help-link {
         margin-top: 26px;
         display: inline-flex;
@@ -334,6 +380,11 @@
         <span><strong data-t="helpTitle"></strong><span data-t="helpBody"></span></span>
       </a>
 
+      <a class="web-link" id="open-web" href="website/">
+        <img src="website/img/pc-intro-s.webp" alt="" />
+        <span><strong data-t="webTitle"></strong><span data-t="webBody"></span><em data-t="webOpen"></em></span>
+      </a>
+
       <div class="parts">
         <section class="part">
           <span class="step">1</span>
@@ -387,6 +438,9 @@
           lead: 'Dit is een voorbeeld van de nieuwe Pure Clinics-app en het beheerscherm. Alles is nep: namen, afspraken en betalingen. Klik gerust rond, je kunt niets kapotmaken.',
           helpTitle: 'Bekijk de uitlegvideo',
           helpBody: 'Ongeveer 3 minuten · alles over de app en het beheer',
+          webTitle: 'De nieuwe website',
+          webBody: 'Een website die voelt als een bezoek aan de kliniek: doe de huidscan, loop door de behandelkamers en vergelijk echte resultaten.',
+          webOpen: 'Open de website',
           appTitle: 'De app voor cliënten',
           appBody: 'Zo ziet de app eruit op een telefoon. Cliënten plannen hier een gratis intake of een behandeling, volgen hun lasertraject en bestellen hun nazorg.',
           appTry: 'Probeer dit: tik op Boeken, kies Laser ontharen, vink je zones aan en kies een tijd.',
@@ -407,6 +461,9 @@
           lead: "This is a preview of the new Pure Clinics app and admin screen. Everything is fake: names, appointments and payments. Click around freely, you can't break anything.",
           helpTitle: 'Watch the explainer video',
           helpBody: 'About 3 minutes · all about the app and the admin panel',
+          webTitle: 'The new website',
+          webBody: 'A website that feels like a visit to the clinic: take the skin scan, walk through the treatment rooms and compare real results.',
+          webOpen: 'Open the website',
           appTitle: 'The app for clients',
           appBody: 'This is how the app looks on a phone. Clients book a free intake or a treatment here, follow their laser treatment plan and order their aftercare.',
           appTry: 'Try this: tap Book, choose Laser hair removal, tick your zones and pick a time.',
@@ -427,6 +484,9 @@
           lead: 'هذه معاينة لتطبيق Pure Clinics الجديد ولوحة الإدارة. كل البيانات وهمية: الأسماء والمواعيد والمدفوعات. تجوّل بحرية، فلن تُفسد شيئًا.',
           helpTitle: 'شاهد فيديو الشرح',
           helpBody: 'نحو 3 دقائق · كل شيء عن التطبيق ولوحة الإدارة',
+          webTitle: 'الموقع الجديد',
+          webBody: 'موقع يشبه زيارة العيادة: افحص بشرتك، وتجوّل في غرف العلاج، وقارن نتائج حقيقية.',
+          webOpen: 'افتح الموقع',
           appTitle: 'التطبيق للعملاء',
           appBody: 'هكذا يبدو التطبيق على الهاتف. يحجز فيه العملاء استشارة مجانية أو علاجًا، ويتابعون خطة الليزر، ويطلبون منتجات العناية اللاحقة.',
           appTry: 'جرّب: اضغط على «الحجز»، واختر إزالة الشعر بالليزر، وحدّد المناطق، ثم اختر وقتًا.',
@@ -447,6 +507,9 @@
           lead: 'Voici un aperçu de la nouvelle app Pure Clinics et de l’écran de gestion. Tout est fictif : noms, rendez-vous et paiements. Explore librement, tu ne peux rien casser.',
           helpTitle: 'Regarder la vidéo explicative',
           helpBody: 'Environ 3 minutes · tout sur l’app et l’espace de gestion',
+          webTitle: 'Le nouveau site web',
+          webBody: 'Un site qui ressemble à une visite de la clinique : fais le scan de peau, parcours les salles de soin et compare de vrais résultats.',
+          webOpen: 'Ouvrir le site',
           appTitle: 'L’app pour les clients',
           appBody: 'Voici l’app sur un téléphone. Les clients y réservent une consultation gratuite ou un soin, suivent leur parcours laser et commandent leurs soins après traitement.',
           appTry: 'Essaie : touche Réserver, choisis l’épilation laser, coche tes zones puis un horaire.',
@@ -467,6 +530,9 @@
           lead: 'Das ist eine Vorschau der neuen Pure-Clinics-App und der Verwaltung. Alles ist erfunden: Namen, Termine und Zahlungen. Klick dich ruhig durch, du kannst nichts kaputt machen.',
           helpTitle: 'Erklärvideo ansehen',
           helpBody: 'Etwa 3 Minuten · alles über die App und die Verwaltung',
+          webTitle: 'Die neue Website',
+          webBody: 'Eine Website, die sich wie ein Besuch in der Klinik anfühlt: Mach den Hautscan, geh durch die Behandlungsräume und vergleiche echte Ergebnisse.',
+          webOpen: 'Website öffnen',
           appTitle: 'Die App für Kunden',
           appBody: 'So sieht die App auf dem Handy aus. Hier buchen Kund:innen ein kostenloses Erstgespräch oder eine Behandlung, verfolgen ihre Laserreihe und bestellen ihre Nachpflege.',
           appTry: 'Probier es aus: Tippe auf Buchen, wähle Laser-Haarentfernung, hak deine Zonen an und wähle eine Uhrzeit.',
@@ -487,6 +553,9 @@
           lead: 'Questa è un’anteprima della nuova app di Pure Clinics e della schermata di gestione. È tutto finto: nomi, appuntamenti e pagamenti. Esplora pure, non puoi rompere nulla.',
           helpTitle: 'Guarda il video di presentazione',
           helpBody: 'Circa 3 minuti · tutto sull’app e sulla gestione',
+          webTitle: 'Il nuovo sito web',
+          webBody: 'Un sito che sembra una visita in clinica: fai lo scan della pelle, attraversa le sale dei trattamenti e confronta risultati reali.',
+          webOpen: 'Apri il sito',
           appTitle: 'L’app per i clienti',
           appBody: 'Ecco l’app su un telefono. Qui i clienti prenotano una consulenza gratuita o un trattamento, seguono il loro percorso laser e ordinano i prodotti per dopo il trattamento.',
           appTry: 'Prova: tocca Prenota, scegli Epilazione laser, seleziona le zone e poi un orario.',

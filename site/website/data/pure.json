@@ -1,0 +1,1019 @@
+{
+ "clinic": {
+  "phone": "024 679 22 36",
+  "email": "info@pureclinics.nl",
+  "clients": 6811,
+  "years": 10
+ },
+ "locations": [
+  {
+   "id": "nijmegen",
+   "city": "Nijmegen",
+   "address": "Sint Annastraat 1, 6524 EA",
+   "phone": "024 679 22 36",
+   "hours": {
+    "0": null,
+    "1": {
+     "open": 10,
+     "close": 17
+    },
+    "2": {
+     "open": 9,
+     "close": 17
+    },
+    "3": {
+     "open": 9,
+     "close": 21
+    },
+    "4": {
+     "open": 9,
+     "close": 18
+    },
+    "5": {
+     "open": 9,
+     "close": 17
+    },
+    "6": {
+     "open": 9,
+     "close": 17
+    }
+   }
+  },
+  {
+   "id": "uden",
+   "city": "Uden",
+   "address": "Kastanjeweg 1, 5401 GW",
+   "phone": "0413 35 76 15",
+   "hours": {
+    "0": null,
+    "1": null,
+    "2": {
+     "open": 12,
+     "close": 21
+    },
+    "3": {
+     "open": 12,
+     "close": 21
+    },
+    "4": null,
+    "5": {
+     "open": 9,
+     "close": 17
+    },
+    "6": {
+     "open": 9,
+     "close": 15
+    }
+   }
+  }
+ ],
+ "treatments": [
+  {
+   "id": "consult",
+   "category": "consult",
+   "name": "Gratis intake",
+   "description": "Een huidtherapeut bekijkt je huid, bespreekt je wensen en geeft eerlijk advies over resultaat, risico’s en herstel.",
+   "minutes": 30,
+   "priceFrom": 0,
+   "deposit": 0,
+   "photo": "pc-consult",
+   "info": {
+    "intro": "Elk traject begint met een gratis intake van 30 minuten bij een hbo-opgeleide huidtherapeut. Je krijgt eerlijk advies en een behandelplan dat bij jouw huid past.",
+    "how": "De huidtherapeut bekijkt je huidtype en huidconditie en vraagt naar je medische achtergrond, medicijnen en verzorging. Daarna bespreken jullie welke behandeling past, wat je mag verwachten, het herstel en de prijs. Vaak worden er foto's gemaakt om je voortgang te volgen.",
+    "sessions": "1",
+    "downtime": "Geen",
+    "results": "Je gaat naar huis met een persoonlijk behandelplan en een duidelijke prijsafspraak, per behandeling of per pakket.",
+    "faq": [
+     {
+      "q": "Wat kost de intake?",
+      "a": "Niets. De intake is gratis en vrijblijvend; daarna beslis je zelf of je start."
+     },
+     {
+      "q": "Moet ik iets voorbereiden?",
+      "a": "Kom je voor laser ontharen, laat de haren dan juist staan. Weet verder welke medicijnen en huidverzorging je gebruikt; daar vraagt de huidtherapeut naar."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "laser",
+   "category": "removal",
+   "name": "Laser ontharen",
+   "description": "Definitief ontharen met de Soprano ICE Platinum. Per zone, met 5+1 gratis in een pakket.",
+   "minutes": 30,
+   "priceFrom": 35,
+   "deposit": 0,
+   "photo": "pc-laser",
+   "info": {
+    "intro": "Definitief minder haargroei met medisch gecertificeerde lasers: de Soprano ICE Platinum en de GentleMax Pro Plus. Voor vrouwen en mannen, en voor lichte en donkere huidtypen.",
+    "how": "Het laserlicht wordt opgenomen door het pigment in de haar en omgezet in warmte, die het haarzakje uitschakelt zonder de huid eromheen te beschadigen. Beide lasers koelen je huid tijdens de behandeling. Omdat niet alle haren tegelijk groeien, heb je een reeks behandelingen nodig.",
+    "sessions": "8–10",
+    "interval": "4–6 weken",
+    "downtime": "Geen",
+    "results": "Het doel is minstens 70 tot 80% minder haar. Behandelde haren vallen na ongeveer twee weken uit; door hormonen kunnen later nieuwe haren actief worden.",
+    "aftercare": [
+     "48 uur geen sauna, hete douche of intensief sporten.",
+     "Tijdens het traject niet epileren, harsen of waxen; scheren mag.",
+     "Dagelijks zonnebrand met minstens SPF 30, en twee weken voor en na geen zonnebank."
+    ],
+    "faq": [
+     {
+      "q": "Doet het pijn?",
+      "a": "Je voelt per puls een kort prikje dat meteen wegtrekt. De gekoelde laserkop maakt het goed te verdragen."
+     },
+     {
+      "q": "Werkt het ook op blonde of grijze haren?",
+      "a": "Nee, die hebben te weinig pigment. Voor lichte haren is elektrische epilatie de oplossing."
+     },
+     {
+      "q": "Wordt het vergoed?",
+      "a": "Alleen overbeharing in het gezicht bij vrouwen, uit de aanvullende verzekering. Lichaamszones worden niet vergoed."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "epilation",
+   "category": "removal",
+   "name": "Elektrische epilatie",
+   "description": "Haartje voor haartje, ook voor licht en grijs haar dat de laser niet ziet.",
+   "minutes": 30,
+   "priceFrom": 60,
+   "deposit": 0,
+   "photo": "pc-epilation",
+   "insurable": true,
+   "info": {
+    "intro": "Permanente ontharing per haarzakje, met een dun naaldje en een kleine stroomstoot. De oplossing voor lichte haren die de laser niet ziet.",
+    "how": "Een dun, steriel naaldje gaat langs de haar het haarzakje in, waarna een kleine stroom de haarwortel uitschakelt. Omdat elk haarzakje apart wordt behandeld, is het vooral geschikt voor kleine gebieden zoals het gezicht.",
+    "sessions": "Meerdere",
+    "downtime": "Enkele uren",
+    "results": "Behandelde haarzakjes groeien niet meer terug, en de haargroei neemt per behandeling verder af.",
+    "aftercare": [
+     "Koel thuis ongeveer tien minuten na.",
+     "Eerste 24 uur geen sauna, hete douche of intensief sporten.",
+     "Tussen de behandelingen niet harsen of epileren; scheren of knippen mag."
+    ],
+    "faq": [
+     {
+      "q": "Wat is het verschil met laser?",
+      "a": "De laser werkt alleen op donkere haren. Elektrische epilatie behandelt elk haarzakje met stroom en werkt dus ook bij blond, grijs of rood haar."
+     },
+     {
+      "q": "Doet het pijn?",
+      "a": "Het kan branderig voelen. De huidtherapeut stemt de sterkte af op wat jij prettig vindt."
+     },
+     {
+      "q": "Wordt het vergoed?",
+      "a": "Overbeharing in het gezicht wordt vaak (deels) vergoed uit de aanvullende verzekering."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "tattoo",
+   "category": "conditions",
+   "name": "Tatoeage verwijderen",
+   "description": "Een tatoeage of permanente make-up laten vervagen met de laser. Prijs naar grootte.",
+   "minutes": 30,
+   "priceFrom": 49,
+   "deposit": 0,
+   "photo": "pc-tattoo",
+   "info": {
+    "intro": "Een tatoeage of permanente make-up laten verwijderen, of laten vervagen voor een cover-up. Pure Clinics werkt met de PicoWay, een picosecondelaser voor zwarte én gekleurde inkt.",
+    "how": "De PicoWay geeft ultrakorte pulsen in vier golflengtes, zodat ook rood, groen en blauw goed te behandelen zijn, op lichte en donkere huid. De inkt valt uiteen in piepkleine deeltjes die je lichaam daarna zelf afvoert.",
+    "sessions": "6–10",
+    "interval": "8–12 weken",
+    "downtime": "Enkele dagen",
+    "results": "De tatoeage kleurt na een puls even wit. Het vervagen zie je pas in de weken erna; vaak gaat hij helemaal weg, of genoeg voor een cover-up.",
+    "aftercare": [
+     "Minstens 4 weken geen directe zon; daarna SPF 30+.",
+     "Niet krabben of aan korstjes zitten.",
+     "Pas zwemmen als de huid helemaal dicht is."
+    ],
+    "faq": [
+     {
+      "q": "Waarom zoveel tijd tussen de behandelingen?",
+      "a": "Je huid moet herstellen en je lichaam heeft tijd nodig om de inkt af te voeren. Daarom zitten er 8 tot 12 weken tussen."
+     },
+     {
+      "q": "Blijft er een litteken over?",
+      "a": "Meestal niet. Het duurt langer dan een operatie, maar de huid blijft gaaf."
+     },
+     {
+      "q": "Waar hangt het aantal behandelingen van af?",
+      "a": "Van de grootte, de kleuren, de diepte van de inkt, de leeftijd van de tatoeage en de plek op je lichaam."
+     }
+    ]
+   },
+   "ba": [
+    "ba-tattoo-1",
+    "ba-tattoo-2"
+   ]
+  },
+  {
+   "id": "acne",
+   "category": "conditions",
+   "name": "Acnétherapie",
+   "description": "Dieptereiniging en een plan om je acne blijvend te verminderen.",
+   "minutes": 45,
+   "priceFrom": 65,
+   "deposit": 0,
+   "photo": "pc-acne",
+   "insurable": true,
+   "info": {
+    "intro": "Een persoonlijk traject tegen acne en een onrustige huid: dieptereinigingen en peelings in de kliniek, en thuis een protocol met ZO Skin Health.",
+    "how": "Na een uitgebreide huidanalyse maakt de huidtherapeut een behandelplan. Eerst worden verstoppingen en ontstekingen aangepakt met dieptereinigingen en chemische peelings. Is de acne onder controle, dan kunnen IPL en SkinPen roodheid, pigment en littekens verminderen.",
+    "sessions": "Kuur van 4+1",
+    "downtime": "1–2 dagen",
+    "results": "Je huid wordt stap voor stap rustiger. In het begin kan acne even opvlammen, doordat diepere verstoppingen naar boven komen.",
+    "aftercare": [
+     "Eerste 24 uur niet sporten en je gezicht niet nat maken.",
+     "Niet aan velletjes of korstjes trekken.",
+     "Geen zuren of retinol tot je huid hersteld is.",
+     "Thuis het advies met ZO Skin Health volgen."
+    ],
+    "faq": [
+     {
+      "q": "Is één behandeling genoeg?",
+      "a": "Nee. Zeker in het begin heb je meerdere behandelingen nodig; daarom is er een pakket van 4+1."
+     },
+     {
+      "q": "Ben ik daarna van acne af?",
+      "a": "Niet altijd helemaal, maar met behandeling en de juiste verzorging is het goed onder controle te houden."
+     },
+     {
+      "q": "Wordt het vergoed?",
+      "a": "Acnetherapie wordt soms vergoed uit de aanvullende verzekering, vaak met een verwijzing. Check je polis."
+     }
+    ]
+   },
+   "ba": [
+    "ba-acne-1",
+    "ba-acne-2",
+    "ba-acne-3"
+   ]
+  },
+  {
+   "id": "couperose",
+   "category": "conditions",
+   "name": "Couperose · vaatlaser",
+   "description": "Zichtbare bloedvaatjes in gezicht en decolleté wegwerken met de vaatlaser.",
+   "minutes": 30,
+   "priceFrom": 95,
+   "deposit": 0,
+   "photo": "pc-couperose",
+   "insurable": true,
+   "info": {
+    "intro": "Rode vaatjes en blijvende roodheid in je gezicht verminderen, met IPL voor fijne vaatjes en de Nd:YAG-vaatlaser voor dieper gelegen vaatjes.",
+    "how": "Je huid wordt gereinigd en je ogen worden beschermd. Het licht wordt opgenomen door het bloed in het vaatje; de warmte sluit het vaatje af, waarna je lichaam het in de weken erna opruimt.",
+    "sessions": "1–3",
+    "interval": "4–6 weken",
+    "downtime": "1–2 dagen",
+    "results": "Behandelde vaatjes komen niet terug, en na elke behandeling zie je verbetering. Door aanleg of zon kunnen nieuwe vaatjes ontstaan; vaak is jaarlijks onderhoud zinvol.",
+    "aftercare": [
+     "Dagelijks SPF 30+, ook als de zon niet schijnt.",
+     "48–72 uur geen sauna, hete douche, sport of alcohol.",
+     "Minstens 4 weken geen zonnebank of directe zon.",
+     "Eerste 24 uur geen make-up, daarna bij voorkeur minerale."
+    ],
+    "faq": [
+     {
+      "q": "Verdwijnt couperose vanzelf?",
+      "a": "Nee, verwijde vaatjes blijven zichtbaar zonder behandeling."
+     },
+     {
+      "q": "Kan het in de zomer?",
+      "a": "Ja, met goede zonbescherming. Is je huid gebruind, plan het dan in de herfst of winter."
+     },
+     {
+      "q": "Wordt het vergoed?",
+      "a": "Sommige aanvullende verzekeringen vergoeden couperose bij een medische indicatie."
+     }
+    ]
+   },
+   "ba": [
+    "ba-couperose-1",
+    "ba-couperose-2",
+    "ba-couperose-3"
+   ]
+  },
+  {
+   "id": "pigment",
+   "category": "conditions",
+   "name": "Pigmentlaser",
+   "description": "Pigmentvlekken en verkleuringen lichter maken, per vlekje of per zone.",
+   "minutes": 30,
+   "priceFrom": 75,
+   "deposit": 0,
+   "photo": "pc-pigment",
+   "info": {
+    "intro": "Pigmentvlekken en verkleuringen lichter maken met een aanpak op maat: licht van de PicoWay of Nordlys, een TCA-peeling of microneedling, met een thuisprotocol van ZO Skin Health.",
+    "how": "Eerst bereid je je huid 4 tot 6 weken voor met producten en strikte zonbescherming. Daarna wordt het licht van de laser of IPL opgenomen door het pigment, dat uiteenvalt en door je lichaam wordt afgevoerd.",
+    "sessions": "1–3",
+    "downtime": "Enkele dagen",
+    "results": "Pigment in de bovenste huidlagen reageert meestal goed; hormonaal pigment is lastiger. Vlekken worden eerst iets donkerder en vervagen daarna.",
+    "aftercare": [
+     "Het hele jaar SPF 30+, ook bij bewolking en in de winter.",
+     "Voor en na de behandeling geen zonnebank of zelfbruiner."
+    ],
+    "faq": [
+     {
+      "q": "Hoe ontstaan pigmentvlekken?",
+      "a": "Door een overproductie van melanine, vooral door zon en hormonen, bijvoorbeeld tijdens een zwangerschap."
+     },
+     {
+      "q": "Kunnen ze terugkomen?",
+      "a": "Ja, vooral door uv-licht. Daarom is zonbescherming het hele jaar belangrijk."
+     }
+    ]
+   },
+   "ba": [
+    "ba-pigment-1",
+    "ba-pigment-2",
+    "ba-pigment-3"
+   ]
+  },
+  {
+   "id": "legveins",
+   "category": "conditions",
+   "name": "Beenvaten",
+   "description": "Kleine adertjes op de benen behandelen met de vaatlaser.",
+   "minutes": 30,
+   "priceFrom": 95,
+   "deposit": 0,
+   "photo": "pc-legveins",
+   "info": {
+    "intro": "Rode en paarse beenvaatjes zichtbaar verminderen met de Nd:YAG-laser van 1064 nm, met koeling vlak voor elke puls.",
+    "how": "Het laserlicht wordt opgenomen door het bloed in het vaatje. De warmte sluit het vaatje af, en je lichaam ruimt het in de weken erna op. Grote spataderen horen bij een arts.",
+    "sessions": "1–3",
+    "interval": "12 weken",
+    "downtime": "Geen",
+    "results": "De vaatjes vervagen geleidelijk. Bij erfelijke aanleg kunnen er nieuwe bijkomen; dan wordt onderhoud aangeraden.",
+    "aftercare": [
+     "Minstens 7 dagen geen intensief sporten, sauna of hete baden.",
+     "1 tot 2 weken steunkousen dragen.",
+     "4 tot 6 weken SPF 30+ en geen zonnebank."
+    ],
+    "faq": [
+     {
+      "q": "Hoe ontstaan beenvaatjes?",
+      "a": "Door verslapte vaatwanden. Erfelijkheid, hormonen, leeftijd en veel staan of zitten spelen mee."
+     },
+     {
+      "q": "Doet het pijn?",
+      "a": "Meestal valt het mee: het voelt warm of prikkend, en de koude spray helpt."
+     }
+    ]
+   },
+   "ba": [
+    "ba-legveins-1",
+    "ba-legveins-2"
+   ]
+  },
+  {
+   "id": "eyes",
+   "category": "conditions",
+   "name": "Wallen & donkere kringen",
+   "description": "RRS Eyes: een frissere oogopslag in een kuur van vier behandelingen.",
+   "minutes": 45,
+   "priceFrom": 150,
+   "deposit": 0,
+   "photo": "pc-eyes",
+   "info": {
+    "intro": "Een frissere blik met RRS HA Eyes, een skinbooster met hyaluronzuur tegen vochtwallen, donkere kringen en fijne lijntjes rond de ogen.",
+    "how": "RRS HA Eyes combineert hyaluronzuur met vitaminen en antioxidanten. Met micro-injecties wordt het in de huid rond je ogen gebracht, zodat die meer vocht vasthoudt en steviger wordt.",
+    "sessions": "4–6",
+    "downtime": "Nauwelijks",
+    "results": "Het effect wordt na ongeveer twee weken zichtbaar en bouwt op tijdens de kuur.",
+    "aftercare": [
+     "Na een uur mag lichte make-up.",
+     "Minstens 3 uur niet sporten en niet in het gebied wrijven.",
+     "Een oogserum ondersteunt het resultaat."
+    ],
+    "faq": [
+     {
+      "q": "Hoe ontstaan wallen?",
+      "a": "Door vocht of vet onder de ogen en een huid die verslapt. Slaapgebrek, alcohol, roken en aanleg spelen mee."
+     },
+     {
+      "q": "Wanneer zie ik resultaat?",
+      "a": "Na ongeveer twee weken, en het wordt beter naarmate de kuur vordert."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "skinpen",
+   "category": "skin",
+   "name": "SkinPen microneedling",
+   "description": "Maakt de huid steviger en egaler, bijvoorbeeld bij littekens en grove poriën.",
+   "minutes": 60,
+   "priceFrom": 195,
+   "deposit": 0,
+   "photo": "pc-skinpen",
+   "info": {
+    "intro": "Medische microneedling met de SkinPen, het eerste FDA-goedgekeurde systeem. Je huid maakt nieuw collageen en elastine aan en wordt gladder, egaler en steviger.",
+    "how": "De SkinPen maakt met dunne, vibrerende naaldjes gecontroleerde microkanaaltjes, op een diepte die per zone wordt ingesteld. Dat zet het herstel van je huid aan. Met PRX, PDRN of exosomen erbij wordt het effect nog sterker.",
+    "sessions": "3–6",
+    "interval": "4–6 weken",
+    "downtime": "1 dag rood",
+    "results": "Na een paar behandelingen is je huid egaler en zachter, en in de maanden erna wordt het nog beter door het nieuwe collageen.",
+    "aftercare": [
+     "Eerste 24 uur alleen de meegegeven Lift HG gebruiken, en geen water.",
+     "72 uur geen sport, zwemmen, sauna of hete douche.",
+     "Daarna dagelijks minerale zonnebrand met SPF 30+."
+    ],
+    "faq": [
+     {
+      "q": "Kan het alleen op één plek?",
+      "a": "Nee, het hele gezicht wordt behandeld om kleurverschil te voorkomen. Littekens worden wel extra plaatselijk behandeld."
+     },
+     {
+      "q": "Is het voor elk huidtype?",
+      "a": "Ja, voor elk huidtype en elke leeftijd."
+     }
+    ]
+   },
+   "ba": [
+    "ba-skinpen-1",
+    "ba-skinpen-2"
+   ]
+  },
+  {
+   "id": "tixel",
+   "category": "skin",
+   "name": "Tixel huidverjonging",
+   "description": "Warmtebehandeling voor fijne lijntjes rond ogen en mond, hals en decolleté.",
+   "minutes": 30,
+   "priceFrom": 65,
+   "deposit": 0,
+   "photo": "pc-tixel",
+   "info": {
+    "intro": "Intensieve huidvernieuwing met warmte in plaats van laserlicht: het effect van een CO₂-laser, met een veel korter herstel.",
+    "how": "Een kleine kop met titanium pinnetjes raakt heel kort je huid en brengt warmte in de diepere huidlaag. Dat zet aan tot nieuw collageen en elastine. Daardoor kunnen ook gevoelige zones zoals de oogleden worden behandeld.",
+    "sessions": "4 (oogleden 6)",
+    "downtime": "4–5 dagen",
+    "results": "Na ongeveer zes weken zie je een stevigere, gladdere en egalere huid, en het blijft daarna verbeteren.",
+    "aftercare": [
+     "Korstjes vanzelf laten loslaten.",
+     "Hydraterende crème bij een trekkerige huid.",
+     "Dagelijks SPF 30+."
+    ],
+    "faq": [
+     {
+      "q": "Is het pijnlijk?",
+      "a": "Minder dan een CO₂-laser. Verdoving is niet nodig."
+     },
+     {
+      "q": "Voor welk huidtype?",
+      "a": "Tixel is geschikt voor alle huidtypes, zolang je huid niet gebruind is."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "sylfirm",
+   "category": "skin",
+   "name": "Sylfirm X",
+   "description": "Radiofrequente microneedling tegen pigment, roodheid en verslapping.",
+   "minutes": 60,
+   "priceFrom": 325,
+   "deposit": 0,
+   "photo": "pc-sylfirm",
+   "info": {
+    "intro": "RF-microneedling met de Sylfirm X voor een stevigere, gladdere en egalere huid, met minimale downtime.",
+    "how": "Fijne naaldjes brengen radiofrequente energie precies op de juiste diepte in de huid. Twee golfvormen maken het mogelijk om verschillende huidproblemen te behandelen. Dat activeert het herstel en de aanmaak van collageen.",
+    "sessions": "3–6",
+    "interval": "4 weken",
+    "downtime": "Enkele dagen",
+    "results": "Je huid wordt in weken tot maanden steviger, voller en egaler. Meerdere behandelingen geven het beste en langst houdbare resultaat.",
+    "aftercare": [
+     "Pas na 12 uur voorzichtig reinigen.",
+     "48 uur geen hete douche, sauna, sport of zwemmen.",
+     "Tot 4 weken geen intensieve zon; dagelijks SPF 30+."
+    ],
+    "faq": [
+     {
+      "q": "Ook voor een donkere huid?",
+      "a": "Ja, het omliggende weefsel wordt niet beschadigd, dus het is geschikt voor alle huidtypes."
+     },
+     {
+      "q": "Zie ik meteen resultaat?",
+      "a": "Nee, collageen opbouwen kost maanden. Meerdere behandelingen geven het beste resultaat."
+     }
+    ]
+   },
+   "ba": [
+    "ba-sylfirm-1",
+    "ba-sylfirm-2"
+   ]
+  },
+  {
+   "id": "skinbooster",
+   "category": "skin",
+   "name": "Skinboosters",
+   "description": "Een vitamineboost die de huid van binnenuit hydrateert. Ook als kuur van vier.",
+   "minutes": 30,
+   "priceFrom": 150,
+   "deposit": 0,
+   "photo": "pc-skinbooster",
+   "info": {
+    "intro": "Micro-injecties met hyaluronzuur, vitaminen en antioxidanten die je huid intensief hydrateren en een gezonde glow geven.",
+    "how": "Met de U225 meso-injector wordt een cocktail op basis van hyaluronzuur gelijkmatig en oppervlakkig in je huid gebracht. Pure Clinics werkt met RRS-skinboosters; de keuze hangt af van je huid en je doel.",
+    "sessions": "4, dan onderhoud",
+    "downtime": "Nauwelijks",
+    "results": "Het effect blijft weken tot maanden zichtbaar. Met onderhoud houd je het resultaat vast.",
+    "aftercare": [
+     "Hitte vermijden, zoals sauna en felle zon.",
+     "De eerste 2 uur geen make-up."
+    ],
+    "faq": [
+     {
+      "q": "Doet het pijn?",
+      "a": "Nee, de vloeistof wordt heel oppervlakkig ingebracht. De meeste mensen voelen er weinig van."
+     },
+     {
+      "q": "Hoe lang werkt het?",
+      "a": "Enkele weken tot maanden; met onderhoudsbehandelingen blijft het resultaat."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "exosomes",
+   "category": "skin",
+   "name": "Exosomen",
+   "description": "Ingeneedld over het hele gezicht voor herstel en een egale, stralende huid.",
+   "minutes": 60,
+   "priceFrom": 325,
+   "deposit": 0,
+   "photo": "pc-exosomes",
+   "info": {
+    "intro": "Plantaardige exosomen uit de stamcellen van een roos, die het herstel van je huid en de aanmaak van collageen ondersteunen. Als extra bij SkinPen of Sylfirm X.",
+    "how": "Exosomen zijn piepkleine blaasjes waarmee cellen met elkaar communiceren. Tijdens een SkinPen- of Sylfirm X-behandeling worden ze via de microkanaaltjes diep in je huid opgenomen.",
+    "sessions": "Meerdere",
+    "downtime": "1–2 dagen",
+    "results": "Sneller herstel, een betere huidstructuur, een egalere teint en een stevigere huid met glow.",
+    "aftercare": [
+     "Eerste 24 uur niet nat maken en geen make-up.",
+     "Eerste 24 uur geen sport, sauna of hete douche.",
+     "Minstens 2 weken geen directe zon; dagelijks SPF 30+."
+    ],
+    "faq": [
+     {
+      "q": "Waarom samen met microneedling?",
+      "a": "Via de kleine kanaaltjes die de naaldjes maken, komen de exosomen veel dieper in de huid dan met een crème."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "pdrn",
+   "category": "skin",
+   "name": "PDRN · zalm-DNA",
+   "description": "Polynucleotiden die het herstel van de huid ondersteunen, als losse behandeling of kuur.",
+   "minutes": 60,
+   "priceFrom": 295,
+   "deposit": 0,
+   "photo": "pc-pdrn",
+   "info": {
+    "intro": "PDRN, ook wel zalm-DNA: gezuiverde DNA-fragmenten die het herstel van je huid ondersteunen, intensief hydrateren en collageen stimuleren.",
+    "how": "PDRN activeert de cellen die collageen en elastine maken. Het wordt meestal met microneedling ingebracht, zodat het via de microkanaaltjes diep in de huid komt. Goed te combineren met SkinPen of Sylfirm X.",
+    "sessions": "Meerdere",
+    "downtime": "1–2 dagen",
+    "results": "Geleidelijk een vollere, stevigere en beter gehydrateerde huid met een frisse glow.",
+    "aftercare": [
+     "24–48 uur geen sport, sauna of hete douche.",
+     "Geen directe zon; dagelijks SPF 30+.",
+     "Alleen de geadviseerde huidverzorging gebruiken."
+    ],
+    "faq": [
+     {
+      "q": "Komt het echt van zalm?",
+      "a": "De DNA-fragmenten komen onder andere uit zalm. Ze worden gezuiverd, zodat alleen de werkzame stoffen overblijven."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "tca",
+   "category": "skin",
+   "name": "TCA peeling",
+   "description": "Een middeldiepe peeling tegen pigmentvlekken, littekens en een doffe huid.",
+   "minutes": 45,
+   "priceFrom": 195,
+   "deposit": 0,
+   "photo": "pc-tca",
+   "info": {
+    "intro": "Een intensievere chemische peeling met trichloorazijnzuur, die de vernieuwing van je huid en de aanmaak van collageen sterk stimuleert.",
+    "how": "Je huid wordt eerst 4 tot 6 weken voorbereid en mag niet gebruind zijn. De huidtherapeut brengt de peeling in lagen aan, afgestemd op hoe je huid reageert. Daarna kleurt je huid tijdelijk rood en vervelt hij.",
+    "sessions": "Kuur van 3",
+    "downtime": "1 week vervellen",
+    "results": "Een gladdere, egalere en stevigere huid. Pigment kan terugkomen, dus blijf je goed beschermen tegen de zon.",
+    "aftercare": [
+     "Eerste 24 uur niet nat maken.",
+     "Niet aan velletjes trekken.",
+     "Minstens 4 weken geen directe zon; dagelijks SPF 50."
+    ],
+    "faq": [
+     {
+      "q": "Doet een peeling pijn?",
+      "a": "Het kan branden of prikken tijdens het aanbrengen. Daarna voelt je huid nog even strak."
+     },
+     {
+      "q": "Wanneer begint het vervellen?",
+      "a": "Meestal na 3 tot 6 dagen, en het duurt ongeveer een week."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "deepclean",
+   "category": "skin",
+   "name": "Dieptereiniging met peeling",
+   "description": "Een frisse, schone huid: reinigen, peelen en verzorgen in één afspraak.",
+   "minutes": 45,
+   "priceFrom": 65,
+   "deposit": 0,
+   "photo": "pc-deepclean",
+   "insurable": true,
+   "info": {
+    "intro": "Een grondige reiniging waarbij onzuiverheden en mee-eters worden verwijderd, met een peeling voor een frissere, egalere huid.",
+    "how": "Na het reinigen verwijdert de huidtherapeut onzuiverheden en mee-eters, zo nodig met een dun naaldje. Daarna volgt een peeling die dode huidcellen losmaakt, bijvoorbeeld een fruitzuurpeeling die bij je huidtype past.",
+    "sessions": "Een kuur",
+    "interval": "8–10 dagen",
+    "downtime": "Dezelfde dag",
+    "results": "Schonere poriën, minder nieuwe ontstekingen en een frissere teint.",
+    "aftercare": [
+     "Dagelijks SPF 30+.",
+     "Korstjes met rust laten."
+    ],
+    "faq": [
+     {
+      "q": "Hoe vaak heb ik een behandeling nodig?",
+      "a": "Dat hangt af van je huid. Vaak wordt een kuur geadviseerd, met een peeling om de 8 tot 10 dagen."
+     }
+    ]
+   },
+   "ba": [
+    "ba-peel-1"
+   ]
+  },
+  {
+   "id": "xlhair",
+   "category": "hair",
+   "name": "XL Hair · haaruitval",
+   "description": "Behandeling tegen haaruitval met zichtbaar resultaat, met een startpakket incl. producten.",
+   "minutes": 30,
+   "priceFrom": 150,
+   "deposit": 0,
+   "photo": "pc-xlhair",
+   "info": {
+    "intro": "Injecties in de hoofdhuid met hyaluronzuur, vitaminen en groeifactoren, die de haarzakjes stimuleren en haaruitval remmen.",
+    "how": "Met de U225 meso-injector wordt XL Hair via kleine gaatjes in de hoofdhuid gebracht, wat ook de doorbloeding stimuleert. Hyaluronzuur hydrateert de hoofdhuid, en vitaminen en groeifactoren ondersteunen de haargroei.",
+    "sessions": "6–8",
+    "interval": "1–2 weken",
+    "downtime": "Nauwelijks",
+    "results": "Actieve haaruitval stopt meestal binnen ongeveer drie maanden. Het eindresultaat zie je rond zes maanden na de laatste behandeling.",
+    "aftercare": [
+     "24 uur geen zon, sauna of producten op de hoofdhuid.",
+     "24 uur niet intensief sporten."
+    ],
+    "faq": [
+     {
+      "q": "Hoe vaak moet ik komen?",
+      "a": "Mannen minstens 6 en vrouwen minstens 8 keer, met 1 tot 2 weken ertussen. Daarna eventueel onderhoud."
+     },
+     {
+      "q": "Zie ik na één behandeling resultaat?",
+      "a": "Nee, haar groeit langzaam. Het effect is meestal rond zes maanden na de laatste behandeling duidelijk."
+     }
+    ]
+   },
+   "ba": [
+    "ba-xlhair-1",
+    "ba-xlhair-2",
+    "ba-xlhair-3"
+   ]
+  },
+  {
+   "id": "camouflage",
+   "category": "conditions",
+   "name": "Camouflagetherapie",
+   "description": "Je leert littekens, pigment of vlekken onzichtbaar maken, met producten in jouw eigen kleur.",
+   "minutes": 30,
+   "priceFrom": 100,
+   "deposit": 0,
+   "photo": "pc-camouflage",
+   "insurable": true,
+   "info": {
+    "intro": "Leer kleurverschillen in je huid dagelijks natuurlijk wegwerken met een camouflagecrème van Lycogel, in jouw kleur.",
+    "how": "Samen met de huidtherapeut kies je de kleur die het best bij je teint past. Je leert de crème zelf aanbrengen, fixeren en verwijderen. Lycogel dekt beter dan foundation, laat je huid ademen en bevat SPF 30.",
+    "sessions": "1",
+    "downtime": "Geen",
+    "results": "Direct effect: zolang je de crème draagt, zijn de kleurverschillen niet te zien.",
+    "aftercare": [
+     "Dagelijks zelf aanbrengen zoals je hebt geleerd."
+    ],
+    "faq": [
+     {
+      "q": "Ook voor een gevoelige huid?",
+      "a": "Ja, de producten zijn hypoallergeen en bevatten een zonnefilter."
+     },
+     {
+      "q": "Wordt het vergoed?",
+      "a": "De meeste camouflagebehandelingen worden vergoed uit de aanvullende zorgverzekering."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "ipl",
+   "category": "skin",
+   "name": "IPL huidverbetering",
+   "description": "Lichtbehandeling tegen roodheid, pigment en een ongelijke teint.",
+   "minutes": 30,
+   "priceFrom": 95,
+   "deposit": 0,
+   "photo": "pc-ipl",
+   "info": {
+    "intro": "IPL (Intense Pulsed Light) tegen oppervlakkige roodheid, fijne vaatjes en pigment, ook na acne.",
+    "how": "IPL geeft gepulseerd licht in meerdere golflengtes, dat wordt opgenomen door het bloed in kleine vaatjes of door pigment. De warmte sluit vaatjes af of breekt pigment af, waarna je lichaam het opruimt.",
+    "sessions": "1–3",
+    "interval": "4 weken",
+    "downtime": "1–2 dagen",
+    "results": "Een egalere en rustigere huid. Bij aanleg is onderhoud zinvol.",
+    "aftercare": [
+     "Dagelijks SPF 30+.",
+     "48–72 uur geen sauna, sport of alcohol.",
+     "Minstens 4 weken geen zonnebank of directe zon."
+    ],
+    "faq": [
+     {
+      "q": "Wat is het verschil met een laser?",
+      "a": "IPL gebruikt meerdere kleuren licht en werkt breder; een laser gebruikt één krachtige golflengte. Bij dieper gelegen vaatjes kiest de huidtherapeut de laser."
+     }
+    ]
+   },
+   "ba": [
+    "ba-ipl-1",
+    "ba-ipl-2",
+    "ba-ipl-3"
+   ]
+  },
+  {
+   "id": "massage",
+   "category": "conditions",
+   "name": "Bindweefselmassage",
+   "description": "Maakt littekens en verkleefd weefsel soepeler. Ook als pakket van 5+1.",
+   "minutes": 30,
+   "priceFrom": 60,
+   "deposit": 0,
+   "photo": "pc-massage",
+   "info": {
+    "intro": "Een intensieve massage van de diepere huidlagen: fitness voor je huid, voor een betere doorbloeding, meer collageen en direct een frissere uitstraling.",
+    "how": "De massage werkt in de diepere huidlagen en stimuleert de doorbloeding, waardoor je huid meer collageen en elastine aanmaakt. Verklevingen worden losgemaakt. In een kuur werkt het het best.",
+    "sessions": "6, dan onderhoud",
+    "interval": "1 week",
+    "downtime": "Enkele uren",
+    "results": "Al na de eerste keer een frissere uitstraling en een gezonde glans.",
+    "aftercare": [
+     "Veel water drinken.",
+     "24 uur geen alcohol.",
+     "Tijdens de kuur verstevigende producten gebruiken."
+    ],
+    "faq": [
+     {
+      "q": "Doet het pijn?",
+      "a": "Het kan wat gevoelig zijn. Je huid kan daarna even rood en beurs aanvoelen."
+     }
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "prx",
+   "category": "skin",
+   "name": "PRX-T33",
+   "description": "Naaldvrije skinbooster voor een directe glow: voller, gladder en stralender, zonder vervellen.",
+   "minutes": 30,
+   "priceFrom": 125,
+   "deposit": 0,
+   "photo": "pc-prx",
+   "info": {
+    "intro": "PRX-T33 is een naaldvrije skinbooster die je huid direct voller en stralender maakt, en de vernieuwing en stevigheid verbetert.",
+    "how": "PRX-T33 combineert TCA met waterstofperoxide en kojinezuur. Het wordt in stappen met een intensieve massage ingemasseerd en stimuleert collageen, zonder het vervellen van een klassieke TCA-peeling.",
+    "sessions": "1, of een kuur van 4–6",
+    "downtime": "Enkele uren",
+    "results": "Direct een vollere, gladdere en stralende huid. Ideaal voor een speciale gelegenheid.",
+    "aftercare": [
+     "Minstens 6 dagen twee keer per dag de meegegeven WiQo-crème.",
+     "Eerste 7 dagen geen directe zon; dagelijks SPF 30+.",
+     "48 uur geen sport, sauna of hete baden."
+    ],
+    "faq": [
+     {
+      "q": "Heb ik er lang last van?",
+      "a": "Nee, de lichte roodheid is meestal binnen een paar uur weg."
+     },
+     {
+      "q": "Is PRX voor iedereen?",
+      "a": "Ja, het is geschikt voor alle huidtypen."
+     }
+    ]
+   },
+   "ba": [
+    "ba-prx-1",
+    "ba-prx-2"
+   ]
+  },
+  {
+   "id": "facial",
+   "category": "skin",
+   "name": "Facial",
+   "description": "Reinigen, hydrateren en laten stralen: gezicht, hals en decolleté, afgestemd op je huid.",
+   "minutes": 60,
+   "priceFrom": 59,
+   "deposit": 0,
+   "photo": "pc-facial",
+   "info": {
+    "intro": "Een verzorgende gezichtsbehandeling die gezicht, hals en decolleté reinigt, hydrateert en weer laat stralen.",
+    "how": "Elke facial begint met een huidanalyse. Daarna volgen reiniging, dieptereiniging, een peeling, een masker, een serum en verzorging. Je facial kan worden uitgebreid met een van de specialistische technieken van Pure Clinics.",
+    "sessions": "1",
+    "downtime": "Geen",
+    "results": "Een grondig gereinigde, goed gehydrateerde huid met een gezonde glow.",
+    "aftercare": [
+     "De geadviseerde producten gebruiken, zodat het resultaat blijft.",
+     "Kies minerale make-up die de huid laat ademen."
+    ]
+   },
+   "ba": []
+  },
+  {
+   "id": "peel",
+   "category": "skin",
+   "name": "Chemische peeling",
+   "description": "Amandel-, melk-, glycol- of salicylzuur: het zuur dat bij jouw huid past, voor een gladdere en frissere huid.",
+   "minutes": 45,
+   "priceFrom": 85,
+   "deposit": 0,
+   "photo": "pc-peel",
+   "info": {
+    "intro": "Chemische peelings met fruitzuren die dode huidcellen losmaken, voor een gladdere, egalere en frissere huid. Er is een zuur voor elk huidtype.",
+    "how": "De huidtherapeut kiest het zuur dat bij je huid past: amandelzuur voor een gevoelige of acnegevoelige huid, melkzuur voor een droge huid, glycolzuur voor een doffe huid en salicylzuur voor een vette huid met verstopte poriën. Tijdens de behandeling houdt de huidtherapeut je huid in de gaten en neutraliseert de peeling op het juiste moment.",
+    "sessions": "Een kuur",
+    "interval": "8–10 dagen",
+    "downtime": "Kort",
+    "results": "Een gladdere, egalere en frissere huid.",
+    "aftercare": [
+     "1 tot 2 weken geen directe zon; dagelijks SPF 30+.",
+     "Tijdelijk geen zuren of retinol.",
+     "Niet scrubben en geen velletjes lostrekken."
+    ],
+    "faq": [
+     {
+      "q": "Doet een peeling pijn?",
+      "a": "Het kan prikken of branden. Hoe sterker de peeling, hoe meer je voelt."
+     },
+     {
+      "q": "Hoe vaak heb ik een peeling nodig?",
+      "a": "Vaak wordt een kuur geadviseerd, met een peeling om de 8 tot 10 dagen."
+     }
+    ]
+   },
+   "ba": [
+    "ba-peel-1"
+   ]
+  },
+  {
+   "id": "brows",
+   "category": "beauty",
+   "name": "Wenkbrauwen & wimpers",
+   "description": "Bij Blanche Beauty Studio: verven, epileren, lifting en laminatie.",
+   "minutes": 30,
+   "priceFrom": 35,
+   "deposit": 0,
+   "photo": "stock-lashes",
+   "info": null,
+   "ba": []
+  },
+  {
+   "id": "nails",
+   "category": "beauty",
+   "name": "Nagels · BIAB",
+   "description": "Bij Blanche Beauty Studio: BIAB, gellak en verzorging van handen en voeten.",
+   "minutes": 60,
+   "priceFrom": 45,
+   "deposit": 0,
+   "photo": "pc-nails",
+   "info": null,
+   "ba": []
+  }
+ ],
+ "concerns": [
+  {
+   "id": "removal",
+   "photo": "pc-smooth",
+   "treatments": [
+    "laser",
+    "epilation"
+   ],
+   "text": "Overmatige of ongewenste haargroei in je gezicht of op je lichaam, vaak met scheerirritatie. Donkere haren kunnen gelaserd worden; lichte haren worden met elektrische epilatie behandeld."
+  },
+  {
+   "id": "acne",
+   "photo": "pc-acne-skin",
+   "treatments": [
+    "acne",
+    "deepclean",
+    "peel",
+    "ipl",
+    "skinpen",
+    "prx"
+   ],
+   "text": "Acne ontstaat als talg en dode huidcellen de poriën verstoppen en bacteriën ontstekingen veroorzaken. Hormonen, stress en voeding kunnen meespelen."
+  },
+  {
+   "id": "scars",
+   "photo": "pc-skinpen",
+   "treatments": [
+    "skinpen",
+    "sylfirm",
+    "tixel",
+    "tca",
+    "pdrn",
+    "exosomes",
+    "camouflage"
+   ],
+   "text": "Ingezonken of oneffen littekens die na acne achterblijven. Behandelingen die collageen aanmaken, zoals SkinPen en Sylfirm X, maken de huid egaler."
+  },
+  {
+   "id": "pigment",
+   "photo": "pc-pigment",
+   "treatments": [
+    "pigment",
+    "ipl",
+    "tca",
+    "skinpen",
+    "prx",
+    "camouflage"
+   ],
+   "text": "Vlekken door een te hoge of ongelijke aanmaak van pigment, vaak door zon of hormonen. Zonder zonbescherming worden ze donkerder of komen ze terug."
+  },
+  {
+   "id": "redness",
+   "photo": "pc-couperose",
+   "treatments": [
+    "couperose",
+    "ipl",
+    "legveins",
+    "camouflage"
+   ],
+   "text": "Kleine, blijvend verwijde vaatjes op wangen, neus en kin, die een rode gloed geven. Ze zijn onschuldig, maar verdwijnen niet vanzelf."
+  },
+  {
+   "id": "aging",
+   "photo": "pc-aging",
+   "treatments": [
+    "tixel",
+    "sylfirm",
+    "skinpen",
+    "pdrn",
+    "exosomes",
+    "skinbooster",
+    "prx",
+    "massage",
+    "facial"
+   ],
+   "text": "Met de jaren maakt je huid minder collageen, elastine en hyaluronzuur aan: lijntjes, minder stevigheid en een doffere huid. Zon en roken versnellen dit."
+  },
+  {
+   "id": "eyes",
+   "photo": "pc-eyes",
+   "treatments": [
+    "eyes",
+    "skinbooster",
+    "tixel"
+   ],
+   "text": "Wallen ontstaan door vocht of vet onder de ogen; wordt de huid dunner, dan schemeren vaatjes door als donkere kringen. Slaapgebrek en aanleg spelen mee."
+  },
+  {
+   "id": "hairloss",
+   "photo": "pc-xlhair",
+   "treatments": [
+    "xlhair"
+   ],
+   "text": "Haaruitval en dunner wordend haar, bij mannen en vrouwen. Een slechte doorbloeding van de hoofdhuid kan een van de oorzaken zijn."
+  }
+ ]
+}
